@@ -1,0 +1,34 @@
+import { Game } from './game';
+import { Mouse } from './mouse';
+import { Particle } from './particle';
+import { Vector } from './vector';
+
+export class RectParticle extends Particle {
+    constructor(game: Game, x: number, y: number, width: number, height: number, life: number, velocity: Vector, private options?) {
+        super(game, x, y, width, height, life, velocity);
+        if (this.options?.depth) {
+            this.d = this.options.depth;
+        }
+    }
+
+    public update(tick: number, mouse: Mouse): void {
+        if (this.options?.force) {
+            this.velocity = {
+                x: this.velocity.x + this.options.force.x * this.delta,
+                y: this.velocity.y + this.options.force.y * this.delta
+            };
+        }
+        super.update(tick, mouse);
+    }
+
+    public draw(ctx: CanvasRenderingContext2D): void {
+        ctx.fillStyle = this.options?.color ?? '#fff';
+        ctx.fillRect(this.p.x - this.s.x * 0.5, this.p.y - this.s.y * 0.5, this.s.x, this.s.y);
+    }
+}
+
+export interface ParticleOptions {
+    color?: string;
+    force?: Vector;
+    depth?: number;
+}

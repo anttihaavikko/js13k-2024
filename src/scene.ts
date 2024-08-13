@@ -39,7 +39,8 @@ export class Scene extends Container {
             this.moveDiceTo(this.ship);
             this.act = () => this.rollForDamage();
             this.nextAction = () => {
-                console.log('dealing damage', this.dice.reduce((sum, d) => sum + d.getValue(), 0));
+                const dmg = this.dice.reduce((sum, d) => sum + d.getValue(), 0);
+                this.splash.content = `Shot for ${dmg} damage!`;
                 this.dice = [];
             };
         };
@@ -86,6 +87,7 @@ export class Scene extends Container {
     private promptShot(): void {
         this.action.setText('SHOOT');
         this.action.visible = true;
+        setTimeout(() => this.splash.content = '', 500);
     }
 
     private confirm(state: boolean): void {
@@ -93,7 +95,7 @@ export class Scene extends Container {
 
         if (state) {
             this.roll(this.dice.length);
-            setTimeout(() => this.nextAction(), 750);
+            setTimeout(() => this.nextAction(), 1000);
         } else {
             this.nextAction();
         }

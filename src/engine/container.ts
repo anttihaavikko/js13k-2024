@@ -1,6 +1,7 @@
 import { Entity } from './entity';
 import { Mouse } from './mouse';
 import { Game } from './game';
+import { ButtonEntity } from './button';
 
 export class Container extends Entity {
     private children: Entity[] = [];
@@ -46,5 +47,9 @@ export class Container extends Entity {
 
     public clear(): void {
         this.children = [];
+    }
+
+    public getButtons(): ButtonEntity[] {
+        return [];
     }
 }

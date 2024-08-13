@@ -4,7 +4,7 @@ import { Entity } from './entity';
 import { Game } from './game';
 import { Mouse } from './mouse';
 
-const BORDER_THICKNESS = 7;
+const BORDER_THICKNESS = 5;
 
 export class ButtonEntity extends Entity {
     public visible = true;
@@ -56,7 +56,7 @@ export class ButtonEntity extends Entity {
         ctx.translate(0, this.hovered ? -5 : 0);
         ctx.fillStyle = '#000';
         ctx.fillRect(this.p.x, this.p.y, this.s.x, this.s.y);
-        ctx.fillStyle = this.hovered ? '#ffff77' : '#fff';
+        ctx.fillStyle = this.hovered ? 'yellow' : '#fff';
         ctx.fillRect(this.p.x + this.borderThickness, this.p.y + this.borderThickness, this.s.x - this.borderThickness * 2, this.s.y - this.borderThickness * 2);
 
         ctx.font =`${this.fontSize}px ${font}`;

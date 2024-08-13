@@ -1,5 +1,6 @@
 import { Dice } from './dice';
 import { Dude } from './dude';
+import { Camera } from './engine/camera';
 import { drawCircle } from './engine/drawing';
 import { Entity } from './engine/entity';
 import { Game } from './engine/game';
@@ -10,8 +11,10 @@ export class Ship extends Entity {
     private dude: Dude;
     private phase: number;
     private dice: Dice[] = [];
+    private closest: Dice;
+    private mp: Vector;
     
-    constructor(game: Game, x: number, private flip: boolean) {
+    constructor(game: Game, x: number, private player: boolean) {
         super(game, x, 550, 0, 0);
         this.dude = new Dude(game, 70, -125);
     }
@@ -40,7 +43,16 @@ export class Ship extends Entity {
         super.update(tick, mouse);
         this.phase = Math.sin(tick * 0.005);
         this.dude.update(tick, mouse);
-        this.dice.forEach(d => d.update(tick, mouse));
+        this.dice.forEach(d => d.update(tick, this.offsetMouse(mouse, this.game.getCamera())));
+        this.mp = this.offsetMouse(mouse, this.game.getCamera());
+    }
+
+    private offsetMouse(mouse: Mouse, cam: Camera): Mouse {
+        return {
+            ...mouse,
+            x: mouse.x / cam.zoom - this.p.x * cam.zoom + 150,
+            y: mouse.y / cam.zoom - this.p.y * cam.zoom - 30
+        };
     }
 
     public draw(ctx: CanvasRenderingContext2D): void {
@@ -48,7 +60,7 @@ export class Ship extends Entity {
         ctx.translate(this.p.x, this.p.y);
         ctx.rotate(this.phase * 0.02);
 
-        if (this.flip) ctx.scale(-1, 1);
+        if (!this.player) ctx.scale(-1, 1);
 
         // mast
         const mastPos = 40;
@@ -67,6 +79,8 @@ export class Ship extends Entity {
 
         ctx.translate(-this.p.x, -this.p.y);
         this.dice.forEach(d => d.draw(ctx));
+        if (this.player) this.dice.forEach(d => d.drawRim(ctx));
+
         ctx.translate(this.p.x, this.p.y);
 
         ctx.translate(120, 0);
@@ -82,7 +96,7 @@ export class Ship extends Entity {
 
         // hull
         ctx.beginPath();
-        const extension = Math.floor((this.dice.length - 1) / 3) * 100;
+        const extension = this.getCargoWidth();
         ctx.moveTo(-200 - extension, -150);
         ctx.lineTo(-170 - extension, 150);
         ctx.lineTo(180, 150);
@@ -92,6 +106,10 @@ export class Ship extends Entity {
         ctx.stroke();
 
         ctx.restore();
+    }
+
+    public getCargoWidth(): number {
+        return Math.floor(Math.max(0, this.dice.length - 1) / 3) * 100;
     }
 
     private drawCannon(ctx: CanvasRenderingContext2D): void {

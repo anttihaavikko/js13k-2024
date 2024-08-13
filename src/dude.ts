@@ -24,7 +24,7 @@ export class Dude extends Entity {
     constructor(game: Game, x: number, y: number) {
         super(game, x, y, 0, 0);
         this.face = new Face(this.game, {
-            blush: 'red',
+            blush: 'orange',
             eyeSize: 10,
             width: 0.75,
             mouthWidth: 0.7,
@@ -156,7 +156,7 @@ export class Dude extends Entity {
             ctx.fill();
             if (bandHeight > 0) {
                 ctx.lineWidth = 5;
-                ctx.fillStyle = 'red';
+                ctx.fillStyle = 'orange';
                 ctx.beginPath();
                 const pos = -12.75;
                 ctx.moveTo(10, pos - rimHeight);

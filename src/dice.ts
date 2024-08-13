@@ -8,11 +8,20 @@ import { Vector } from './engine/vector';
 export class Dice extends Entity {
     private value: number;
     private rolling: boolean;
+    private hovering: boolean;
 
-    constructor(game: Game, x: number, y: number) {
+    constructor(game: Game, x: number, y: number, private damage: boolean = false) {
         super(game, x, y, 100, 100);
-        this.value = randomInt(1, 6);
+        this.randomize();
         this.fixRotation();
+    }
+
+    private randomize(): void {
+        this.value = this.damage ? randomInt(0, 2) : randomInt(1, 6);
+    }
+
+    public getValue(): number {
+        return this.value;
     }
 
     private fixRotation(): void {
@@ -35,32 +44,51 @@ export class Dice extends Entity {
 
     public update(tick: number, mouse: Mouse): void {
         super.update(tick, mouse);
+        this.hovering = this.isInside(mouse, 5);
         if (this.rolling) {
-            this.value = randomInt(1, 6);
+            this.randomize();
             this.rotation += tick * 0.1;
         }
+    }
+
+    public drawRim(ctx: CanvasRenderingContext2D): void {
+        if (!this.hovering) return;
+        ctx.save();
+        ctx.translate(this.p.x + 50, this.p.y + 50);
+        ctx.rotate(this.rotation);
+        ctx.strokeStyle = 'orange';
+        const borderWidth = 5;
+        ctx.strokeRect(-50 - borderWidth, -50 - borderWidth, 100 + borderWidth * 2, 100 + borderWidth * 2);
+        ctx.restore();
     }
 
     public draw(ctx: CanvasRenderingContext2D): void {
         ctx.save();
         ctx.translate(this.p.x + 50, this.p.y + 50);
         ctx.rotate(this.rotation);
+        ctx.fillStyle = this.hovering ? 'yellow' : '#fff';
         ctx.beginPath();
         ctx.rect(-50, -50, 100, 100);
         ctx.fill();
         ctx.stroke();
-        if (this.value === 1 || this.value === 3 || this.value === 5) drawCircle(ctx, { x: 0, y: 0 }, 8, '#000');
-        if (this.value !== 1) drawCircle(ctx, { x: -25, y: -25 }, 8, '#000');
-        if (this.value !== 1) drawCircle(ctx, { x: 25, y: 25 }, 8, '#000');
+        if (this.value === 1 || this.value === 3 || this.value === 5) this.drawPip(ctx, { x: 0, y: 0 });
+        if (this.value > 1) {
+            this.drawPip(ctx, { x: -25, y: -25 });
+            this.drawPip(ctx, { x: 25, y: 25 });
+        }
         if (this.value >= 4) {
-            drawCircle(ctx, { x: -25, y: 25 }, 8, '#000');
-            drawCircle(ctx, { x: 25, y: -25 }, 8, '#000');
+            this.drawPip(ctx, { x: -25, y: 25 });
+            this.drawPip(ctx, { x: 25, y: -25 });
         }
         if (this.value === 6) {
-            drawCircle(ctx, { x: 0, y: -25 }, 8, '#000');
-            drawCircle(ctx, { x: 0, y: 25 }, 8, '#000');
+            this.drawPip(ctx, { x: 0, y: -25 });
+            this.drawPip(ctx, { x: 0, y: 25 });
         }
         ctx.fillStyle = '#fff';
         ctx.restore();
+    }
+
+    private drawPip(ctx: CanvasRenderingContext2D, pos: Vector): void {
+        drawCircle(ctx, pos, this.damage ? 12 : 8, '#000');
     }
 }

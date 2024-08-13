@@ -57,6 +57,7 @@ document.ontouchstart = (e: TouchEvent) => {
 document.onmousedown = () => {
     audio.play();
     mouse.pressing = true;
+    game.click(mouse);
 };
 
 // document.onmouseup = () => mouse.pressing = false;

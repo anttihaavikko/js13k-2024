@@ -28,6 +28,12 @@ export class Game extends Entity {
         return this.audio;
     }
 
+    public click(mouse: Mouse): void {
+        this.scene?.getButtons().forEach(b => {
+            if (b.visible && b.isInside(mouse)) b.trigger();
+        });
+    }
+
     public onKey(callback: (event: KeyboardEvent) => void): void {
         this.keyListeners.push(callback);
     }

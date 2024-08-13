@@ -13,6 +13,7 @@ export const drawEllipse = (ctx: CanvasRenderingContext2D, pos: Vector, x: numbe
         ctx.strokeStyle = stroke;
         ctx.stroke();
     }
+    ctx.closePath();
 };
 
 export const drawRect = (ctx: CanvasRenderingContext2D, pos: Vector, size: Vector, fill: string, stroke: string): void => {

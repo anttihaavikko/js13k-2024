@@ -104,7 +104,7 @@ export class Dice extends Entity {
     public draw(ctx: CanvasRenderingContext2D): void {
         ctx.save();
         ctx.beginPath();
-        ctx.translate(this.p.x + 50, this.p.y + 50 + this.getHeight());
+        ctx.translate(this.p.x + 50, this.p.y + 50 + this.getHeight() + (this.rolling ? Math.sin(this.tween.time * Math.PI) * -150 : 0));
         ctx.rotate(this.rotation);
         ctx.fillStyle = this.hovering || this.marked ? 'yellow' : '#fff';
         ctx.rect(-50, -50, 100, 100);
@@ -132,7 +132,7 @@ export class Dice extends Entity {
         if (this.damage) {
             ctx.fillStyle = '#000';
             ctx.font =`45px ${font}`;
-            ctx.fillText('✦', pos.x * 0.8 - 15, pos.y * 0.8 + 15);
+            ctx.fillText('✦', pos.x * 0.8 - 20, pos.y * 0.8 + 15);
             return;
         }
         drawCircle(ctx, pos, this.damage ? 12 : 8, '#000', 'transparent');

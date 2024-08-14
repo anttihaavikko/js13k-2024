@@ -25,6 +25,7 @@ export class Ship extends Entity {
     private stagger: number = 0;
     private incoming: number = 0;
     private ball: Ball;
+    private friendly: boolean;
     
     constructor(game: Game, private name: string, x: number, private scene: Scene, private player: boolean) {
         super(game, x, 550, 0, 0);
@@ -212,7 +213,7 @@ export class Ship extends Entity {
         // ctx.translate(this.p.x - off, this.p.y);
 
         ctx.translate(120, 0);
-        this.drawCannon(ctx);
+        if (!this.friendly) this.drawCannon(ctx);
         ctx.translate(-120, 0);
 
         ctx.save();
@@ -246,6 +247,10 @@ export class Ship extends Entity {
         ctx.fillText(this.name, 0, 0);
 
         ctx.restore();
+    }
+
+    public rerollAll(): void {
+        this.dice.forEach(d => d.reroll());
     }
 
     public sail(): void {
@@ -283,5 +288,13 @@ export class Ship extends Entity {
         ctx.stroke();
 
         drawCircle(ctx, { x: 35, y: -190 }, 8, '#000');
+    }
+
+    public makeAngry(): void {
+        this.dude.makeAngry(true);
+    }
+
+    public makeFriendly(): void {
+        this.friendly = true;
     }
 }

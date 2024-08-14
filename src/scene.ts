@@ -8,6 +8,7 @@ import { ButtonEntity } from './engine/button';
 import { Camera } from './engine/camera';
 import { offset } from './engine/vector';
 import { Ball } from './ball';
+import { randomCell } from './engine/random';
 
 export class Scene extends Container {
     private ship: Ship;
@@ -126,7 +127,7 @@ export class Scene extends Container {
             const dmg = this.getDamage();
             if (dmg < this.dice.length) {
                 this.roll(this.dice.length);
-                setTimeout(() => after(), 500);
+                setTimeout(() => after(), 750);
                 return;
             }
             this.shoot();
@@ -137,7 +138,7 @@ export class Scene extends Container {
             setTimeout(() => {
                 after();
                 this.dice = [];
-            }, 500);
+            }, 750);
         }, () => {
             after();
             this.dice = [];
@@ -189,12 +190,20 @@ export class Scene extends Container {
                 this.loot.push(d);
             }
 
-            setTimeout(() => this.promptForReroll('Victory! Nicely done!', 'Would you like to reroll the loot?', () => this.promptSail()), 750);
+            setTimeout(() => this.promptForReroll('Victory! Nicely done!', 'Would you like to reroll the loot?', () => {
+                this.promptSail();
+                this.showGreed();
+            }), 750);
             return;
         }
         this.current = this.current.getOpponent();
         this.current.pose(true);
         this.promptShot();
+    }
+
+    private showGreed(): void {
+        this.splash.content = 'Don\'t be greedy!';
+        this.secondLine.content = 'You can only take one...';
     }
 
     private promptSail(): void {
@@ -236,21 +245,41 @@ export class Scene extends Container {
         this.action.setText('');
         this.action.visible = false;
         setTimeout(() => {
-            this.enemy = new Ship(this.game, (14 - this.level).toString(), (this.level - 1) * 2000 + 3000, this, false);
+            this.enemy = new Ship(this.game, this.getEnemyName(), (this.level - 1) * 2000 + 3000, this, false);
             this.ship.setOpponent(this.enemy);
             this.enemy.setOpponent(this.ship);
-            for (let index = 0; index < this.level; index++) {
+            for (let index = 0; index < 1 + (this.level - 1) * 0.5; index++) {
                 this.enemy.addDice(new Dice(this.game, 0, 0));
             }
         }, 4000);
         setTimeout(() => this.activateLevel(), 5000);
     }
 
+    private getEnemyName(): string {
+        return this.level % 2 == 0 ? randomCell(['VND', 'MRC', 'GIT', 'POO', 'SIN', 'CSS', 'ASH']) : (13 - (this.level - 1) * 0.5).toString();
+    }
+
     private activateLevel(): void {
         this.targetZoom = 0.5;
         this.cam.pan.y = 350;
         this.cam.shift = 100;
+
+        if (this.level % 2 == 0) {
+            this.enemy.makeFriendly();
+            this.doEvent();
+            return;
+        }
+
+        this.enemy.makeAngry();
+        setTimeout(() => this.splash.content = 'COMMENCE COMBAT'!, 1000);
         setTimeout(() => this.promptShot(), 2000);
+    }
+
+    private doEvent(): void {
+        this.promptAnswer('Hello there mate!', 'Would you like to reroll all your cargo?', () => {
+            this.ship.rerollAll();
+            setTimeout(() => this.promptSail(), 500);
+        }, () => this.promptSail());
     }
 
     private zoom(): void {

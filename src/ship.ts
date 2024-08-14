@@ -85,13 +85,13 @@ export class Ship extends Entity {
         ctx.beginPath();
         ctx.moveTo(-60 + mastPos, -440);
         ctx.lineTo(-60 + mastPos, -200);
-        ctx.lineTo(-200 + mastPos, -200);
+        ctx.lineTo(-200 + mastPos - this.phase * 10, -200 - this.phase * 10);
         ctx.closePath();
         ctx.fill();
         ctx.stroke();
 
         // draw mouse point
-        if (this.player) ctx.fillRect(this.mp.x, this.mp.y, 20, 20);
+        // if (this.player) ctx.fillRect(this.mp.x, this.mp.y, 20, 20);
 
         // const cam = this.game.getCamera();
         // const off = cam.pan.x / cam.zoom + (this.player ? 800 : -700);
@@ -125,8 +125,9 @@ export class Ship extends Entity {
     }
 
     public sail(): void {
+        this.dude.hopInPlace();
         this.tween.setEase(quadEaseInOut);
-        this.tween.move(offset(this.p, 1000, 0), 3);
+        this.tween.move(offset(this.p, 2000, 0), 6);
     }
 
     public getCargoWidth(): number {

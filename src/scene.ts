@@ -26,7 +26,7 @@ export class Scene extends Container {
     constructor(game: Game) {
         super(game, 0, 0, []);
         this.ship = new Ship(game, 0, true);
-        this.enemy = new Ship(game, 2000, false);
+        this.enemy = new Ship(game, 3000, false);
 
         this.splash = new WobblyText(game, 'Lets start by rolling for your cargo!', 35, 400, 120, 0.2, 3, { shadow: 5, align: 'center' });
         this.action = new ButtonEntity(game, 'ROLL', 400, 550, 200, 55, () => this.buttonPress(), game.getAudio(), 20);
@@ -135,7 +135,7 @@ export class Scene extends Container {
     public roll(amount: number): void {
         this.dice = [];
         for (let i = 0; i < amount; i++) {
-            const m = this.getMid();
+            const m = this.getMid() - 50;
             const d = new Dice(this.game, m, 800, this.useDamageDice);
             d.roll(m + i * 120 - 120 * ((amount - 1) * 0.5), 450);
             this.dice.push(d);

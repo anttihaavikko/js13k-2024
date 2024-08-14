@@ -76,6 +76,7 @@ export class Scene extends Container {
             if (e.key == 'x') this.ship.shoot(1);
             if (e.key == 'z') this.targetZoom = Math.random() * 0.5 + 0.25;
             if (e.key == 'p') this.ship.pose(true);
+            if (e.key == 'h') this.game.getCamera().shake(10, 0.15, 1);
         });
     }
 
@@ -183,9 +184,10 @@ export class Scene extends Container {
             this.current = this.ship;
 
             const m = this.getMid() + (80 + this.cam.shift + 200) / this.cam.zoom;
-            for (let i = 0; i < Math.min(this.level + 1, 5); i++) {
+            const amt = Math.min(this.level + 1, 6);
+            for (let i = 0; i < amt; i++) {
                 const d = new Dice(this.game, m, 300);
-                d.roll(m + i * 120 - 120 * ((this.level - 1) * 0.5), 420);
+                d.roll(m + i * 120 - 120 * ((amt - 1) * 0.5), 420);
                 d.float(true);
                 this.loot.push(d);
             }

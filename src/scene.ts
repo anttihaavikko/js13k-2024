@@ -73,6 +73,11 @@ export class Scene extends Container {
         this.roll(this.current.getDiceCount());
         this.action.visible = false;
         this.splash.content = '';
+
+        if (this.current.isAuto()) {
+            setTimeout(() => this.confirm(this.getDamage() < this.dice.length), 750);
+            return;
+        }
         
         setTimeout(() => {
             this.splash.content = 'Would you like to roll again?';
@@ -108,14 +113,23 @@ export class Scene extends Container {
         this.act = () => this.nextLevel();
     }
 
+    private getDamage(): number {
+        return this.dice.reduce((sum, d) => sum + d.getValue(), 0);
+    }
+
     private promptShot(): void {
         this.act = () => this.rollForDamage();
         this.nextAction = () => {
-            const dmg = this.dice.reduce((sum, d) => sum + d.getValue(), 0);
+            const dmg = this.getDamage();
             this.splash.content = `Shot for ${dmg} damage!`;
             this.current.shoot(dmg);
             this.dice = [];
         };
+
+        if (this.current.isAuto()) {
+            this.act();
+            return;
+        }
             
         this.action.setText('SHOOT');
         this.action.visible = true;

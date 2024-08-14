@@ -30,6 +30,10 @@ export class Ship extends Entity {
         ];
     }
 
+    public isAuto(): boolean {
+        return !this.player;
+    }
+
     public getOpponent(): Ship {
         return this.opponent;
     }

@@ -102,6 +102,7 @@ export class Ship extends Entity {
     public shoot(damage: number): void {
         this.shootAnim();
         this.opponent?.hurt(damage);
+        setTimeout(() => this.scene.nextTurn(), 500);
     }
 
     public pulse(x: number, y: number, size: number): void {
@@ -154,11 +155,11 @@ export class Ship extends Entity {
         }
     }
 
-    private offsetMouse(mouse: Mouse, cam: Camera): Mouse {
+    public offsetMouse(mouse: Mouse, cam: Camera, x: number = 0, y: number = 0): Mouse {
         return {
             ...mouse,
-            x: mouse.x / cam.zoom - 400 + cam.shift,
-            y: mouse.y / cam.zoom - 550 - cam.pan.y
+            x: mouse.x / cam.zoom - 400 + cam.shift + x,
+            y: mouse.y / cam.zoom - 550 - cam.pan.y + y
         };
     }
 

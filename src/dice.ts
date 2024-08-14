@@ -11,11 +11,15 @@ export class Dice extends Entity {
     private hovering: boolean;
     private marked: boolean;
     private pickable: boolean;
+    private floating: boolean;
+    private phase: number;
+    private floatOffset: number;
 
     constructor(game: Game, x: number, y: number, private damage: boolean = false) {
         super(game, x, y, 100, 100);
         this.randomize();
         this.fixRotation();
+        this.floatOffset = Math.random();
     }
 
     public allowPick(state: boolean = true): void {
@@ -54,11 +58,17 @@ export class Dice extends Entity {
 
     public update(tick: number, mouse: Mouse): void {
         super.update(tick, mouse);
+        this.phase = Math.sin(tick * 0.005 + this.floatOffset);
         this.hovering = this.pickable && this.isInside(mouse, 5);
         if (this.rolling) {
             this.randomize();
             this.rotation += tick * 0.1;
         }
+    }
+
+    public float(state: boolean): void {
+        this.floating = state;
+        this.allowPick(state);
     }
 
     public isHovering(): boolean {
@@ -74,7 +84,7 @@ export class Dice extends Entity {
     public drawRim(ctx: CanvasRenderingContext2D): void {
         if (!this.hovering && !this.marked) return;
         ctx.save();
-        ctx.translate(this.p.x + 50, this.p.y + 50);
+        ctx.translate(this.p.x + 50, this.p.y + 50 + this.getHeight());
         ctx.rotate(this.rotation);
         ctx.strokeStyle = 'orange';
         const borderWidth = 5;
@@ -82,10 +92,18 @@ export class Dice extends Entity {
         ctx.restore();
     }
 
+    public reroll(): void {
+        this.roll(this.p.x, this.p.y);
+    }
+
+    private getHeight(): number {
+        return this.floating ? this.phase * 7 : 0;
+    }
+
     public draw(ctx: CanvasRenderingContext2D): void {
         ctx.save();
         ctx.beginPath();
-        ctx.translate(this.p.x + 50, this.p.y + 50);
+        ctx.translate(this.p.x + 50, this.p.y + 50 + this.getHeight());
         ctx.rotate(this.rotation);
         ctx.fillStyle = this.hovering || this.marked ? 'yellow' : '#fff';
         ctx.rect(-50, -50, 100, 100);

@@ -19,8 +19,9 @@ export class Scene extends Container {
     private action: ButtonEntity;
     private yesButton: ButtonEntity;
     private noButton: ButtonEntity;
-    private nextAction: () => void;
     private act: () => void;
+    private yesAct: () => void;
+    private noAct: () => void;
     private useDamageDice: boolean;
     private cam: Camera;
     private targetZoom = 0.75;
@@ -30,6 +31,8 @@ export class Scene extends Container {
     private current: Ship;
     private ball: Ball;
     private bigText: WobblyText;
+    private loot: Dice[] = [];
+    private won: boolean = false;
 
     constructor(game: Game) {
         super(game, 0, 0, []);
@@ -43,19 +46,25 @@ export class Scene extends Container {
         this.secondLine = new WobblyText(game, '', 25, 400, 165, 0.2, 3, { shadow: 3, align: 'center' });
         this.bigText = new WobblyText(game, 'GAME NAME', 80, 400, 210, 0.2, 3, { shadow: 7, align: 'center' });
         this.action = new ButtonEntity(game, 'ROLL', 400, 550, 200, 55, () => this.buttonPress(), game.getAudio(), 20);
-        this.yesButton = new ButtonEntity(game, 'YEAH', 330, 550, 120, 55, () => this.confirm(true), game.getAudio(), 20);
-        this.noButton = new ButtonEntity(game, 'NOPE', 470, 550, 120, 55, () => this.confirm(false), game.getAudio(), 20);
+        this.yesButton = new ButtonEntity(game, 'YEAH', 330, 550, 120, 55, () => this.answer(true), game.getAudio(), 20);
+        this.noButton = new ButtonEntity(game, 'NOPE', 470, 550, 120, 55, () => this.answer(false), game.getAudio(), 20);
 
         this.yesButton.visible = false;
         this.noButton.visible = false;
 
-        this.act = () => this.rollForCargo();
-
-        this.nextAction = () => {
-            this.moveDiceTo(this.ship);
-        };
-        
-        // this.ship.addDice();
+        this.promptAction('ROLL', () => {
+            this.rollForCargo();
+            setTimeout(() => this.promptAnswer('Would you like to roll again?', '', () => {
+                this.reroll();
+                setTimeout(() => {
+                    this.moveDiceTo(this.ship);
+                    this.promptSail();
+                }, 500);
+            }, () => {
+                this.moveDiceTo(this.ship);
+                this.promptSail();
+            }), 500);
+        });
 
         this.cam = game.getCamera();
         this.cam.zoom = this.targetZoom;
@@ -63,34 +72,81 @@ export class Scene extends Container {
 
         game.onKey((e) => {
             if (e.key == 's') this.ship.sail();
-            if (e.key == 'x') this.ship.shoot(0);
+            if (e.key == 'x') this.ship.shoot(1);
             if (e.key == 'z') this.targetZoom = Math.random() * 0.5 + 0.25;
             if (e.key == 'k') this.ship.sink();
             if (e.key == 'p') this.ship.pose(true);
         });
     }
 
+    public answer(answered: boolean): void {
+        this.splash.content = '';
+        this.secondLine.content = '';
+        this.yesButton.visible = false;
+        this.noButton.visible = false;
+        if (answered) this.yesAct();
+        if (!answered) this.noAct();
+    }
+
+    private reroll(): void {
+        this.roll(this.dice.length);
+        this.loot.forEach(l => l.reroll());
+    }
+
+    private promptAction(label: string, action: () => void): void {
+        setTimeout(() => {
+            this.action.visible = true;
+            this.action.setText(label);
+            this.act = action;
+        }, 500);
+    }
+
+    private promptAnswer(first: string, second: string, yes: () => void, no: () => void): void {
+        this.splash.content = first;
+        this.secondLine.content = second;
+        this.yesButton.visible = true;
+        this.noButton.visible = true;
+        this.yesAct = yes;
+        this.noAct = no;
+    }
+
     private buttonPress(): void {
         this.bigText.content = '';
+        this.action.visible = false;
         this.act();
     }
 
     private rollForDamage(): void {
         this.useDamageDice = true;
         this.roll(this.current.getDiceCount());
-        this.action.visible = false;
-        this.splash.content = '';
+        setTimeout(() => this.promptForReroll('Would you like to roll again?', '', () => this.shoot()), 500);
+    }
 
+    private promptForReroll(first: string, second: string, after: () => void): void {
         if (this.current.isAuto()) {
-            setTimeout(() => this.confirm(this.getDamage() < this.dice.length), 750);
+            const dmg = this.getDamage();
+            if (dmg < this.dice.length) {
+                this.roll(this.dice.length);
+                setTimeout(() => after(), 500);
+                return;
+            }
+            this.current.shoot(dmg);
             return;
         }
-        
-        setTimeout(() => {
-            this.splash.content = 'Would you like to roll again?';
-            this.yesButton.visible = true;
-            this.noButton.visible = true;
-        }, 500);
+        this.promptAnswer(first, second, () => {
+            this.reroll();
+            setTimeout(() => {
+                after();
+                this.dice = [];
+            }, 500);
+        }, () => {
+            after();
+            this.dice = [];
+        });
+    }
+
+    private shoot(): void {
+        this.current.shoot(this.getDamage());
     }
 
     private rollForCargo(): void {
@@ -106,11 +162,28 @@ export class Scene extends Container {
     }
 
     public nextTurn(): void {
+        this.dice = [];
         this.splash.content = '';
         this.secondLine.content = '';
-        this.dice = [];
-        if (this.level === 0 || this.enemy.isDead()) {
+        if (this.won) {
             this.promptSail();
+            return;
+        }
+        if (this.enemy.isDead() && !this.won) {
+
+            this.won = true;
+            this.enemy.sink();
+            this.current = this.ship;
+
+            const m = this.getMid() + (80 + this.cam.shift + 200) / this.cam.zoom;
+            for (let i = 0; i < this.level; i++) {
+                const d = new Dice(this.game, m, 300);
+                d.roll(m + i * 120 - 120 * ((this.level - 1) * 0.5), 420);
+                d.float(true);
+                this.loot.push(d);
+            }
+
+            setTimeout(() => this.promptForReroll('Victory, nicely done!', 'Would you like to reroll the loot?', () => this.promptSail()), 750);
             return;
         }
         this.current = this.current.getOpponent();
@@ -119,12 +192,7 @@ export class Scene extends Container {
     }
 
     private promptSail(): void {
-        if (this.enemy?.isDead()) {
-            this.enemy.sink();
-        }
-        this.action.setText('SAIL');
-        this.action.visible = true;
-        this.act = () => this.nextLevel();
+        this.promptAction('SAIL', () => this.nextLevel());
     }
 
     private getDamage(): number {
@@ -132,6 +200,8 @@ export class Scene extends Container {
     }
 
     private promptShot(): void {
+        this.current.setBall(this.ball);
+
         if (this.current.isDead()) {
             this.ship.pose(false);
             this.enemy.pose(true);
@@ -139,37 +209,17 @@ export class Scene extends Container {
             this.bigText.content = 'GAME OVER';
             return;
         }
-        this.current.setBall(this.ball);
-        this.act = () => this.rollForDamage();
-        this.nextAction = () => {
-            const dmg = this.getDamage();
-            if (this.current.isAuto()) {
-                if (dmg <= 0) {
-                    this.nextTurn();
-                    return;
-                }
-                this.splash.content = `Incoming ${dmg} damage!`;
-                this.secondLine.content = 'Select cargo taking the hit...';
-                this.ship.addDamage(dmg);
-                return;
-            }
-            this.splash.content = `Shot for ${dmg} damage!`;
-            this.current.shoot(dmg);
-            this.dice = [];
-        };
-
         if (this.current.isAuto()) {
-            this.act();
+            setTimeout(() => this.rollForDamage(), 1000);
             return;
         }
-            
+        this.promptAction('SHOOT', () => this.rollForDamage());
         this.current.pose(true);
-        this.action.setText('SHOOT');
-        this.action.visible = true;
-        setTimeout(() => this.splash.content = '', 500);
     }
 
     private nextLevel(): void {
+        this.won = false;
+        this.current = this.ship;
         this.level++;
         this.targetZoom = 0.75;
         this.cam.shift = 0;
@@ -193,24 +243,6 @@ export class Scene extends Container {
         this.cam.pan.y = 350;
         this.cam.shift = 100;
         setTimeout(() => this.promptShot(), 2000);
-    }
-
-    private confirm(state: boolean): void {
-        this.splash.content = '';
-
-        if (state) {
-            this.roll(this.dice.length);
-            setTimeout(() => this.nextAction(), 1000);
-        } else {
-            this.nextAction();
-        }
-
-        this.yesButton.visible = false;
-        this.noButton.visible = false;
-
-        if (!this.current.isAuto()) {
-            setTimeout(() => this.nextTurn(), state ? 2500 : 1250);
-        }
     }
 
     private zoom(): void {
@@ -251,6 +283,7 @@ export class Scene extends Container {
         this.phase = Math.abs(Math.sin(tick * 0.002));
         this.wave = Math.sin(tick * 0.0003);
         [this.ball, this.ship, this.enemy, ...this.dice, this.splash, this.secondLine, this.bigText, ...this.getButtons()].filter(e => !!e).forEach(e => e.update(tick, mouse));
+        this.loot.forEach(l => l.update(tick, this.ship.offsetMouse(mouse, this.cam, this.cam.pan.x + 200, 540)));
         const diff = this.ship.p.x - this.getMid() + this.cam.shift;
         if (Math.abs(diff) > 10) this.camVelocity += Math.sign(diff);
         this.cam.pan.x += this.camVelocity;
@@ -258,6 +291,21 @@ export class Scene extends Container {
         // const z = this.cam.zoom - this.targetZoom
         const z = this.targetZoom - this.cam.zoom;
         if (Math.abs(z) > 0.01) this.cam.zoom += Math.sign(z) * 0.0075;
+
+        if (this.loot.length > 0 && mouse.pressing) {
+            const looted = this.loot.find(l => l.isHovering());
+            if (looted) {
+                this.yesButton.visible = false;
+                this.noButton.visible = false;
+                this.loot.forEach(l => l.allowPick(false));
+                looted.float(false);
+                looted.move(offset(this.ship.getDicePos(this.ship.getDiceCount()), this.ship.p.x, this.ship.p.y), () => this.ship.addDice(looted));
+                setTimeout(() => {
+                    this.loot = this.loot.filter(l => l != looted);
+                    this.promptSail();
+                }, 300);
+            }
+        }
     }
 
     public draw(ctx: CanvasRenderingContext2D): void {
@@ -267,6 +315,9 @@ export class Scene extends Container {
         this.enemy?.draw(ctx);
         this.ship.draw(ctx);
         this.ball.draw(ctx);
+
+        this.loot.forEach(l => l.draw(ctx));
+        this.loot.forEach(l => l.drawRim(ctx));
 
         ctx.strokeStyle = '#fff';
         ctx.fillStyle = 'cyan';
@@ -288,7 +339,6 @@ export class Scene extends Container {
 
         ctx.strokeStyle = '#000';
 
-        ctx.fillStyle = 'red';
         [...this.dice, ...this.getChildren()].forEach(e => e.draw(ctx));
         ctx.resetTransform();
         

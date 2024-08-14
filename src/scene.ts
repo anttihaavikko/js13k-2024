@@ -29,6 +29,7 @@ export class Scene extends Container {
     private level: number = 0;
     private current: Ship;
     private ball: Ball;
+    private bigText: WobblyText;
 
     constructor(game: Game) {
         super(game, 0, 0, []);
@@ -40,6 +41,7 @@ export class Scene extends Container {
 
         this.splash = new WobblyText(game, 'Lets start by rolling for your cargo!', 35, 400, 120, 0.2, 3, { shadow: 5, align: 'center' });
         this.secondLine = new WobblyText(game, '', 25, 400, 165, 0.2, 3, { shadow: 3, align: 'center' });
+        this.bigText = new WobblyText(game, 'GAME NAME', 80, 400, 210, 0.2, 3, { shadow: 7, align: 'center' });
         this.action = new ButtonEntity(game, 'ROLL', 400, 550, 200, 55, () => this.buttonPress(), game.getAudio(), 20);
         this.yesButton = new ButtonEntity(game, 'YEAH', 330, 550, 120, 55, () => this.confirm(true), game.getAudio(), 20);
         this.noButton = new ButtonEntity(game, 'NOPE', 470, 550, 120, 55, () => this.confirm(false), game.getAudio(), 20);
@@ -57,7 +59,7 @@ export class Scene extends Container {
 
         this.cam = game.getCamera();
         this.cam.zoom = this.targetZoom;
-        this.cam.pan = { x: -400, y: 50 };
+        this.cam.pan = { x: -100, y: 50 };
 
         game.onKey((e) => {
             if (e.key == 's') this.ship.sail();
@@ -68,6 +70,7 @@ export class Scene extends Container {
     }
 
     private buttonPress(): void {
+        this.bigText.content = '';
         this.act();
     }
 
@@ -102,6 +105,7 @@ export class Scene extends Container {
     }
 
     public nextTurn(): void {
+        this.splash.content = '';
         this.secondLine.content = '';
         this.dice = [];
         if (this.level === 0 || this.enemy.isDead()) {
@@ -128,6 +132,7 @@ export class Scene extends Container {
     private promptShot(): void {
         if (this.current.isDead()) {
             this.splash.content = 'Lost all your cargo!';
+            this.bigText.content = 'GAME OVER';
             return;
         }
         this.current.setBall(this.ball);
@@ -236,7 +241,7 @@ export class Scene extends Container {
         super.update(tick, mouse);
         this.phase = Math.abs(Math.sin(tick * 0.002));
         this.wave = Math.sin(tick * 0.0003);
-        [this.ball, this.ship, this.enemy, ...this.dice, this.splash, this.secondLine, ...this.getButtons()].filter(e => !!e).forEach(e => e.update(tick, mouse));
+        [this.ball, this.ship, this.enemy, ...this.dice, this.splash, this.secondLine, this.bigText, ...this.getButtons()].filter(e => !!e).forEach(e => e.update(tick, mouse));
         const diff = this.ship.p.x - this.getMid() + this.cam.shift;
         if (Math.abs(diff) > 10) this.camVelocity += Math.sign(diff);
         this.cam.pan.x += this.camVelocity;
@@ -278,6 +283,6 @@ export class Scene extends Container {
         [...this.dice, ...this.getChildren()].forEach(e => e.draw(ctx));
         ctx.resetTransform();
         
-        [this.splash, this.secondLine, ...this.getButtons()].forEach(b => b.draw(ctx));
+        [this.splash, this.secondLine, this.bigText, ...this.getButtons()].forEach(b => b.draw(ctx));
     }
 }

@@ -10,11 +10,16 @@ export class Dice extends Entity {
     private rolling: boolean;
     private hovering: boolean;
     private marked: boolean;
+    private pickable: boolean;
 
     constructor(game: Game, x: number, y: number, private damage: boolean = false) {
         super(game, x, y, 100, 100);
         this.randomize();
         this.fixRotation();
+    }
+
+    public allowPick(state: boolean = true): void {
+        this.pickable = state;
     }
 
     public mark(state: boolean = true): void {
@@ -49,11 +54,15 @@ export class Dice extends Entity {
 
     public update(tick: number, mouse: Mouse): void {
         super.update(tick, mouse);
-        this.hovering = this.isInside(mouse, 5);
+        this.hovering = this.pickable && this.isInside(mouse, 5);
         if (this.rolling) {
             this.randomize();
             this.rotation += tick * 0.1;
         }
+    }
+
+    public isHovering(): boolean {
+        return this.hovering;
     }
 
     public hurt(amount: number): boolean {

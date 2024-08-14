@@ -12,6 +12,7 @@ import { Mouse } from './engine/mouse';
 import { Pulse } from './engine/pulse';
 import { randomCell } from './engine/random';
 import { offset, Vector } from './engine/vector';
+import { Scene } from './scene';
 
 export class Ship extends Entity {
     private dude: Dude;
@@ -22,8 +23,10 @@ export class Ship extends Entity {
     private opponent: Ship;
     private recoil: number = 0;
     private stagger: number = 0;
+    private incoming: number = 0;
+    private ball: Ball;
     
-    constructor(game: Game, private name: string, x: number, private player: boolean) {
+    constructor(game: Game, private name: string, x: number, private scene: Scene, private player: boolean) {
         super(game, x, 550, 0, 0);
         this.colors = [
             randomCell(woods),
@@ -33,6 +36,10 @@ export class Ship extends Entity {
             randomCell(fabrics)
         ];
         this.dude = new Dude(game, 70, -125, this.colors[4], this.colors[3]);
+    }
+
+    public setBall(ball: Ball) {
+        this.ball = ball;
     }
 
     public isAuto(): boolean {
@@ -51,9 +58,22 @@ export class Ship extends Entity {
         return this.dice.length === 0;
     }
 
+    public addDamage(dmg: number): void {
+        if (dmg <= 0) {
+            this.scene.nextTurn();
+            return;
+        }
+        this.incoming = dmg;
+        this.dice.forEach(d => d.allowPick());
+    }
+
     public hurt(amount: number): void {
         const target = this.dice.find(d => d.getValue() > amount) ?? this.dice.sort((a, b) => a.getValue() - b.getValue())[0];
         if (!target) return;
+        this.hurtDice(target, amount);
+    }
+
+    public hurtDice(target: Dice, amount: number): void {
         target.mark();
         setTimeout(() => {
             this.game.getCamera().shake(10, 0.15, 1);
@@ -68,15 +88,19 @@ export class Ship extends Entity {
         }, 500);
     }
 
-    public shoot(damage: number, ball: Ball): void {
+    public shootAnim(): void {
         this.recoil = 1;
         this.stagger = 1;
-        this.opponent?.hurt(damage);
         const dir = this.player ? 1 : -1;
         const muzzle = offset(this.p, dir * 300, -this.p.y + 340);
-        ball.shoot(muzzle, 800 * dir);
+        this.ball.shoot(muzzle, 800 * dir);
         this.game.getCamera().shake(5, 0.1, 1);
-        this.pulse(muzzle.x + 40, muzzle.y, 80);   
+        this.pulse(muzzle.x + 40, muzzle.y, 80);
+    }
+
+    public shoot(damage: number): void {
+        this.shootAnim();
+        this.opponent?.hurt(damage);
     }
 
     public pulse(x: number, y: number, size: number): void {
@@ -104,6 +128,10 @@ export class Ship extends Entity {
         this.dice.forEach((d, i) => d.move(this.getDicePos(i)));
     }
 
+    public notDone(): boolean {
+        return this.incoming > 0;
+    }
+
     public update(tick: number, mouse: Mouse): void {
         super.update(tick, mouse);
         this.phase = Math.sin(tick * 0.005);
@@ -112,6 +140,17 @@ export class Ship extends Entity {
         this.mp = this.offsetMouse(mouse, this.game.getCamera());
         if (this.recoil > 0) this.recoil = Math.max(0, this.recoil - 0.075);
         if (this.stagger > 0) this.stagger = Math.max(0, this.stagger - 0.05);
+
+        if (this.incoming > 0 && mouse.pressing) {
+            const d = this.dice.find(d => d.isHovering());
+            if (d) {
+                this.opponent.shootAnim();
+                this.hurtDice(d, this.incoming);
+                this.incoming = 0;
+                this.dice.forEach(dd => dd.allowPick(false));
+                setTimeout(() => this.scene.nextTurn(), 500);
+            }
+        }
     }
 
     private offsetMouse(mouse: Mouse, cam: Camera): Mouse {
@@ -155,7 +194,7 @@ export class Ship extends Entity {
         ctx.stroke();
 
         // draw mouse point
-        if (this.player) ctx.fillRect(this.mp.x, this.mp.y, 20, 20);
+        // if (this.player) ctx.fillRect(this.mp.x, this.mp.y, 20, 20);
 
         // const cam = this.game.getCamera();
         // const off = cam.pan.x / cam.zoom + (this.player ? 800 : -700);

@@ -48,6 +48,7 @@ export class Game extends Entity {
         this.scene?.update(tick, mouse);
         this.camera.update();
         this.blinders.update(tick, mouse);
+        mouse.pressing = false;
     }
 
     public draw(ctx: CanvasRenderingContext2D): void {

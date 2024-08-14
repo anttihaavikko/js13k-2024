@@ -15,6 +15,7 @@ export class Scene extends Container {
     private phase: number;
     private dice: Dice[] = [];
     private splash: WobblyText;
+    private secondLine: WobblyText;
     private action: ButtonEntity;
     private yesButton: ButtonEntity;
     private noButton: ButtonEntity;
@@ -34,10 +35,11 @@ export class Scene extends Container {
 
         this.ball = new Ball(this.game, 100, 100, 0, 0);
 
-        this.ship = new Ship(game, '14', 0, true);
+        this.ship = new Ship(game, '14', 0, this, true);
         this.current = this.ship;
 
         this.splash = new WobblyText(game, 'Lets start by rolling for your cargo!', 35, 400, 120, 0.2, 3, { shadow: 5, align: 'center' });
+        this.secondLine = new WobblyText(game, '', 25, 400, 165, 0.2, 3, { shadow: 3, align: 'center' });
         this.action = new ButtonEntity(game, 'ROLL', 400, 550, 200, 55, () => this.buttonPress(), game.getAudio(), 20);
         this.yesButton = new ButtonEntity(game, 'YEAH', 330, 550, 120, 55, () => this.confirm(true), game.getAudio(), 20);
         this.noButton = new ButtonEntity(game, 'NOPE', 470, 550, 120, 55, () => this.confirm(false), game.getAudio(), 20);
@@ -59,7 +61,7 @@ export class Scene extends Container {
 
         game.onKey((e) => {
             if (e.key == 's') this.ship.sail();
-            if (e.key == 'x') this.ship.shoot(0, this.ball);
+            if (e.key == 'x') this.ship.shoot(0);
             if (e.key == 'z') this.targetZoom = Math.random() * 0.5 + 0.25;
             if (e.key == 'k') this.ship.sink();
         });
@@ -88,7 +90,7 @@ export class Scene extends Container {
     }
 
     private rollForCargo(): void {
-        this.roll(3);
+        this.roll(2);
         this.action.visible = false;
         this.splash.content = '';
         
@@ -99,7 +101,9 @@ export class Scene extends Container {
         }, 500);
     }
 
-    private nextTurn(): void {
+    public nextTurn(): void {
+        this.secondLine.content = '';
+        this.dice = [];
         if (this.level === 0 || this.enemy.isDead()) {
             this.promptSail();
             return;
@@ -126,11 +130,18 @@ export class Scene extends Container {
             this.splash.content = 'Lost all your cargo!';
             return;
         }
+        this.current.setBall(this.ball);
         this.act = () => this.rollForDamage();
         this.nextAction = () => {
             const dmg = this.getDamage();
+            if (this.current.isAuto() && dmg > 0) {
+                this.splash.content = `Incoming ${dmg} damage!`;
+                this.secondLine.content = 'Select cargo taking the hit...';
+                this.ship.addDamage(dmg);
+                return;
+            }
             this.splash.content = `Shot for ${dmg} damage!`;
-            this.current.shoot(dmg, this.ball);
+            this.current.shoot(dmg);
             this.dice = [];
         };
 
@@ -153,10 +164,10 @@ export class Scene extends Container {
         this.action.setText('');
         this.action.visible = false;
         setTimeout(() => {
-            this.enemy = new Ship(this.game, (14 - this.level).toString(), (this.level - 1) * 2000 + 3000, false);
+            this.enemy = new Ship(this.game, (14 - this.level).toString(), (this.level - 1) * 2000 + 3000, this, false);
             this.ship.setOpponent(this.enemy);
             this.enemy.setOpponent(this.ship);
-            for (let index = 0; index < this.level + 1; index++) {
+            for (let index = 0; index < this.level; index++) {
                 this.enemy.addDice(new Dice(this.game, 0, 0));
             }
         }, 4000);
@@ -183,7 +194,9 @@ export class Scene extends Container {
         this.yesButton.visible = false;
         this.noButton.visible = false;
 
-        setTimeout(() => this.nextTurn(), state ? 2500 : 1250);
+        if (!this.current.isAuto()) {
+            setTimeout(() => this.nextTurn(), state ? 2500 : 1250);
+        }
     }
 
     private zoom(): void {
@@ -223,7 +236,7 @@ export class Scene extends Container {
         super.update(tick, mouse);
         this.phase = Math.abs(Math.sin(tick * 0.002));
         this.wave = Math.sin(tick * 0.0003);
-        [this.ball, this.ship, this.enemy, ...this.dice, this.splash, ...this.getButtons()].filter(e => !!e).forEach(e => e.update(tick, mouse));
+        [this.ball, this.ship, this.enemy, ...this.dice, this.splash, this.secondLine, ...this.getButtons()].filter(e => !!e).forEach(e => e.update(tick, mouse));
         const diff = this.ship.p.x - this.getMid() + this.cam.shift;
         if (Math.abs(diff) > 10) this.camVelocity += Math.sign(diff);
         this.cam.pan.x += this.camVelocity;
@@ -247,8 +260,8 @@ export class Scene extends Container {
         // ctx.rotate(this.phase * 0.1);
         const start = Math.floor(this.cam.pan.x / 100) * 100 - 500 - this.cam.shift;
         ctx.beginPath();
-        ctx.moveTo(start + 3000, 1000);
-        ctx.lineTo(start, 1000);
+        ctx.moveTo(start + 3000, 2000);
+        ctx.lineTo(start, 2000);
         ctx.lineTo(start, 500 + this.phase * 5);
         for (let i = 0; i < 3000 / 50; i++) {
             ctx.quadraticCurveTo(start + i * 50 - 25, 525 - this.phase * 5, start + i * 50, 500 + this.phase * 7 + Math.sin(i * this.wave * 0.5) * 5);
@@ -265,6 +278,6 @@ export class Scene extends Container {
         [...this.dice, ...this.getChildren()].forEach(e => e.draw(ctx));
         ctx.resetTransform();
         
-        [this.splash, ...this.getButtons()].forEach(b => b.draw(ctx));
+        [this.splash, this.secondLine, ...this.getButtons()].forEach(b => b.draw(ctx));
     }
 }

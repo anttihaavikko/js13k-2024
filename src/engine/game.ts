@@ -55,7 +55,7 @@ export class Game extends Entity {
         ctx.fillRect(0, 0, 800, 600);
         
         ctx.save();
-        ctx.translate(this.camera.offset.x - this.camera.pan.x, this.camera.offset.y + this.camera.pan.y);
+        ctx.translate(this.camera.offset.x - this.camera.pan.x + this.camera.shift, this.camera.offset.y + this.camera.pan.y);
         ctx.rotate(this.camera.rotation);
         ctx.scale(this.camera.zoom, this.camera.zoom);
         this.scene?.draw(ctx);

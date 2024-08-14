@@ -61,8 +61,8 @@ export class Ship extends Entity {
     private offsetMouse(mouse: Mouse, cam: Camera): Mouse {
         return {
             ...mouse,
-            x: (mouse.x - 400) / cam.zoom,
-            y: (mouse.y - 30) / cam.zoom - 600
+            x: (mouse.x - 400) / cam.zoom + cam.shift,
+            y: (mouse.y - 130) / cam.zoom - 600
         };
     }
 
@@ -91,7 +91,7 @@ export class Ship extends Entity {
         ctx.stroke();
 
         // draw mouse point
-        // if (this.player) ctx.fillRect(this.mp.x, this.mp.y, 20, 20);
+        if (this.player) ctx.fillRect(this.mp.x, this.mp.y, 20, 20);
 
         // const cam = this.game.getCamera();
         // const off = cam.pan.x / cam.zoom + (this.player ? 800 : -700);

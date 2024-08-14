@@ -1,4 +1,3 @@
-import { HEIGHT } from './index';
 import { Mouse } from './engine/mouse';
 import { Game } from './engine/game';
 import { Container } from './engine/container';
@@ -22,6 +21,8 @@ export class Scene extends Container {
     private act: () => void;
     private useDamageDice: boolean;
     private cam: Camera;
+    private targetZoom = 0.75;
+    private camVelocity = 0;
 
     constructor(game: Game) {
         super(game, 0, 0, []);
@@ -40,12 +41,6 @@ export class Scene extends Container {
 
         this.nextAction = () => {
             this.moveDiceTo(this.ship);
-            this.act = () => this.rollForDamage();
-            this.nextAction = () => {
-                const dmg = this.dice.reduce((sum, d) => sum + d.getValue(), 0);
-                this.splash.content = `Shot for ${dmg} damage!`;
-                this.dice = [];
-            };
         };
         
         // this.ship.addDice();
@@ -53,8 +48,8 @@ export class Scene extends Container {
         this.enemy.addDice(new Dice(this.game, 0, 0));
 
         this.cam = game.getCamera();
-        this.cam.zoom = 0.75;
-        this.cam.pan = { x: -400, y: 50 };
+        this.cam.zoom = this.targetZoom;
+        this.cam.pan = { x: -400, y: 150 };
 
         game.onKey((e) => {
             if (e.key == 's') this.ship.sail();
@@ -91,10 +86,38 @@ export class Scene extends Container {
         }, 500);
     }
 
+    private promptSail(): void {
+        this.action.setText('SAIL');
+        this.action.visible = true;
+        this.act = () => this.nextLevel();
+    }
+
     private promptShot(): void {
+        this.act = () => this.rollForDamage();
+        this.nextAction = () => {
+            const dmg = this.dice.reduce((sum, d) => sum + d.getValue(), 0);
+            this.splash.content = `Shot for ${dmg} damage!`;
+            this.dice = [];
+        };
+            
         this.action.setText('SHOOT');
         this.action.visible = true;
         setTimeout(() => this.splash.content = '', 500);
+    }
+
+    private nextLevel(): void {
+        this.targetZoom = 0.75;
+        this.cam.shift = 0;
+        this.ship.sail();
+        this.action.setText('');
+        this.action.visible = false;
+        setTimeout(() => this.activateLevel(), 5000);
+    }
+
+    private activateLevel(): void {
+        this.targetZoom = 0.5;
+        this.cam.shift = 400;
+        setTimeout(() => this.promptShot(), 2000);
     }
 
     private confirm(state: boolean): void {
@@ -110,7 +133,7 @@ export class Scene extends Container {
         this.yesButton.visible = false;
         this.noButton.visible = false;
 
-        setTimeout(() => this.promptShot(), state ? 1500 : 750);
+        setTimeout(() => this.promptSail(), state ? 1500 : 750);
     }
 
     private zoom(): void {
@@ -129,7 +152,7 @@ export class Scene extends Container {
     }
 
     private getMid(): number {
-        return (this.cam.pan.x + 400) / this.cam.zoom;
+        return (this.cam.pan.x + 400 - this.cam.shift) / this.cam.zoom;
     }
 
     public roll(amount: number): void {
@@ -150,9 +173,13 @@ export class Scene extends Container {
         super.update(tick, mouse);
         this.phase = Math.abs(Math.sin(tick * 0.002));
         [this.ship, this.enemy, ...this.dice, this.splash, ...this.getButtons()].forEach(e => e.update(tick, mouse));
-        if (this.getMid() < this.ship.p.x) {
-            this.cam.pan.x += 5;
-        }
+        const diff = this.ship.p.x - this.getMid() + this.cam.shift;
+        if (Math.abs(diff) > 10) this.camVelocity += Math.sign(diff);
+        this.cam.pan.x += this.camVelocity;
+        this.camVelocity *= 0.9;
+        // const z = this.cam.zoom - this.targetZoom
+        const z = this.targetZoom - this.cam.zoom;
+        if (Math.abs(z) > 0.01) this.cam.zoom += Math.sign(z) * 0.01;
     }
 
     public draw(ctx: CanvasRenderingContext2D): void {
@@ -166,7 +193,7 @@ export class Scene extends Container {
         ctx.fillStyle = 'cyan';
         // ctx.translate(this.cam.pan.x, 0);
         // ctx.rotate(this.phase * 0.1);
-        const start = Math.floor(this.cam.pan.x / this.cam.zoom / 100) * 100 - 500;
+        const start = Math.floor(this.cam.pan.x / this.cam.zoom / 100) * 100 - 500 - this.cam.shift;
         ctx.beginPath();
         ctx.moveTo(start + 3000, 1000);
         ctx.lineTo(start, 1000);

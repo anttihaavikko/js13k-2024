@@ -6,6 +6,7 @@ export class Camera {
     public rotation: number;
     public zoom: number;
     public pan: Vector = ZERO;
+    public shift: number = 0;
 
     private shakeStrength = 0;
     private shakeRotation = 0;

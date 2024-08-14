@@ -49,7 +49,7 @@ export class Scene extends Container {
 
         this.cam = game.getCamera();
         this.cam.zoom = this.targetZoom;
-        this.cam.pan = { x: -400, y: 150 };
+        this.cam.pan = { x: -400, y: 50 };
 
         game.onKey((e) => {
             if (e.key == 's') this.ship.sail();
@@ -108,6 +108,7 @@ export class Scene extends Container {
     private nextLevel(): void {
         this.targetZoom = 0.75;
         this.cam.shift = 0;
+        this.cam.pan.y = 50;
         this.ship.sail();
         this.action.setText('');
         this.action.visible = false;
@@ -116,6 +117,7 @@ export class Scene extends Container {
 
     private activateLevel(): void {
         this.targetZoom = 0.5;
+        this.cam.pan.y = 350;
         this.cam.shift = 100;
         setTimeout(() => this.promptShot(), 2000);
     }

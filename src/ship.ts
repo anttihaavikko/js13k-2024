@@ -62,7 +62,7 @@ export class Ship extends Entity {
         return {
             ...mouse,
             x: mouse.x / cam.zoom - 400 + cam.shift,
-            y: mouse.y / cam.zoom - 700
+            y: mouse.y / cam.zoom - 550 - cam.pan.y
         };
     }
 

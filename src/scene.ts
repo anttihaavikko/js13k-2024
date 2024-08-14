@@ -31,9 +31,6 @@ export class Scene extends Container {
         super(game, 0, 0, []);
 
         this.ship = new Ship(game, 0, true);
-        this.enemy = new Ship(game, 3000, false);
-        this.ship.setOpponent(this.enemy);
-        this.enemy.setOpponent(this.ship);
         this.current = this.ship;
 
         this.splash = new WobblyText(game, 'Lets start by rolling for your cargo!', 35, 400, 120, 0.2, 3, { shadow: 5, align: 'center' });
@@ -51,8 +48,6 @@ export class Scene extends Container {
         };
         
         // this.ship.addDice();
-        this.enemy.addDice(new Dice(this.game, 0, 0));
-        this.enemy.addDice(new Dice(this.game, 0, 0));
 
         this.cam = game.getCamera();
         this.cam.zoom = this.targetZoom;
@@ -118,6 +113,10 @@ export class Scene extends Container {
     }
 
     private promptShot(): void {
+        if (this.current.isDead()) {
+            this.splash.content = 'Lost all your cargo!';
+            return;
+        }
         this.act = () => this.rollForDamage();
         this.nextAction = () => {
             const dmg = this.getDamage();
@@ -144,6 +143,14 @@ export class Scene extends Container {
         this.ship.sail();
         this.action.setText('');
         this.action.visible = false;
+        setTimeout(() => {
+            this.enemy = new Ship(this.game, (this.level - 1) * 2000 + 3000, false);
+            this.ship.setOpponent(this.enemy);
+            this.enemy.setOpponent(this.ship);
+            for (let index = 0; index < this.level + 1; index++) {
+                this.enemy.addDice(new Dice(this.game, 0, 0));
+            }
+        }, 4000);
         setTimeout(() => this.activateLevel(), 5000);
     }
 
@@ -207,7 +214,7 @@ export class Scene extends Container {
         super.update(tick, mouse);
         this.phase = Math.abs(Math.sin(tick * 0.002));
         this.wave = Math.sin(tick * 0.0003);
-        [this.ship, this.enemy, ...this.dice, this.splash, ...this.getButtons()].forEach(e => e.update(tick, mouse));
+        [this.ship, this.enemy, ...this.dice, this.splash, ...this.getButtons()].filter(e => !!e).forEach(e => e.update(tick, mouse));
         const diff = this.ship.p.x - this.getMid() + this.cam.shift;
         if (Math.abs(diff) > 10) this.camVelocity += Math.sign(diff);
         this.cam.pan.x += this.camVelocity;
@@ -221,7 +228,7 @@ export class Scene extends Container {
         ctx.strokeStyle = '#000';
         ctx.lineWidth = 7;
         
-        this.enemy.draw(ctx);
+        this.enemy?.draw(ctx);
         this.ship.draw(ctx);
 
         ctx.strokeStyle = '#fff';

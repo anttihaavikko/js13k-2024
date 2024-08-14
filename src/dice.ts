@@ -69,13 +69,14 @@ export class Dice extends Entity {
 
     public draw(ctx: CanvasRenderingContext2D): void {
         ctx.save();
+        ctx.beginPath();
         ctx.translate(this.p.x + 50, this.p.y + 50);
         ctx.rotate(this.rotation);
         ctx.fillStyle = this.hovering ? 'yellow' : '#fff';
-        ctx.beginPath();
         ctx.rect(-50, -50, 100, 100);
         ctx.fill();
         ctx.stroke();
+        ctx.closePath();
         if (this.value === 1 || this.value === 3 || this.value === 5) this.drawPip(ctx, { x: 0, y: 0 });
         if (this.value > 1) {
             this.drawPip(ctx, { x: -25, y: -25 });
@@ -94,6 +95,6 @@ export class Dice extends Entity {
     }
 
     private drawPip(ctx: CanvasRenderingContext2D, pos: Vector): void {
-        drawCircle(ctx, pos, this.damage ? 12 : 8, '#000');
+        drawCircle(ctx, pos, this.damage ? 12 : 8, '#000', 'transparent');
     }
 }

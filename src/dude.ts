@@ -203,7 +203,7 @@ export class Dude extends Entity {
     private curveTo(ctx: CanvasRenderingContext2D, ax: number, ay: number, x: number, y: number): void {
         ctx.quadraticCurveTo(ax, ay, x, y);
         ctx.stroke();
-        drawCircle(ctx, { x, y }, 2.5, '#000', 'trasparent');
+        drawCircle(ctx, { x, y }, 2.5, '#000');
     }
 
     private drawArm(ctx: CanvasRenderingContext2D, dir: number): void {

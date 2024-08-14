@@ -257,7 +257,8 @@ export class Scene extends Container {
 
         ctx.strokeStyle = '#000';
 
-        [...this.dice].forEach(e => e.draw(ctx));
+        ctx.fillStyle = 'red';
+        [...this.dice, ...this.getChildren()].forEach(e => e.draw(ctx));
         ctx.resetTransform();
         
         [this.splash, ...this.getButtons()].forEach(b => b.draw(ctx));

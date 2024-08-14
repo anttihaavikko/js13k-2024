@@ -8,6 +8,7 @@ import { quadEaseInOut } from './engine/easings';
 import { Entity } from './engine/entity';
 import { Game } from './engine/game';
 import { Mouse } from './engine/mouse';
+import { Pulse } from './engine/pulse';
 import { randomCell } from './engine/random';
 import { offset, Vector } from './engine/vector';
 
@@ -54,6 +55,9 @@ export class Ship extends Entity {
         if (!target) return;
         setTimeout(() => {
             this.game.getCamera().shake(10, 0.15, 1);
+            const dir = this.player ? 1 : -1;
+            const pos = offset(this.p, dir * -50, -this.p.y + 340);
+            this.pulse(pos.x + 40, pos.y, 150);   
             if (target.hurt(amount)) {
                 this.dice = this.dice.filter(d => d != target);
                 this.repositionDice();
@@ -67,8 +71,14 @@ export class Ship extends Entity {
         this.stagger = 1;
         this.opponent?.hurt(damage);
         const dir = this.player ? 1 : -1;
-        ball.shoot(offset(this.p, dir * 300, -this.p.y + 340), 800 * dir);
+        const muzzle = offset(this.p, dir * 300, -this.p.y + 340);
+        ball.shoot(muzzle, 800 * dir);
         this.game.getCamera().shake(5, 0.1, 1);
+        this.pulse(muzzle.x + 40, muzzle.y, 80);   
+    }
+
+    public pulse(x: number, y: number, size: number): void {
+        this.game.getScene().add(new Pulse(this.game, x, y, size, 0.15, 0, 150));
     }
 
     public addDice(d: Dice): void {
@@ -121,9 +131,11 @@ export class Ship extends Entity {
         // mast
         ctx.fillStyle = this.colors[0];
         const mastPos = 40;
+        ctx.beginPath();
         ctx.rect(-50 + mastPos, -550, 15, 600);
         ctx.fill();
         ctx.stroke();
+        ctx.closePath();
 
         // sail
         ctx.fillStyle = this.colors[3];

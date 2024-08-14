@@ -240,6 +240,7 @@ export class Ship extends Entity {
         ctx.translate(-120, -100);
         ctx.scale(this.player ? 1 : -1, 1);
         ctx.lineWidth = 12;
+        ctx.lineJoin = 'round';
         ctx.fillStyle = this.colors[4];
         ctx.font =`40px ${font}`;
         ctx.textAlign = 'center';

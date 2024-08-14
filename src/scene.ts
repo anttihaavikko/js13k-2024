@@ -181,7 +181,7 @@ export class Scene extends Container {
         this.camVelocity *= 0.9;
         // const z = this.cam.zoom - this.targetZoom
         const z = this.targetZoom - this.cam.zoom;
-        if (Math.abs(z) > 0.01) this.cam.zoom += Math.sign(z) * 0.01;
+        if (Math.abs(z) > 0.01) this.cam.zoom += Math.sign(z) * 0.0075;
     }
 
     public draw(ctx: CanvasRenderingContext2D): void {

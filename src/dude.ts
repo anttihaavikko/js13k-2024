@@ -24,7 +24,7 @@ export class Dude extends Entity {
     private flag: string;
     private skin: string;
 
-    constructor(game: Game, x: number, y: number) {
+    constructor(game: Game, x: number, y: number, private mainColor: string, private secondaryColor: string) {
         super(game, x, y, 0, 0);
         this.face = new Face(this.game, {
             blush: 'red',
@@ -136,49 +136,26 @@ export class Dude extends Entity {
     }
 
     private drawHat(ctx: CanvasRenderingContext2D): void {
-        const drawHat = (height: number, slant: number, rimWidth: number, rimHeight: number, rimSlant: number, bandHeight: number, curve: number) => {
-            ctx.fillStyle = '#fff';
-            ctx.strokeStyle = '#000';
-            ctx.lineWidth = 8;
-            ctx.beginPath();
-            ctx.translate(0, 5 - this.phase * 2.5);
-            ctx.moveTo(-rimWidth - rimSlant, -10);
-            ctx.lineTo(rimWidth + rimSlant, -10);
-            ctx.lineTo(rimWidth, -10 - rimHeight);
-            ctx.lineTo(10, -10 - rimHeight);
-            ctx.lineTo(10 - slant, -10 - rimHeight - height);
-            const top = -10 - rimHeight - height - curve;
-            if (curve > 0) {
-                ctx.bezierCurveTo(rimWidth * 0.5, top, -rimWidth * 0.5, top, -10 + slant, -10 - rimHeight - height);
-            } else {
-                ctx.lineTo(-10 + slant, -10 - rimHeight - height);
-            }
-            ctx.lineTo(-10, -10 - rimHeight);
-            ctx.lineTo(-rimWidth, -10 - rimHeight);
-            ctx.closePath();
-            ctx.stroke();
-            ctx.fill();
-            if (bandHeight > 0) {
-                ctx.lineWidth = 5;
-                ctx.fillStyle = 'orange';
-                ctx.beginPath();
-                const pos = -12.75;
-                ctx.moveTo(10, pos - rimHeight);
-                ctx.lineTo(-10, pos - rimHeight);
-                ctx.lineTo(-10 + slant * (bandHeight / height), pos - rimHeight - bandHeight);
-                // const ax = 0;
-                // const ay = 0;
-                // ctx.bezierCurveTo(0, -10 - height, 0, -10 - height, 10 - slant * (bandHeight / height), -10 - rimHeight - bandHeight);
-                ctx.lineTo(10 - slant * (bandHeight / height), pos - rimHeight - bandHeight);
-                ctx.closePath();
-                ctx.stroke();
-                ctx.fill();
-            }
+        ctx.fillStyle = this.mainColor;
+        ctx.lineWidth = 6;
+        ctx.beginPath();
+        ctx.translate(0, 20 - this.phase * 5);
+        ctx.scale(1.5, 1.5);
+        ctx.moveTo(8, -15);
+        ctx.bezierCurveTo(-12, -5, -12, -5, -20, -5);
+        ctx.bezierCurveTo(-10, -26 + this.phase, -3, -26 + this.phase, 10, -18);
+        ctx.closePath();
+        ctx.stroke();
+        ctx.fill();
 
-            // ctx.resetTransform();
-        };
-
-        drawHat(15, 0, 15, 5, 0, 5, 10);
+        ctx.fillStyle = this.secondaryColor;
+        ctx.lineWidth = 5;
+        ctx.beginPath();
+        ctx.moveTo(10, -15);
+        ctx.bezierCurveTo(6, -25, 6, -25, 15 - this.phase * 2, -35);
+        ctx.bezierCurveTo(16, -25, 16, -25, 10, -15);
+        ctx.stroke();
+        ctx.fill();
     }
 
     private drawLeg(ctx: CanvasRenderingContext2D, dir: number): void {

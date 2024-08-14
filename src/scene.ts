@@ -34,7 +34,7 @@ export class Scene extends Container {
 
         this.ball = new Ball(this.game, 100, 100, 0, 0);
 
-        this.ship = new Ship(game, 0, true);
+        this.ship = new Ship(game, '14', 0, true);
         this.current = this.ship;
 
         this.splash = new WobblyText(game, 'Lets start by rolling for your cargo!', 35, 400, 120, 0.2, 3, { shadow: 5, align: 'center' });
@@ -153,7 +153,7 @@ export class Scene extends Container {
         this.action.setText('');
         this.action.visible = false;
         setTimeout(() => {
-            this.enemy = new Ship(this.game, (this.level - 1) * 2000 + 3000, false);
+            this.enemy = new Ship(this.game, (14 - this.level).toString(), (this.level - 1) * 2000 + 3000, false);
             this.ship.setOpponent(this.enemy);
             this.enemy.setOpponent(this.ship);
             for (let index = 0; index < this.level + 1; index++) {

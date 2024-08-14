@@ -3,6 +3,7 @@ import { fabrics, woods } from './colors';
 import { Dice } from './dice';
 import { Dude } from './dude';
 import { Camera } from './engine/camera';
+import { font } from './engine/constants';
 import { drawCircle } from './engine/drawing';
 import { quadEaseIn, quadEaseInOut } from './engine/easings';
 import { Entity } from './engine/entity';
@@ -22,9 +23,8 @@ export class Ship extends Entity {
     private recoil: number = 0;
     private stagger: number = 0;
     
-    constructor(game: Game, x: number, private player: boolean) {
+    constructor(game: Game, private name: string, x: number, private player: boolean) {
         super(game, x, 550, 0, 0);
-        this.dude = new Dude(game, 70, -125);
         this.colors = [
             randomCell(woods),
             randomCell(woods),
@@ -32,6 +32,7 @@ export class Ship extends Entity {
             randomCell(fabrics),
             randomCell(fabrics)
         ];
+        this.dude = new Dude(game, 70, -125, this.colors[4], this.colors[3]);
     }
 
     public isAuto(): boolean {
@@ -187,6 +188,15 @@ export class Ship extends Entity {
         ctx.lineTo(250 - 15, -77);
         ctx.fill();
         ctx.stroke();
+
+        ctx.translate(-120, -100);
+        ctx.scale(this.player ? 1 : -1, 1);
+        ctx.lineWidth = 12;
+        ctx.fillStyle = this.colors[4];
+        ctx.font =`40px ${font}`;
+        ctx.textAlign = 'center';
+        ctx.strokeText(this.name, 0, 0);
+        ctx.fillText(this.name, 0, 0);
 
         ctx.restore();
     }

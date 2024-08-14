@@ -6,6 +6,8 @@ import { Ship } from './ship';
 import { Dice } from './dice';
 import { WobblyText } from './engine/wobbly';
 import { ButtonEntity } from './engine/button';
+import { Camera } from './engine/camera';
+import { offset } from './engine/vector';
 
 export class Scene extends Container {
     private ship: Ship;
@@ -19,11 +21,12 @@ export class Scene extends Container {
     private nextAction: () => void;
     private act: () => void;
     private useDamageDice: boolean;
+    private cam: Camera;
 
     constructor(game: Game) {
         super(game, 0, 0, []);
-        this.ship = new Ship(game, 300, true);
-        this.enemy = new Ship(game, 1300, false);
+        this.ship = new Ship(game, 0, true);
+        this.enemy = new Ship(game, 2000, false);
 
         this.splash = new WobblyText(game, 'Lets start by rolling for your cargo!', 35, 400, 120, 0.2, 3, { shadow: 5, align: 'center' });
         this.action = new ButtonEntity(game, 'ROLL', 400, 550, 200, 55, () => this.buttonPress(), game.getAudio(), 20);
@@ -49,10 +52,14 @@ export class Scene extends Container {
         this.enemy.addDice(new Dice(this.game, 0, 0));
         this.enemy.addDice(new Dice(this.game, 0, 0));
 
-        game.getCamera().zoom = 0.5;
+        this.cam = game.getCamera();
+        this.cam.zoom = 0.75;
+        this.cam.pan = { x: -400, y: 50 };
 
-        // game.onKey((e) => {
-        // });
+        game.onKey((e) => {
+            if (e.key == 's') this.ship.sail();
+            if (e.key == 'z') this.cam.zoom = Math.random() * 0.5 + 0.25;
+        });
     }
 
     private buttonPress(): void {
@@ -114,18 +121,23 @@ export class Scene extends Container {
     }
 
     private moveDiceTo(ship: Ship): void {
-        this.dice.forEach((d, i) => d.move(ship.getDicePos(i + ship.getDiceCount()), () => ship.addDice(d)));
+        this.dice.forEach((d, i) => d.move(offset(ship.getDicePos(i + ship.getDiceCount()), this.ship.p.x, this.ship.p.y), () => ship.addDice(d)));
         setTimeout(() => {
             this.dice = [];
             this.zoom();
         }, 300);
     }
 
+    private getMid(): number {
+        return (this.cam.pan.x + 400) / this.cam.zoom;
+    }
+
     public roll(amount: number): void {
         this.dice = [];
         for (let i = 0; i < amount; i++) {
-            const d = new Dice(this.game, 750, 800, this.useDamageDice);
-            d.roll(750 + i * 120 - 120 * ((amount - 1) * 0.5), 570);
+            const m = this.getMid();
+            const d = new Dice(this.game, m, 800, this.useDamageDice);
+            d.roll(m + i * 120 - 120 * ((amount - 1) * 0.5), 450);
             this.dice.push(d);
         }
     }
@@ -138,24 +150,27 @@ export class Scene extends Container {
         super.update(tick, mouse);
         this.phase = Math.abs(Math.sin(tick * 0.002));
         [this.ship, this.enemy, ...this.dice, this.splash, ...this.getButtons()].forEach(e => e.update(tick, mouse));
+        if (this.getMid() < this.ship.p.x) {
+            this.cam.pan.x += 5;
+        }
     }
 
     public draw(ctx: CanvasRenderingContext2D): void {
         ctx.strokeStyle = '#000';
         ctx.lineWidth = 7;
 
-        ctx.translate(0, 300);
-
         ctx.fillStyle = '#fff';
         
-        this.ship.draw(ctx);
         this.enemy.draw(ctx);
+        this.ship.draw(ctx);
 
         ctx.beginPath();
+        ctx.setLineDash([20,20]);
         ctx.rect(-10000, HEIGHT - 100 + this.phase * 5, 20000, HEIGHT + 70);
         ctx.fill();
         ctx.stroke();
         ctx.closePath();
+        ctx.setLineDash([]);
 
         [...this.dice].forEach(e => e.draw(ctx));
         ctx.resetTransform();

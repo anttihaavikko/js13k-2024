@@ -1,3 +1,4 @@
+import { skins } from './colors';
 import { AudioManager } from './engine/audio';
 import { Camera } from './engine/camera';
 import { drawCircle, drawEllipse } from './engine/drawing';
@@ -6,6 +7,7 @@ import { Face } from './engine/face';
 import { Game } from './engine/game';
 import { clamp01 } from './engine/math';
 import { Mouse } from './engine/mouse';
+import { randomCell } from './engine/random';
 import { Vector } from './engine/vector';
 
 export class Dude extends Entity {
@@ -20,17 +22,19 @@ export class Dude extends Entity {
 
     private face: Face;
     private flag: string;
+    private skin: string;
 
     constructor(game: Game, x: number, y: number) {
         super(game, x, y, 0, 0);
         this.face = new Face(this.game, {
-            blush: 'orange',
+            blush: 'red',
             eyeSize: 10,
             width: 0.75,
             mouthWidth: 0.7,
             blushSize: 0.8,
             mouthThickness: 12
         });
+        this.skin = randomCell(skins);
     }
 
     public getCamera(): Camera {
@@ -104,7 +108,7 @@ export class Dude extends Entity {
         ctx.strokeStyle = '#000';
         ctx.stroke();
         ctx.lineWidth = 35;
-        ctx.strokeStyle = '#fff';
+        ctx.strokeStyle = this.skin;
         ctx.stroke();
 
         this.drawArm(ctx, 1);

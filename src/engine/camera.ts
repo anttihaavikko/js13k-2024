@@ -5,6 +5,7 @@ export class Camera {
     public offset: Vector = ZERO;
     public rotation: number;
     public zoom: number;
+    public pan: Vector = ZERO;
 
     private shakeStrength = 0;
     private shakeRotation = 0;

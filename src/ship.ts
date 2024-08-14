@@ -53,6 +53,7 @@ export class Ship extends Entity {
         const target = this.dice.find(d => d.getValue() > amount) ?? this.dice.sort((a, b) => a.getValue() - b.getValue())[0];
         if (!target) return;
         setTimeout(() => {
+            this.game.getCamera().shake(10, 0.15, 1);
             if (target.hurt(amount)) {
                 this.dice = this.dice.filter(d => d != target);
                 this.repositionDice();
@@ -67,6 +68,7 @@ export class Ship extends Entity {
         this.opponent?.hurt(damage);
         const dir = this.player ? 1 : -1;
         ball.shoot(offset(this.p, dir * 300, -this.p.y + 340), 800 * dir);
+        this.game.getCamera().shake(5, 0.1, 1);
     }
 
     public addDice(d: Dice): void {

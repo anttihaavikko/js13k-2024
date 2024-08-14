@@ -1,3 +1,4 @@
+import { Ball } from './ball';
 import { fabrics, woods } from './colors';
 import { Dice } from './dice';
 import { Dude } from './dude';
@@ -17,6 +18,8 @@ export class Ship extends Entity {
     private mp: Vector;
     private colors: string[];
     private opponent: Ship;
+    private recoil: number = 0;
+    private stagger: number = 0;
     
     constructor(game: Game, x: number, private player: boolean) {
         super(game, x, 550, 0, 0);
@@ -48,14 +51,22 @@ export class Ship extends Entity {
 
     public hurt(amount: number): void {
         const target = this.dice.find(d => d.getValue() > amount) ?? this.dice.sort((a, b) => a.getValue() - b.getValue())[0];
-        if (target?.hurt(amount)) {
-            this.dice = this.dice.filter(d => d != target);
-            this.repositionDice();
-        }
+        if (!target) return;
+        setTimeout(() => {
+            if (target.hurt(amount)) {
+                this.dice = this.dice.filter(d => d != target);
+                this.repositionDice();
+            }
+            this.stagger = 1;
+        }, 500);
     }
 
-    public shoot(damage: number): void {
-        this.opponent.hurt(damage);
+    public shoot(damage: number, ball: Ball): void {
+        this.recoil = 1;
+        this.stagger = 1;
+        this.opponent?.hurt(damage);
+        const dir = this.player ? 1 : -1;
+        ball.shoot(offset(this.p, dir * 300, -this.p.y + 340), 800 * dir);
     }
 
     public addDice(d: Dice): void {
@@ -85,6 +96,8 @@ export class Ship extends Entity {
         this.dude.update(tick, mouse);
         this.dice.forEach(d => d.update(tick, this.offsetMouse(mouse, this.game.getCamera())));
         this.mp = this.offsetMouse(mouse, this.game.getCamera());
+        if (this.recoil > 0) this.recoil = Math.max(0, this.recoil - 0.075);
+        if (this.stagger > 0) this.stagger = Math.max(0, this.stagger - 0.05);
     }
 
     private offsetMouse(mouse: Mouse, cam: Camera): Mouse {
@@ -97,8 +110,9 @@ export class Ship extends Entity {
 
     public draw(ctx: CanvasRenderingContext2D): void {
         ctx.save();
-        ctx.translate(this.p.x, this.p.y);
-        ctx.rotate(this.phase * 0.02);
+        const mirror = this.player ? 1 : -1;
+        ctx.translate(this.p.x - this.stagger * 20 * mirror, this.p.y);
+        ctx.rotate(this.phase * 0.02 - this.stagger * 0.05 * mirror);
 
         if (!this.player) ctx.scale(-1, 1);
 
@@ -170,7 +184,9 @@ export class Ship extends Entity {
     private drawCannon(ctx: CanvasRenderingContext2D): void {
         ctx.fillStyle = '#666';
         // cannon
-        ctx.translate(190, 0);
+        ctx.save();
+        ctx.rotate(-this.recoil * 0.2);
+        ctx.translate(190 - this.recoil * 10, 0);
         ctx.beginPath();
         const height = 25;
         ctx.moveTo(0, -200 - height);
@@ -178,7 +194,7 @@ export class Ship extends Entity {
         ctx.closePath();
         ctx.fill();
         ctx.stroke();
-        ctx.translate(-190, 0);
+        ctx.restore();
 
         ctx.fillStyle = this.colors[1];
         // cannon base

@@ -7,6 +7,7 @@ import { WobblyText } from './engine/wobbly';
 import { ButtonEntity } from './engine/button';
 import { Camera } from './engine/camera';
 import { offset } from './engine/vector';
+import { Ball } from './ball';
 
 export class Scene extends Container {
     private ship: Ship;
@@ -26,9 +27,12 @@ export class Scene extends Container {
     private wave: number;
     private level: number = 0;
     private current: Ship;
+    private ball: Ball;
 
     constructor(game: Game) {
         super(game, 0, 0, []);
+
+        this.ball = new Ball(this.game, 100, 100, 0, 0);
 
         this.ship = new Ship(game, 0, true);
         this.current = this.ship;
@@ -55,6 +59,7 @@ export class Scene extends Container {
 
         game.onKey((e) => {
             if (e.key == 's') this.ship.sail();
+            if (e.key == 'x') this.ship.shoot(0, this.ball);
             if (e.key == 'z') this.targetZoom = Math.random() * 0.5 + 0.25;
         });
     }
@@ -121,7 +126,7 @@ export class Scene extends Container {
         this.nextAction = () => {
             const dmg = this.getDamage();
             this.splash.content = `Shot for ${dmg} damage!`;
-            this.current.shoot(dmg);
+            this.current.shoot(dmg, this.ball);
             this.dice = [];
         };
 
@@ -174,7 +179,7 @@ export class Scene extends Container {
         this.yesButton.visible = false;
         this.noButton.visible = false;
 
-        setTimeout(() => this.nextTurn(), state ? 1500 : 750);
+        setTimeout(() => this.nextTurn(), state ? 2500 : 1250);
     }
 
     private zoom(): void {
@@ -214,7 +219,7 @@ export class Scene extends Container {
         super.update(tick, mouse);
         this.phase = Math.abs(Math.sin(tick * 0.002));
         this.wave = Math.sin(tick * 0.0003);
-        [this.ship, this.enemy, ...this.dice, this.splash, ...this.getButtons()].filter(e => !!e).forEach(e => e.update(tick, mouse));
+        [this.ball, this.ship, this.enemy, ...this.dice, this.splash, ...this.getButtons()].filter(e => !!e).forEach(e => e.update(tick, mouse));
         const diff = this.ship.p.x - this.getMid() + this.cam.shift;
         if (Math.abs(diff) > 10) this.camVelocity += Math.sign(diff);
         this.cam.pan.x += this.camVelocity;
@@ -230,6 +235,7 @@ export class Scene extends Container {
         
         this.enemy?.draw(ctx);
         this.ship.draw(ctx);
+        this.ball.draw(ctx);
 
         ctx.strokeStyle = '#fff';
         ctx.fillStyle = 'cyan';

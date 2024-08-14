@@ -89,7 +89,7 @@ export class Dude extends Entity {
     }
 
     public pose(state: boolean): void {
-        // if (state) this.hopInPlace(2);
+        if (state) this.hopInPlace();
         this.posing = state;
     }
 
@@ -98,7 +98,7 @@ export class Dude extends Entity {
         ctx.save();
         ctx.translate(0,  -this.air * 50 + this.ducking * 7 - (this.posing ? 10 : 0));
 
-        this.drawLeg(ctx, 1, this.posing ? -30 : 0);
+        this.drawLeg(ctx, 1, this.posing ? -45 : 0);
         this.drawLeg(ctx, -1, 0);
         
         ctx.translate(this.p.x, this.p.y);
@@ -119,7 +119,7 @@ export class Dude extends Entity {
 
         ctx.translate(0, -20);
 
-        this.drawArm(ctx, 1, this.posing ? -30 : 20);
+        this.drawArm(ctx, 1, this.posing ? -30 : 10 + this.phase * 10);
         this.drawArm(ctx, -1, 0);
 
         ctx.translate(this.p.x, this.p.y - 50 - this.phase * 5);

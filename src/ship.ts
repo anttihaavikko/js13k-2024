@@ -35,7 +35,7 @@ export class Ship extends Entity {
             randomCell(fabrics),
             randomCell(fabrics)
         ];
-        this.dude = new Dude(game, 70, -100, this.colors[4], this.colors[3], randomCell(woods));
+        this.dude = new Dude(game, 50, -100, this.colors[4], this.colors[3], randomCell(woods));
     }
 
     public setBall(ball: Ball) {
@@ -89,7 +89,8 @@ export class Ship extends Entity {
     }
 
     public shootAnim(): void {
-        this.dude.pose(false);
+        this.dude.hopInPlace();
+        setTimeout(() => this.dude.pose(false), 300);
         this.recoil = 1;
         this.stagger = 1;
         const dir = this.player ? 1 : -1;

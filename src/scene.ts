@@ -74,7 +74,6 @@ export class Scene extends Container {
             if (e.key == 's') this.ship.sail();
             if (e.key == 'x') this.ship.shoot(1);
             if (e.key == 'z') this.targetZoom = Math.random() * 0.5 + 0.25;
-            if (e.key == 'k') this.ship.sink();
             if (e.key == 'p') this.ship.pose(true);
         });
     }
@@ -130,7 +129,7 @@ export class Scene extends Container {
                 setTimeout(() => after(), 500);
                 return;
             }
-            this.current.shoot(dmg);
+            this.shoot();
             return;
         }
         this.promptAnswer(first, second, () => {
@@ -146,7 +145,14 @@ export class Scene extends Container {
     }
 
     private shoot(): void {
-        this.current.shoot(this.getDamage());
+        const dmg = this.getDamage();
+        if (this.current.isAuto()) {
+            this.splash.content = `Incoming ${dmg} damage!`;
+            this.secondLine.content = 'Select cargo taking the hit...';
+            this.ship.addDamage(dmg);
+            return;
+        }
+        this.current.shoot(dmg);
     }
 
     private rollForCargo(): void {
@@ -176,14 +182,14 @@ export class Scene extends Container {
             this.current = this.ship;
 
             const m = this.getMid() + (80 + this.cam.shift + 200) / this.cam.zoom;
-            for (let i = 0; i < this.level; i++) {
+            for (let i = 0; i < Math.min(this.level + 1, 5); i++) {
                 const d = new Dice(this.game, m, 300);
                 d.roll(m + i * 120 - 120 * ((this.level - 1) * 0.5), 420);
                 d.float(true);
                 this.loot.push(d);
             }
 
-            setTimeout(() => this.promptForReroll('Victory, nicely done!', 'Would you like to reroll the loot?', () => this.promptSail()), 750);
+            setTimeout(() => this.promptForReroll('Victory! Nicely done!', 'Would you like to reroll the loot?', () => this.promptSail()), 750);
             return;
         }
         this.current = this.current.getOpponent();
@@ -192,6 +198,8 @@ export class Scene extends Container {
     }
 
     private promptSail(): void {
+        this.splash.content = '';
+        this.secondLine.content = '';
         this.promptAction('SAIL', () => this.nextLevel());
     }
 

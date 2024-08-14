@@ -24,11 +24,17 @@ export class Scene extends Container {
     private targetZoom = 0.75;
     private camVelocity = 0;
     private wave: number;
+    private level: number = 0;
+    private current: Ship;
 
     constructor(game: Game) {
         super(game, 0, 0, []);
+
         this.ship = new Ship(game, 0, true);
         this.enemy = new Ship(game, 3000, false);
+        this.ship.setOpponent(this.enemy);
+        this.enemy.setOpponent(this.ship);
+        this.current = this.ship;
 
         this.splash = new WobblyText(game, 'Lets start by rolling for your cargo!', 35, 400, 120, 0.2, 3, { shadow: 5, align: 'center' });
         this.action = new ButtonEntity(game, 'ROLL', 400, 550, 200, 55, () => this.buttonPress(), game.getAudio(), 20);
@@ -64,7 +70,7 @@ export class Scene extends Container {
 
     private rollForDamage(): void {
         this.useDamageDice = true;
-        this.roll(this.ship.getDiceCount());
+        this.roll(this.current.getDiceCount());
         this.action.visible = false;
         this.splash.content = '';
         
@@ -87,6 +93,15 @@ export class Scene extends Container {
         }, 500);
     }
 
+    private nextTurn(): void {
+        if (this.level === 0 || this.enemy.isDead()) {
+            this.promptSail();
+            return;
+        }
+        this.current = this.current.getOpponent();
+        this.promptShot();
+    }
+
     private promptSail(): void {
         this.action.setText('SAIL');
         this.action.visible = true;
@@ -98,6 +113,7 @@ export class Scene extends Container {
         this.nextAction = () => {
             const dmg = this.dice.reduce((sum, d) => sum + d.getValue(), 0);
             this.splash.content = `Shot for ${dmg} damage!`;
+            this.current.shoot(dmg);
             this.dice = [];
         };
             
@@ -107,6 +123,7 @@ export class Scene extends Container {
     }
 
     private nextLevel(): void {
+        this.level++;
         this.targetZoom = 0.75;
         this.cam.shift = 0;
         this.cam.pan.y = 50;
@@ -136,7 +153,7 @@ export class Scene extends Container {
         this.yesButton.visible = false;
         this.noButton.visible = false;
 
-        setTimeout(() => this.promptSail(), state ? 1500 : 750);
+        setTimeout(() => this.nextTurn(), state ? 1500 : 750);
     }
 
     private zoom(): void {
@@ -175,7 +192,7 @@ export class Scene extends Container {
     public update(tick: number, mouse: Mouse): void {
         super.update(tick, mouse);
         this.phase = Math.abs(Math.sin(tick * 0.002));
-        this.wave = Math.sin(tick * 0.001);
+        this.wave = Math.sin(tick * 0.0003);
         [this.ship, this.enemy, ...this.dice, this.splash, ...this.getButtons()].forEach(e => e.update(tick, mouse));
         const diff = this.ship.p.x - this.getMid() + this.cam.shift;
         if (Math.abs(diff) > 10) this.camVelocity += Math.sign(diff);

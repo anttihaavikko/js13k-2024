@@ -16,6 +16,7 @@ export class Ship extends Entity {
     private dice: Dice[] = [];
     private mp: Vector;
     private colors: string[];
+    private opponent: Ship;
     
     constructor(game: Game, x: number, private player: boolean) {
         super(game, x, 550, 0, 0);
@@ -27,6 +28,30 @@ export class Ship extends Entity {
             randomCell(fabrics),
             randomCell(fabrics)
         ];
+    }
+
+    public getOpponent(): Ship {
+        return this.opponent;
+    }
+
+    public setOpponent(other: Ship): void {
+        this.opponent = other;
+    }
+
+    public isDead(): boolean {
+        return this.dice.length === 0;
+    }
+
+    public hurt(amount: number): void {
+        const target = this.dice.find(d => d.getValue() > amount) ?? this.dice.sort((a, b) => a.getValue() - b.getValue())[0];
+        if (target?.hurt(amount)) {
+            this.dice = this.dice.filter(d => d != target);
+            this.repositionDice();
+        }
+    }
+
+    public shoot(damage: number): void {
+        this.opponent.hurt(damage);
     }
 
     public addDice(d: Dice): void {

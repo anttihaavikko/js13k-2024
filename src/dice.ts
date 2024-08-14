@@ -51,6 +51,11 @@ export class Dice extends Entity {
         }
     }
 
+    public hurt(amount: number): boolean {
+        this.value = Math.max(0, this.value - amount);
+        return this.value <= 0;
+    }
+
     public drawRim(ctx: CanvasRenderingContext2D): void {
         if (!this.hovering) return;
         ctx.save();

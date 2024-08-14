@@ -118,6 +118,10 @@ export class Ship extends Entity {
         ctx.lineTo(180, 150);
         ctx.lineTo(250, -160);
         ctx.closePath();
+        ctx.moveTo(-200 - extension, -110);
+        ctx.lineTo(250 - 10, -120);
+        ctx.moveTo(-200 - extension + 5, -72);
+        ctx.lineTo(250 - 15, -77);
         ctx.fill();
         ctx.stroke();
 

@@ -53,7 +53,7 @@ export class Scene extends Container {
 
         game.onKey((e) => {
             if (e.key == 's') this.ship.sail();
-            if (e.key == 'z') this.cam.zoom = Math.random() * 0.5 + 0.25;
+            if (e.key == 'z') this.targetZoom = Math.random() * 0.5 + 0.25;
         });
     }
 
@@ -116,7 +116,7 @@ export class Scene extends Container {
 
     private activateLevel(): void {
         this.targetZoom = 0.5;
-        this.cam.shift = 400;
+        this.cam.shift = 100;
         setTimeout(() => this.promptShot(), 2000);
     }
 
@@ -152,13 +152,13 @@ export class Scene extends Container {
     }
 
     private getMid(): number {
-        return (this.cam.pan.x + 400 - this.cam.shift) / this.cam.zoom;
+        return (this.cam.pan.x + 400 - this.cam.shift);
     }
 
     public roll(amount: number): void {
         this.dice = [];
         for (let i = 0; i < amount; i++) {
-            const m = this.getMid() - 50;
+            const m = this.getMid() + (80 + this.cam.shift) / this.cam.zoom;
             const d = new Dice(this.game, m, 800, this.useDamageDice);
             d.roll(m + i * 120 - 120 * ((amount - 1) * 0.5), 450);
             this.dice.push(d);
@@ -193,7 +193,7 @@ export class Scene extends Container {
         ctx.fillStyle = 'cyan';
         // ctx.translate(this.cam.pan.x, 0);
         // ctx.rotate(this.phase * 0.1);
-        const start = Math.floor(this.cam.pan.x / this.cam.zoom / 100) * 100 - 500 - this.cam.shift;
+        const start = Math.floor(this.cam.pan.x / 100) * 100 - 500 - this.cam.shift;
         ctx.beginPath();
         ctx.moveTo(start + 3000, 1000);
         ctx.lineTo(start, 1000);

@@ -61,8 +61,8 @@ export class Ship extends Entity {
     private offsetMouse(mouse: Mouse, cam: Camera): Mouse {
         return {
             ...mouse,
-            x: (mouse.x - 400) / cam.zoom + cam.shift,
-            y: (mouse.y - 130) / cam.zoom - 600
+            x: mouse.x / cam.zoom - 400 + cam.shift,
+            y: mouse.y / cam.zoom - 700
         };
     }
 

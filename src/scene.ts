@@ -61,6 +61,7 @@ export class Scene extends Container {
             if (e.key == 's') this.ship.sail();
             if (e.key == 'x') this.ship.shoot(0, this.ball);
             if (e.key == 'z') this.targetZoom = Math.random() * 0.5 + 0.25;
+            if (e.key == 'k') this.ship.sink();
         });
     }
 
@@ -108,6 +109,9 @@ export class Scene extends Container {
     }
 
     private promptSail(): void {
+        if (this.enemy?.isDead()) {
+            this.enemy.sink();
+        }
         this.action.setText('SAIL');
         this.action.visible = true;
         this.act = () => this.nextLevel();

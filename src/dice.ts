@@ -9,11 +9,16 @@ export class Dice extends Entity {
     private value: number;
     private rolling: boolean;
     private hovering: boolean;
+    private marked: boolean;
 
     constructor(game: Game, x: number, y: number, private damage: boolean = false) {
         super(game, x, y, 100, 100);
         this.randomize();
         this.fixRotation();
+    }
+
+    public mark(state: boolean = true): void {
+        this.marked = state;
     }
 
     private randomize(): void {
@@ -52,12 +57,13 @@ export class Dice extends Entity {
     }
 
     public hurt(amount: number): boolean {
+        this.marked = false;
         this.value = Math.max(0, this.value - amount);
         return this.value <= 0;
     }
 
     public drawRim(ctx: CanvasRenderingContext2D): void {
-        if (!this.hovering) return;
+        if (!this.hovering && !this.marked) return;
         ctx.save();
         ctx.translate(this.p.x + 50, this.p.y + 50);
         ctx.rotate(this.rotation);
@@ -72,7 +78,7 @@ export class Dice extends Entity {
         ctx.beginPath();
         ctx.translate(this.p.x + 50, this.p.y + 50);
         ctx.rotate(this.rotation);
-        ctx.fillStyle = this.hovering ? 'yellow' : '#fff';
+        ctx.fillStyle = this.hovering || this.marked ? 'yellow' : '#fff';
         ctx.rect(-50, -50, 100, 100);
         ctx.fill();
         ctx.stroke();

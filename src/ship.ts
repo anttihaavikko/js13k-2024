@@ -4,7 +4,7 @@ import { Dice } from './dice';
 import { Dude } from './dude';
 import { Camera } from './engine/camera';
 import { drawCircle } from './engine/drawing';
-import { quadEaseInOut } from './engine/easings';
+import { quadEaseIn, quadEaseInOut } from './engine/easings';
 import { Entity } from './engine/entity';
 import { Game } from './engine/game';
 import { Mouse } from './engine/mouse';
@@ -53,6 +53,7 @@ export class Ship extends Entity {
     public hurt(amount: number): void {
         const target = this.dice.find(d => d.getValue() > amount) ?? this.dice.sort((a, b) => a.getValue() - b.getValue())[0];
         if (!target) return;
+        target.mark();
         setTimeout(() => {
             this.game.getCamera().shake(10, 0.15, 1);
             const dir = this.player ? 1 : -1;
@@ -120,6 +121,11 @@ export class Ship extends Entity {
         };
     }
 
+    public sink(): void {
+        this.tween.setEase(quadEaseIn);
+        this.tween.move(offset(this.p, 0, 550), 1);
+    }
+
     public draw(ctx: CanvasRenderingContext2D): void {
         ctx.save();
         const mirror = this.player ? 1 : -1;
@@ -154,7 +160,7 @@ export class Ship extends Entity {
         // const off = cam.pan.x / cam.zoom + (this.player ? 800 : -700);
         // ctx.translate(-this.p.x + off, -this.p.y);
         this.dice.forEach(d => d.draw(ctx));
-        if (this.player) this.dice.forEach(d => d.drawRim(ctx));
+        this.dice.forEach(d => d.drawRim(ctx));
         // ctx.translate(this.p.x - off, this.p.y);
 
         ctx.translate(120, 0);

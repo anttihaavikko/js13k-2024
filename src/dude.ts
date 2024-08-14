@@ -1,7 +1,7 @@
 import { skins } from './colors';
 import { AudioManager } from './engine/audio';
 import { Camera } from './engine/camera';
-import { drawCircle, drawEllipse } from './engine/drawing';
+import { drawCircle } from './engine/drawing';
 import { Entity } from './engine/entity';
 import { Face } from './engine/face';
 import { Game } from './engine/game';
@@ -19,12 +19,13 @@ export class Dude extends Entity {
     private hopDir: number;
     private wave = 0;
     private kick: boolean;
+    private posing: boolean;
 
     private face: Face;
     private flag: string;
     private skin: string;
 
-    constructor(game: Game, x: number, y: number, private mainColor: string, private secondaryColor: string) {
+    constructor(game: Game, x: number, y: number, private mainColor: string, private secondaryColor: string, private cane: string) {
         super(game, x, y, 0, 0);
         this.face = new Face(this.game, {
             blush: 'red',
@@ -87,23 +88,28 @@ export class Dude extends Entity {
         this.hop(this.p);
     }
 
+    public pose(state: boolean): void {
+        // if (state) this.hopInPlace(2);
+        this.posing = state;
+    }
+
     public draw(ctx: CanvasRenderingContext2D): void {
         ctx.lineCap = 'round';
         ctx.save();
-        drawEllipse(ctx, this.p, 35 + 4 * this.phase - this.air * 5, 10 + 2 * this.phase - this.air * 5, '#00000033');
-        ctx.translate(0,  -this.air * 50 + this.ducking * 7);
-        this.drawLeg(ctx, 1);
-        this.drawLeg(ctx, -1);
+        ctx.translate(0,  -this.air * 50 + this.ducking * 7 - (this.posing ? 10 : 0));
+
+        this.drawLeg(ctx, 1, this.posing ? -30 : 0);
+        this.drawLeg(ctx, -1, 0);
         
         ctx.translate(this.p.x, this.p.y);
-        ctx.rotate(this.wave * 0.05 + this.hopDir * -0.05);
+        ctx.rotate(this.wave * 0.05 - (this.posing ? 0.3 : 0));
         ctx.translate(-this.p.x, -this.p.y);
 
         ctx.translate(0,  -this.phase * 10 + this.ducking * 3);
 
         ctx.beginPath();
-        ctx.moveTo(this.p.x, this.p.y - 30);
-        ctx.lineTo(this.p.x, this.p.y - 60);
+        ctx.moveTo(this.p.x, this.p.y - 40);
+        ctx.lineTo(this.p.x, this.p.y - 90);
         ctx.lineWidth = 50;
         ctx.strokeStyle = '#000';
         ctx.stroke();
@@ -111,15 +117,17 @@ export class Dude extends Entity {
         ctx.strokeStyle = this.skin;
         ctx.stroke();
 
-        this.drawArm(ctx, 1);
-        this.drawArm(ctx, -1);
+        ctx.translate(0, -20);
+
+        this.drawArm(ctx, 1, this.posing ? -30 : 20);
+        this.drawArm(ctx, -1, 0);
 
         ctx.translate(this.p.x, this.p.y - 50 - this.phase * 5);
 
-        ctx.scale(0.25, 0.25);
+        ctx.scale(0.3, 0.3);
         this.face.draw(ctx);
 
-        ctx.scale(5, 5);
+        ctx.scale(4.5, 4.5);
         ctx.translate(0, -18 + this.phase * 7 - clamp01(this.air - 0.5) * 20);
         ctx.rotate(clamp01(this.air - 0.75) * 0.5 * this.hopDir);
         this.drawHat(ctx);
@@ -158,55 +166,57 @@ export class Dude extends Entity {
         ctx.fill();
     }
 
-    private drawLeg(ctx: CanvasRenderingContext2D, dir: number): void {
+    private drawLeg(ctx: CanvasRenderingContext2D, dir: number, yoff: number): void {
         ctx.strokeStyle = '#000';
         ctx.lineWidth = 7;
         ctx.beginPath();
         ctx.lineJoin = 'round';
         ctx.moveTo(this.p.x, this.p.y - 30 - this.phase * 10);
         const diff = clamp01(this.air - 0.5) * 20;
-        const loff = this.kick && dir > 0 && this.hopDir < 0 ? -10 * this.hopDir : 0;
-        const roff = this.kick && dir < 0 && this.hopDir > 0 ? 10 * this.hopDir : 0;
         ctx.quadraticCurveTo(
-            this.p.x + dir * 30 * (1 + this.phase * 0.2) - diff * 0.2 * dir + loff - roff,
-            this.p.y - 15 - this.phase * 5 + diff - diff * 0.2 * dir - loff - roff,
-            this.p.x + dir * 22 - diff * dir + loff - roff,
-            this.p.y + diff - loff - roff
+            this.p.x + dir * 30 * (1 + this.phase * 0.2) - diff * 0.2 * dir,
+            this.p.y - 30 - this.phase * 5 + diff - diff * 0.2 * dir + yoff,
+            this.p.x + dir * 22 - diff * dir,
+            this.p.y + diff + yoff
         );
-        ctx.lineTo(this.p.x - this.air * dir * 5 + dir * 30 - diff * dir + loff - roff, this.p.y + this.air * 18 - loff - roff);
+        // ctx.lineTo(this.p.x - this.air * dir * 5 + dir * 30 - diff * dir, this.p.y + this.air * 18);
         ctx.stroke();
     }
 
     private curveTo(ctx: CanvasRenderingContext2D, ax: number, ay: number, x: number, y: number): void {
         ctx.quadraticCurveTo(ax, ay, x, y);
         ctx.stroke();
-        drawCircle(ctx, { x, y }, 2.5, '#000');
+        drawCircle(ctx, { x, y }, 3, '#000');
     }
 
-    private drawArm(ctx: CanvasRenderingContext2D, dir: number): void {
+    private drawArm(ctx: CanvasRenderingContext2D, dir: number, yoff: number): void {
         ctx.save();
         ctx.translate(this.p.x + dir * 22, this.p.y - 15 + this.phase * 10);
         ctx.strokeStyle = '#000';
-        ctx.lineWidth = 6;
+        ctx.lineWidth = 7;
         ctx.beginPath();
         const diff = this.phase * -15;
         const rise = this.air * -10;
         ctx.moveTo(0, diff - 15);
         const normal = () => this.curveTo(ctx, dir * 20 - this.wave * 5 + rise, -20 + diff * 1.2, dir * 15 + this.wave * 5, 0 + diff + rise);
         if (dir < 0) {
-            if (this.face.thinking) {
-                this.curveTo(ctx, dir * 20 - this.wave * 5, 5 + diff * 1.2, -15 * dir, -15 + diff); 
-            } else {
-                normal();
-            }
+            normal();
         } else {
-            if (this.flag) {
-                this.curveTo(ctx, dir * 20 - this.wave * 10 + this.phase * 3, 5 + diff * 1.2, 20 * dir, -25 + diff); 
-            } else {
-                normal();
-            }
+            this.curveTo(ctx, dir * 20 - this.wave * 10 + this.phase * 3, 5 + diff * 1.2 + yoff, 20 * dir, -25 + diff + yoff);
         }
         ctx.stroke();
+        if (dir > 0) {
+            ctx.translate(20 * dir, -25 + diff + yoff);
+            if (this.posing) ctx.rotate(-this.phase * 0.2);
+            ctx.beginPath();
+            ctx.moveTo(0, -10);
+            ctx.lineTo(0, 50);
+            ctx.lineWidth = 12;
+            ctx.stroke();
+            ctx.strokeStyle = this.cane;
+            ctx.lineWidth = 6;
+            ctx.stroke();
+        }
         ctx.restore();
     }
 }

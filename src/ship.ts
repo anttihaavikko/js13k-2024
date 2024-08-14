@@ -35,7 +35,7 @@ export class Ship extends Entity {
             randomCell(fabrics),
             randomCell(fabrics)
         ];
-        this.dude = new Dude(game, 70, -125, this.colors[4], this.colors[3]);
+        this.dude = new Dude(game, 70, -100, this.colors[4], this.colors[3], randomCell(woods));
     }
 
     public setBall(ball: Ball) {
@@ -89,6 +89,7 @@ export class Ship extends Entity {
     }
 
     public shootAnim(): void {
+        this.dude.pose(false);
         this.recoil = 1;
         this.stagger = 1;
         const dir = this.player ? 1 : -1;
@@ -162,8 +163,13 @@ export class Ship extends Entity {
     }
 
     public sink(): void {
+        this.dude.hopInPlace();
         this.tween.setEase(quadEaseIn);
         this.tween.move(offset(this.p, 0, 550), 1);
+    }
+
+    public pose(state: boolean): void {
+        this.dude.pose(state);
     }
 
     public draw(ctx: CanvasRenderingContext2D): void {
@@ -208,7 +214,7 @@ export class Ship extends Entity {
         ctx.translate(-120, 0);
 
         ctx.save();
-        ctx.scale(1.2, 1.2);
+        ctx.scale(1.4, 1.4);
         this.dude.draw(ctx);
         ctx.restore();
 

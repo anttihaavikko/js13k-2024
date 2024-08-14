@@ -66,6 +66,7 @@ export class Scene extends Container {
             if (e.key == 'x') this.ship.shoot(0);
             if (e.key == 'z') this.targetZoom = Math.random() * 0.5 + 0.25;
             if (e.key == 'k') this.ship.sink();
+            if (e.key == 'p') this.ship.pose(true);
         });
     }
 
@@ -113,6 +114,7 @@ export class Scene extends Container {
             return;
         }
         this.current = this.current.getOpponent();
+        this.current.pose(true);
         this.promptShot();
     }
 
@@ -131,6 +133,8 @@ export class Scene extends Container {
 
     private promptShot(): void {
         if (this.current.isDead()) {
+            this.ship.pose(false);
+            this.enemy.pose(true);
             this.splash.content = 'Lost all your cargo!';
             this.bigText.content = 'GAME OVER';
             return;
@@ -139,7 +143,11 @@ export class Scene extends Container {
         this.act = () => this.rollForDamage();
         this.nextAction = () => {
             const dmg = this.getDamage();
-            if (this.current.isAuto() && dmg > 0) {
+            if (this.current.isAuto()) {
+                if (dmg <= 0) {
+                    this.nextTurn();
+                    return;
+                }
                 this.splash.content = `Incoming ${dmg} damage!`;
                 this.secondLine.content = 'Select cargo taking the hit...';
                 this.ship.addDamage(dmg);
@@ -155,6 +163,7 @@ export class Scene extends Container {
             return;
         }
             
+        this.current.pose(true);
         this.action.setText('SHOOT');
         this.action.visible = true;
         setTimeout(() => this.splash.content = '', 500);

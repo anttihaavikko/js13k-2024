@@ -1,3 +1,4 @@
+import { font } from './engine/constants';
 import { drawCircle } from './engine/drawing';
 import { Entity } from './engine/entity';
 import { Game } from './engine/game';
@@ -128,6 +129,12 @@ export class Dice extends Entity {
     }
 
     private drawPip(ctx: CanvasRenderingContext2D, pos: Vector): void {
+        if (this.damage) {
+            ctx.fillStyle = '#000';
+            ctx.font =`45px ${font}`;
+            ctx.fillText('✦', pos.x * 0.8 - 15, pos.y * 0.8 + 15);
+            return;
+        }
         drawCircle(ctx, pos, this.damage ? 12 : 8, '#000', 'transparent');
     }
 }

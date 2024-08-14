@@ -158,19 +158,29 @@ export class Scene extends Container {
     public draw(ctx: CanvasRenderingContext2D): void {
         ctx.strokeStyle = '#000';
         ctx.lineWidth = 7;
-
-        ctx.fillStyle = '#fff';
         
         this.enemy.draw(ctx);
         this.ship.draw(ctx);
 
+        ctx.strokeStyle = '#fff';
+        ctx.fillStyle = 'cyan';
+        // ctx.translate(this.cam.pan.x, 0);
+        // ctx.rotate(this.phase * 0.1);
+        const start = Math.floor(this.cam.pan.x / this.cam.zoom / 100) * 100 - 500;
         ctx.beginPath();
-        ctx.setLineDash([20,20]);
-        ctx.rect(-10000, HEIGHT - 100 + this.phase * 5, 20000, HEIGHT + 70);
+        ctx.moveTo(start + 3000, 1000);
+        ctx.lineTo(start, 1000);
+        ctx.lineTo(start, 500 + this.phase * 5);
+        for (let i = 0; i < 3000 / 50; i++) {
+            ctx.quadraticCurveTo(start + i * 50 - 25, 525 - this.phase * 5, start + i * 50, 500 + this.phase * 7);
+        }
+        ctx.closePath();
+        // ctx.rect(-10000, HEIGHT - 100 + this.phase * 5, 20000, HEIGHT + 70);
         ctx.fill();
         ctx.stroke();
-        ctx.closePath();
-        ctx.setLineDash([]);
+        // ctx.resetTransform();
+
+        ctx.strokeStyle = '#000';
 
         [...this.dice].forEach(e => e.draw(ctx));
         ctx.resetTransform();

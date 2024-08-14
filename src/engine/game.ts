@@ -51,7 +51,7 @@ export class Game extends Entity {
     }
 
     public draw(ctx: CanvasRenderingContext2D): void {
-        ctx.fillStyle = '#333';
+        ctx.fillStyle = '#5d9acf';
         ctx.fillRect(0, 0, 800, 600);
         
         ctx.save();

@@ -23,6 +23,7 @@ export class Scene extends Container {
     private cam: Camera;
     private targetZoom = 0.75;
     private camVelocity = 0;
+    private wave: number;
 
     constructor(game: Game) {
         super(game, 0, 0, []);
@@ -174,6 +175,7 @@ export class Scene extends Container {
     public update(tick: number, mouse: Mouse): void {
         super.update(tick, mouse);
         this.phase = Math.abs(Math.sin(tick * 0.002));
+        this.wave = Math.sin(tick * 0.001);
         [this.ship, this.enemy, ...this.dice, this.splash, ...this.getButtons()].forEach(e => e.update(tick, mouse));
         const diff = this.ship.p.x - this.getMid() + this.cam.shift;
         if (Math.abs(diff) > 10) this.camVelocity += Math.sign(diff);
@@ -201,7 +203,7 @@ export class Scene extends Container {
         ctx.lineTo(start, 1000);
         ctx.lineTo(start, 500 + this.phase * 5);
         for (let i = 0; i < 3000 / 50; i++) {
-            ctx.quadraticCurveTo(start + i * 50 - 25, 525 - this.phase * 5, start + i * 50, 500 + this.phase * 7);
+            ctx.quadraticCurveTo(start + i * 50 - 25, 525 - this.phase * 5, start + i * 50, 500 + this.phase * 7 + Math.sin(i * this.wave * 0.5) * 5);
         }
         ctx.closePath();
         // ctx.rect(-10000, HEIGHT - 100 + this.phase * 5, 20000, HEIGHT + 70);

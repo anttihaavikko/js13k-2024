@@ -103,4 +103,21 @@ export class AudioManager {
     public sail(vol: number): void {
         this.playEffect([vol,,50,.09,.26,.62,4,2.7,6,,,,.06,1.2,,.1,,.46,.27,.03,1598]);
     }
+
+    public jump(): void {
+        this.playEffect([.7,,312,.01,.01,.06,,2.6,,58,,,,,,.1,,.57,.09]);
+    }
+
+    public land(): void {
+        this.playEffect([1,,252,.02,.02,.19,,1.7,,-50,,,,,,.1,.03,.91,.04]);
+    }
+
+    public win(): void {
+        this.playEffect([2.2,,229,.03,.11,.5,,2.6,,,-186,.06,.03,,,,.12,.5,.17]);
+    }
+
+    public sink(): void {
+        this.playEffect([.8,,35,.04,.08,.6,4,3.4,5,,,,,.3,,.1,,.37,.19,,1989]);
+        setTimeout(() => this.playEffect([0.7,,468,.06,.11,,,3.2,-8,,-61,.07,.05,,,,,.91,.14]), 500);
+    }
 }

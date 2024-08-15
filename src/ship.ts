@@ -168,6 +168,7 @@ export class Ship extends Entity {
     }
 
     public sink(): void {
+        this.game.getAudio().sink();
         this.dude.hopInPlace();
         this.tween.setEase(quadEaseIn);
         this.tween.move(offset(this.p, 0, 850), 1.5);
@@ -181,7 +182,7 @@ export class Ship extends Entity {
         ctx.save();
         const mirror = this.player ? 1 : -1;
         ctx.translate(this.p.x - this.stagger * 20 * mirror, this.p.y);
-        ctx.rotate(this.phase * 0.02 - this.stagger * 0.05 * mirror);
+        // ctx.rotate(this.phase * 0.02 - this.stagger * 0.05 * mirror);
 
         if (!this.player) ctx.scale(-1, 1);
 

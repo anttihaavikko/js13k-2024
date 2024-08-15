@@ -18,11 +18,8 @@ export class Dude extends Entity {
     private ducking = 0;
     private hopDir: number;
     private wave = 0;
-    private kick: boolean;
     private posing: boolean;
-
     private face: Face;
-    private flag: string;
     private skin: string;
 
     constructor(game: Game, x: number, y: number, private mainColor: string, private secondaryColor: string, private cane: string) {
@@ -72,15 +69,14 @@ export class Dude extends Entity {
     }
 
     public hop(to: Vector): void {
-        this.kick = Math.random() < 0.8;
         this.hopDir = -Math.sign(to.x - this.p.x);
         this.height = 1;
         this.tween.move(to, 0.3);
-        // this.game.getAudio().jump();
+        this.game.getAudio().jump();
         setTimeout(() => {
-            // this.game.getAudio().squish();
+            this.game.getAudio().land();
             // this.game.getScene().add(...bits(this.game, offset(this.getCenter(), 0, 10), COLORS.border));
-        }, 300);
+        }, 370);
         setTimeout(() => this.hopDir = 0, 300);
     }
 
@@ -137,10 +133,6 @@ export class Dude extends Entity {
         ctx.rotate(this.wave * -0.05);
 
         ctx.restore();
-    }
-
-    public setFlagColor(color: string): void {
-        this.flag = color;
     }
 
     private drawHat(ctx: CanvasRenderingContext2D): void {

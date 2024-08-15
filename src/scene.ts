@@ -358,8 +358,8 @@ export class Scene extends Container {
         this.loot.forEach(l => l.draw(ctx));
         this.loot.forEach(l => l.drawRim(ctx));
 
-        ctx.strokeStyle = '#fff';
-        ctx.fillStyle = 'cyan';
+        ctx.strokeStyle = '#ffffffcc';
+        ctx.fillStyle = '#00ffffcc';
         // ctx.translate(this.cam.pan.x, 0);
         // ctx.rotate(this.phase * 0.1);
         const start = Math.floor(this.cam.pan.x / 100) * 100 - 500 - this.cam.shift;

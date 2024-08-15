@@ -168,7 +168,7 @@ export class Ship extends Entity {
     public sink(): void {
         this.dude.hopInPlace();
         this.tween.setEase(quadEaseIn);
-        this.tween.move(offset(this.p, 0, 550), 1);
+        this.tween.move(offset(this.p, 0, 850), 1.5);
     }
 
     public pose(state: boolean): void {
@@ -187,7 +187,7 @@ export class Ship extends Entity {
         ctx.fillStyle = this.colors[0];
         const mastPos = 40;
         ctx.beginPath();
-        ctx.rect(-50 + mastPos, -550, 15, 600);
+        ctx.rect(-50 + mastPos, -550, 15, 520);
         ctx.fill();
         ctx.stroke();
         ctx.closePath();
@@ -226,14 +226,16 @@ export class Ship extends Entity {
         ctx.beginPath();
         const extension = this.getCargoWidth();
         ctx.moveTo(-200 - extension, -150);
-        ctx.lineTo(-170 - extension, 150);
-        ctx.lineTo(180, 150);
+        ctx.lineTo(-170 - extension, 10);
+        ctx.lineTo(180, 10);
         ctx.lineTo(250, -160);
         ctx.closePath();
-        ctx.moveTo(-200 - extension, -110);
-        ctx.lineTo(250 - 10, -120);
-        ctx.moveTo(-200 - extension + 5, -72);
-        ctx.lineTo(250 - 15, -77);
+        ctx.moveTo(-195 - extension, -110);
+        ctx.lineTo(235, -120);
+        ctx.moveTo(-190 - extension + 5, -72);
+        ctx.lineTo(215, -77);
+        ctx.moveTo(-180 - extension + 5, -30);
+        ctx.lineTo(190, -30);
         ctx.fill();
         ctx.stroke();
 

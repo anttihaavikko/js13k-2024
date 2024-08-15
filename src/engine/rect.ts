@@ -14,8 +14,8 @@ export class RectParticle extends Particle {
     public update(tick: number, mouse: Mouse): void {
         if (this.options?.force) {
             this.velocity = {
-                x: this.velocity.x + this.options.force.x * this.delta,
-                y: this.velocity.y + this.options.force.y * this.delta
+                x: this.velocity.x + this.options.force.x,
+                y: this.velocity.y + this.options.force.y
             };
         }
         super.update(tick, mouse);

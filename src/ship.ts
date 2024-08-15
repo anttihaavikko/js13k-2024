@@ -4,6 +4,7 @@ import { Dice } from './dice';
 import { Dude } from './dude';
 import { Camera } from './engine/camera';
 import { font } from './engine/constants';
+import { Container } from './engine/container';
 import { drawCircle } from './engine/drawing';
 import { quadEaseIn, quadEaseInOut } from './engine/easings';
 import { Entity } from './engine/entity';
@@ -11,6 +12,7 @@ import { Game } from './engine/game';
 import { Mouse } from './engine/mouse';
 import { Pulse } from './engine/pulse';
 import { randomCell } from './engine/random';
+import { RectParticle } from './engine/rect';
 import { offset, Vector } from './engine/vector';
 import { Scene } from './scene';
 
@@ -26,6 +28,8 @@ export class Ship extends Entity {
     private incoming: number = 0;
     private ball: Ball;
     private friendly: boolean;
+    private splashing: boolean;
+    private effects: Container;
     
     constructor(game: Game, private name: string, x: number, private scene: Scene, private player: boolean) {
         super(game, x, 550, 0, 0);
@@ -36,6 +40,7 @@ export class Ship extends Entity {
             randomCell(fabrics),
             randomCell(fabrics)
         ];
+        this.effects = new Container(game);
         this.dude = new Dude(game, 70, -100, this.colors[4], this.colors[3], randomCell(woods));
     }
 
@@ -142,10 +147,24 @@ export class Ship extends Entity {
         super.update(tick, mouse);
         this.phase = Math.sin(tick * 0.005);
         this.dude.update(tick, mouse);
+        this.effects.update(tick, mouse);
         this.dice.forEach(d => d.update(tick, this.offsetMouse(mouse, this.game.getCamera())));
         this.mp = this.offsetMouse(mouse, this.game.getCamera());
         if (this.recoil > 0) this.recoil = Math.max(0, this.recoil - 0.075);
         if (this.stagger > 0) this.stagger = Math.max(0, this.stagger - 0.05);
+
+        if (this.splashing) {
+            const dir = this.player ? 1 : -1;
+            this.effects.add(new RectParticle(
+                this.game,
+                this.p.x - 180 + 370 * Math.random(),
+                500,
+                10,
+                10,
+                0.3,
+                { x: (-2 - Math.random() * 5) * dir, y: -4 - Math.random() * 3 },
+                { force: { x: 0, y: 0.5 }, color: '#ffffffcc' }));
+        }
 
         if (this.incoming > 0 && mouse.pressing) {
             const d = this.dice.find(d => d.isHovering());
@@ -259,6 +278,8 @@ export class Ship extends Entity {
         ctx.fillText(this.name, 0, 0);
 
         ctx.restore();
+
+        this.effects.draw(ctx);
     }
 
     public rerollAll(): void {
@@ -269,6 +290,8 @@ export class Ship extends Entity {
         this.dude.hopInPlace();
         this.tween.setEase(quadEaseInOut);
         this.tween.move(offset(this.p, 2000 * dir, 0), 6);
+        setTimeout(() => this.splashing = true, 300);
+        setTimeout(() => this.splashing = false, 5000);
         const delay = 750;
         for (let i = 0; i < (6 - 1) * 1000 / delay; i++) {
             setTimeout(() => this.game.getAudio().sail(0.1 + Math.random() * 0.3), i * delay);

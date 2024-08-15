@@ -278,7 +278,7 @@ export class Scene extends Container {
 
         this.enemy.makeAngry();
         setTimeout(() => {
-            this.info('COMMENCE COMBAT!');
+            this.info('COMMENCE COMBAT!', 'This will not end peacefully...');
             this.game.getAudio().warn();
         }, 1000);
         setTimeout(() => this.promptShot(), 2000);
@@ -329,7 +329,7 @@ export class Scene extends Container {
     public roll(amount: number): void {
         this.dice = [];
         for (let i = 0; i < amount; i++) {
-            const m = this.getMid() + (80 + this.cam.shift) / this.cam.zoom;
+            const m = this.getMid() + (70 + this.cam.shift) / this.cam.zoom;
             const d = new Dice(this.game, m, 800, this.useDamageDice);
             d.roll(m + i * 120 - 120 * ((amount - 1) * 0.5), 450);
             this.dice.push(d);
@@ -357,7 +357,7 @@ export class Scene extends Container {
         if (this.loot.length > 0 && mouse.pressing) {
             const looted = this.loot.find(l => l.isHovering());
             if (looted) {
-                this.info();
+                this.showGreed();
                 this.game.getAudio().buttonClick();
                 this.yesButton.visible = false;
                 this.noButton.visible = false;

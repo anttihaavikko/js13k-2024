@@ -5,7 +5,6 @@ import { Vector } from './vector';
 
 export abstract class Particle extends Entity {
     public ratio = 1;
-
     private start = -1;
 
     constructor(game: Game, x: number, y: number, width: number, height: number, protected life: number, protected velocity: Vector) {

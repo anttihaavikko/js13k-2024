@@ -44,9 +44,9 @@ export class Scene extends Container {
         this.ship = new Ship(game, '14', 0, this, true);
         this.current = this.ship;
 
-        this.splash = new WobblyText(game, 'Lets start by rolling for your cargo!', 35, 400, 120, 0.2, 3, { shadow: 5, align: 'center' });
-        this.secondLine = new WobblyText(game, '', 25, 400, 165, 0.2, 3, { shadow: 3, align: 'center' });
-        this.bigText = new WobblyText(game, 'GAME NAME', 80, 400, 210, 0.2, 3, { shadow: 7, align: 'center' });
+        this.splash = new WobblyText(game, 'Lets start by rolling for your cargo!', 35, 400, 120, 0.2, 3, { shadow: 5, align: 'center', scales: true });
+        this.secondLine = new WobblyText(game, '', 25, 400, 165, 0.2, 3, { shadow: 3, align: 'center', scales: true });
+        this.bigText = new WobblyText(game, 'GAME NAME', 80, 400, 210, 0.2, 3, { shadow: 7, align: 'center', scales: true });
         this.action = new ButtonEntity(game, 'ROLL', 400, 550, 200, 55, () => this.buttonPress(), game.getAudio(), 20);
         this.yesButton = new ButtonEntity(game, 'YEAH', 470, 550, 120, 55, () => this.answer(true), game.getAudio(), 20);
         this.noButton = new ButtonEntity(game, 'NOPE', 330, 550, 120, 55, () => this.answer(false), game.getAudio(), 20);
@@ -234,9 +234,11 @@ export class Scene extends Container {
     }
 
     public info(first: string = '', second: string = '', big: string = ''): void {
-        this.splash.content = first;
-        this.secondLine.content = second;
-        this.bigText.content = big;
+        this.splash.toggle(first);
+        setTimeout(() => {
+            this.secondLine.toggle(second);
+            this.bigText.toggle(big);
+        }, 150);
     }
 
     private promptSail(): void {

@@ -350,6 +350,18 @@ export class Scene extends Container {
     public draw(ctx: CanvasRenderingContext2D): void {
         ctx.strokeStyle = '#000';
         ctx.lineWidth = 7;
+
+        const start = Math.floor(this.cam.pan.x / 100) * 100 - 500 - this.cam.shift;
+
+        ctx.fillStyle = '#0000ff11';
+        
+        for (let i = 0; i < 3000 / 50; i++) {
+            ctx.save();
+            ctx.translate(start + i * 100 - 500, 0);
+            ctx.rotate(Math.PI * 0.25);
+            ctx.fillRect(i, -500, 25, 3000);
+            ctx.restore();
+        }
         
         this.enemy?.draw(ctx);
         this.ship.draw(ctx);
@@ -359,10 +371,9 @@ export class Scene extends Container {
         this.loot.forEach(l => l.drawRim(ctx));
 
         ctx.strokeStyle = '#ffffffcc';
-        ctx.fillStyle = '#00ffffcc';
+        ctx.fillStyle = '#03fcf4cc';
         // ctx.translate(this.cam.pan.x, 0);
         // ctx.rotate(this.phase * 0.1);
-        const start = Math.floor(this.cam.pan.x / 100) * 100 - 500 - this.cam.shift;
         ctx.beginPath();
         ctx.moveTo(start + 3000, 2000);
         ctx.lineTo(start, 2000);

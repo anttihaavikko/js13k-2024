@@ -8,6 +8,7 @@ import { ZERO } from './vector';
 
 export class WobblyText extends TextEntity {
     private time = 0;
+    private timer: NodeJS.Timeout;
 
     constructor(game: Game, content: string, fontSize: number, x: number, y: number, private frequency: number, private amplitude: number, options?: TextOptions) {
         super(game, content, fontSize, x, y, -1, ZERO, options);
@@ -21,7 +22,8 @@ export class WobblyText extends TextEntity {
     }
 
     public toggle(text: string): void {
-        setTimeout(() => this.content = text, text ? 0 : 200);
+        clearTimeout(this.timer);
+        this.timer = setTimeout(() => this.content = text, text ? 0 : 200);
         const s = text ? 1 : 0;
         this.tween.scale({ x: s, y: s }, 0.2);
     }

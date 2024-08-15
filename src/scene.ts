@@ -75,6 +75,10 @@ export class Scene extends Container {
         game.onKey((e) => {
             if (e.key == 'm') this.game.getAudio().toggleMute();
             // dev keys
+            if (e.key == 'b') {
+                this.current.shout('UNLUCKY');
+                this.game.getAudio().bad();
+            }
             if (e.key == 'e') this.doEvent();
             if (e.key == 's') this.ship.sail();
             if (e.key == 'k') this.ship.sink();
@@ -202,8 +206,10 @@ export class Scene extends Container {
         this.current = this.current.getOpponent();
 
         if (this.current.isUnlucky() && !this.current.getOpponent().isUnlucky()) {
-            console.log('UNLUCKY!');
-            this.nextTurn();
+            setTimeout(() => {
+                this.current.shout('UNLUCKY');
+                setTimeout(() => this.nextTurn(), 500);
+            }, 500);
             return;
         }
 
@@ -311,6 +317,7 @@ export class Scene extends Container {
         this.enemy.makeAngry();
         setTimeout(() => {
             this.info('COMMENCE COMBAT!', 'This will not end peacefully...');
+            this.enemy.shout('FILTHY RAT');
             this.game.getAudio().warn();
         }, 1000);
         setTimeout(() => this.promptShot(), 2000);
@@ -366,11 +373,13 @@ export class Scene extends Container {
                     this.enemy?.hop();
                     this.promptAnswer('Hello there mate!', 'Would you like to reroll all your cargo?', () => {
                         this.ship.rerollAll();
-                        this.thank();
-                        setTimeout(() => this.promptSail(), 500);
+                        setTimeout(() => {
+                            this.promptSail();
+                            this.thank();
+                        }, 500);
                     }, () => {
-                        this.decline();
                         this.promptSail();
+                        this.decline();
                     });
                 }, 1000);
                 break;
@@ -387,11 +396,13 @@ export class Scene extends Container {
                     this.enemy?.hop();
                     this.promptAnswer('Ahoy! I could plate one of your cargo!', 'It\'ll only be able to receive 1 damage at a time....', () => {
                         this.ship.addPlate();
-                        this.thank();
-                        setTimeout(() => this.promptSail(), 500);
+                        setTimeout(() => {
+                            this.promptSail();
+                            this.thank();
+                        }, 500);
                     }, () => {
-                        this.decline();
                         this.promptSail();
+                        this.decline();
                     });
                 }, 1000);
                 break;

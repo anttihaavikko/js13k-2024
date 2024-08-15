@@ -14,6 +14,7 @@ import { Pulse } from './engine/pulse';
 import { randomCell, randomSorter } from './engine/random';
 import { RectParticle } from './engine/rect';
 import { offset, Vector } from './engine/vector';
+import { WobblyText } from './engine/wobbly';
 import { Scene } from './scene';
 
 export class Ship extends Entity {
@@ -32,6 +33,7 @@ export class Ship extends Entity {
     private splashing: boolean;
     private effects: Container;
     private hidden: boolean;
+    private message: WobblyText;
     
     constructor(game: Game, private name: string, x: number, private scene: Scene, private player: boolean) {
         super(game, x, 550, 0, 0);
@@ -42,8 +44,14 @@ export class Ship extends Entity {
             randomCell(fabrics),
             randomCell(fabrics)
         ];
+        this.message = new WobblyText(game, '', 30, this.player ? 300: -300, -200, 0.5, 3, { shadow: 4, align: 'center', scales: true });
         this.effects = new Container(game);
         this.dude = new Dude(game, 70, -100, this.colors[4], this.colors[3], randomCell(woods));
+    }
+
+    public shout(text: string): void {
+        this.message.toggle(text);
+        setTimeout(() => this.message.toggle(''), 1000);
     }
 
     public setBall(ball: Ball) {
@@ -158,6 +166,7 @@ export class Ship extends Entity {
         this.phase = Math.sin(tick * 0.005);
         this.dude.update(tick, mouse);
         this.effects.update(tick, mouse);
+        this.message.update(tick, mouse);
         [...this.dice, ...this.tempDice].forEach(d => d.update(tick, this.offsetMouse(mouse, this.game.getCamera())));
         this.mp = this.offsetMouse(mouse, this.game.getCamera());
         if (this.recoil > 0) this.recoil = Math.max(0, this.recoil - 0.075);
@@ -324,6 +333,9 @@ export class Ship extends Entity {
         ctx.textAlign = 'center';
         ctx.strokeText(this.name, 0, 0);
         ctx.fillText(this.name, 0, 0);
+
+        // ctx.translate(0, this.phase * 5);
+        this.message.draw(ctx);
 
         ctx.restore();
 

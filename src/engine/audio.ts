@@ -122,8 +122,12 @@ export class AudioManager {
         setTimeout(() => this.playEffect([0.7,,468,.06,.11,,,3.2,-8,,-61,.07,.05,,,,,.91,.14]), 500);
     }
 
-    public warn(): void {
+    public bad(): void {
         this.playEffect([1.5,,525,.07,.12,.44,,1.2,,75,,,.05,.3,.9,,,,.26,.23,494]);
+    }
+
+    public warn(): void {
+        this.bad();
         this.playEffect([,,326,,.11,.45,1,.8,,-5,124,.07,.06,.2,33,,,.54,.14,,-1210]);
         // this.playEffect([0.6,,486,.09,.11,.24,1,1.3,,,20,.07,.03,,48,.1,,.62,.26,.08]);
     }

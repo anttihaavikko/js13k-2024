@@ -344,7 +344,7 @@ export class Scene extends Container {
     private doEvent(): void {
         const hasSpice = this.ship.hasSpice();
 
-        switch (randomInt(0, 2)) {
+        switch (randomInt(0, 3)) {
             case 0:
                 this.enemy.removeSpice();
                 setTimeout(() => {
@@ -377,6 +377,21 @@ export class Scene extends Container {
                 this.promptSail();
                 this.info('Someone must have sunk here!', 'Free loot I guess...');
                 this.addLoot(600);
+                break;
+            case 3:
+                this.enemy.addPlate();
+                setTimeout(() => {
+                    this.game.getAudio().greet();
+                    this.enemy?.hop();
+                    this.promptAnswer('Ahoy! I could plate one of your cargo!', 'It\'ll only be able to receive 1 damage at a time....', () => {
+                        this.ship.addPlate();
+                        this.thank();
+                        setTimeout(() => this.promptSail(), 500);
+                    }, () => {
+                        this.decline();
+                        this.promptSail();
+                    });
+                }, 1000);
                 break;
             default:
                 break;

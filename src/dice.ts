@@ -16,6 +16,7 @@ export class Dice extends Entity {
     private phase: number;
     private floatOffset: number;
     private spice: boolean;
+    private plated: boolean;
 
     constructor(game: Game, x: number, y: number, private damage: boolean = false) {
         super(game, x, y, 100, 100);
@@ -86,9 +87,17 @@ export class Dice extends Entity {
         return this.hovering || this.marked;
     }
 
+    public plate(): void {
+        this.plated = true;
+    }
+
+    public canPlate(): boolean {
+        return !this.plated && !this.spice;
+    }
+
     public hurt(amount: number): boolean {
         this.marked = false;
-        this.value = Math.max(0, this.value - amount);
+        this.value = Math.max(0, this.value - Math.min(amount, (this.plated ? 1 : amount)));
         return this.value <= 0;
     }
 
@@ -117,6 +126,7 @@ export class Dice extends Entity {
         ctx.translate(this.p.x + 50, this.p.y + 50 + this.getHeight() + (this.rolling ? Math.sin(this.tween.time * Math.PI) * -150 : 0));
         ctx.rotate(this.rotation);
         ctx.fillStyle = this.spice ? 'orange' : '#fff';
+        if (this.plated) ctx.fillStyle = '#a9c5db';
         if (this.hovering || this.marked) ctx.fillStyle = 'yellow';
         ctx.rect(-50, -50, 100, 100);
         ctx.fill();

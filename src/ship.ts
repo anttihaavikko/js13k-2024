@@ -226,6 +226,12 @@ export class Ship extends Entity {
         };
     }
 
+    public addPlate(): void {
+        if (this.player) this.game.getAudio().greet();
+        const options = this.dice.filter(d => d.canPlate());
+        if (options.length > 0) randomCell(options).plate(); 
+    }
+
     public sink(): void {
         this.game.getAudio().sink();
         this.dude.hopInPlace();

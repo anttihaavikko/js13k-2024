@@ -44,9 +44,11 @@ export class Dice extends Entity {
     }
 
     public roll(x: number, y: number): void {
+        this.game.getAudio().throw();
         this.tween.move({ x, y }, 0.3 );
         this.rolling = true;
         setTimeout(() => {
+            this.game.getAudio().roll();
             this.rolling = false;
             this.fixRotation();
         }, 300);

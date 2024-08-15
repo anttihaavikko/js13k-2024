@@ -19,6 +19,7 @@ export class ButtonEntity extends Entity {
     }
 
     public trigger(): void {
+        this.audio.buttonClick();
         this.onClick();
     }
 
@@ -38,7 +39,6 @@ export class ButtonEntity extends Entity {
         if (!wasHovered && this.hovered) this.hover();
         if (!mouse.pressing) {
             if (this.pressed && !mouse.dragging && this.hovered) {
-                this.audio.buttonClick();
                 this.onClick();
             }
             this.pressed = false;

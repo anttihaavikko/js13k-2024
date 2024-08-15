@@ -78,6 +78,7 @@ export class Ship extends Entity {
         target.mark();
         setTimeout(() => {
             this.game.getCamera().shake(10, 0.15, 1);
+            this.game.getAudio().explosion();
             const dir = this.player ? 1 : -1;
             const pos = offset(this.p, dir * -50, -this.p.y + 340);
             this.pulse(pos.x + 40, pos.y, 150);   
@@ -99,6 +100,7 @@ export class Ship extends Entity {
         this.ball.shoot(muzzle, 800 * dir);
         this.game.getCamera().shake(5, 0.1, 1);
         this.pulse(muzzle.x + 40, muzzle.y, 80);
+        this.game.getAudio().shoot();
     }
 
     public shoot(damage: number): void {
@@ -260,6 +262,10 @@ export class Ship extends Entity {
         this.dude.hopInPlace();
         this.tween.setEase(quadEaseInOut);
         this.tween.move(offset(this.p, 2000, 0), 6);
+        const delay = 750;
+        for (let i = 0; i < (6 - 1) * 1000 / delay; i++) {
+            setTimeout(() => this.game.getAudio().sail(0.1 + Math.random() * 0.3), i * delay);
+        }
     }
 
     public getCargoWidth(): number {

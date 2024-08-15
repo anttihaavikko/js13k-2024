@@ -336,6 +336,7 @@ export class Scene extends Container {
         if (this.loot.length > 0 && mouse.pressing) {
             const looted = this.loot.find(l => l.isHovering());
             if (looted) {
+                this.game.getAudio().buttonClick();
                 this.yesButton.visible = false;
                 this.noButton.visible = false;
                 this.loot.forEach(l => l.allowPick(false));

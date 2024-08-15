@@ -72,6 +72,8 @@ export class Scene extends Container {
         this.cam.pan = { x: -100, y: 50 };
 
         game.onKey((e) => {
+            if (e.key == 'm') this.game.getAudio().toggleMute();
+            // dev keys
             if (e.key == 's') this.ship.sail();
             if (e.key == 'x') this.ship.shoot(1);
             if (e.key == 'z') this.targetZoom = Math.random() * 0.5 + 0.25;

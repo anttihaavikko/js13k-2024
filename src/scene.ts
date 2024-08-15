@@ -359,7 +359,7 @@ export class Scene extends Container {
             ctx.save();
             ctx.translate(start + i * 100 - 500, 0);
             ctx.rotate(Math.PI * 0.25);
-            ctx.fillRect(i, -500, 25, 3000);
+            ctx.fillRect(i, -2000, 25, 5000);
             ctx.restore();
         }
         

@@ -11,7 +11,7 @@ import { Entity } from './engine/entity';
 import { Game } from './engine/game';
 import { Mouse } from './engine/mouse';
 import { Pulse } from './engine/pulse';
-import { randomCell } from './engine/random';
+import { randomCell, randomSorter } from './engine/random';
 import { RectParticle } from './engine/rect';
 import { offset, Vector } from './engine/vector';
 import { Scene } from './scene';
@@ -320,6 +320,10 @@ export class Ship extends Entity {
 
         this.effects.draw(ctx);
         this.tempDice.forEach(d => d.draw(ctx));
+    }
+
+    public addSpice(amount: number): void {
+        [...this.dice].sort(randomSorter).slice(0, amount).forEach(l => l.makeSpice());
     }
 
     public rerollAll(): void {

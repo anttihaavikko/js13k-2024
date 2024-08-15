@@ -195,7 +195,7 @@ export class Scene extends Container {
                 this.loot.push(d);
             }
 
-            [...this.loot].sort(randomSorter).slice(0, 1).forEach(l => l.makeSpice());
+            [...this.loot].sort(randomSorter).slice(0, this.getSpiceCount()).forEach(l => l.makeSpice());
 
             setTimeout(() => {
                 this.game.getAudio().win();
@@ -209,6 +209,10 @@ export class Scene extends Container {
         this.current = this.current.getOpponent();
         this.current.pose(true);
         this.promptShot();
+    }
+
+    private getSpiceCount(): number {
+        return (this.level - 1) / 3 + 1;
     }
 
     private showGreed(): void {
@@ -265,6 +269,9 @@ export class Scene extends Container {
             for (let index = 0; index < 1 + (this.level - 1) * 0.5; index++) {
                 this.enemy.addDice(new Dice(this.game, 0, 0));
             }
+
+            this.enemy.addSpice(this.getSpiceCount() - 1);
+
         }, 4000);
         setTimeout(() => this.activateLevel(), 5000);
     }

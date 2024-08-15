@@ -254,6 +254,7 @@ export class Scene extends Container {
             this.ship.pose(false);
             this.enemy.pose(true);
             this.info('Lost all your cargo!', '', 'GAME OVER');
+            this.ship.sink();
             return;
         }
         if (this.current.isAuto()) {

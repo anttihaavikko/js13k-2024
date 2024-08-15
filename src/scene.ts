@@ -83,8 +83,7 @@ export class Scene extends Container {
     }
 
     public answer(answered: boolean): void {
-        this.splash.content = '';
-        this.secondLine.content = '';
+        this.info();
         this.yesButton.visible = false;
         this.noButton.visible = false;
         if (answered) this.yesAct();
@@ -105,8 +104,7 @@ export class Scene extends Container {
     }
 
     private promptAnswer(first: string, second: string, yes: () => void, no: () => void): void {
-        this.splash.content = first;
-        this.secondLine.content = second;
+        this.info(first, second);
         this.yesButton.visible = true;
         this.noButton.visible = true;
         this.yesAct = yes;
@@ -114,7 +112,7 @@ export class Scene extends Container {
     }
 
     private buttonPress(): void {
-        this.bigText.content = '';
+        this.info();
         this.action.visible = false;
         this.act();
     }
@@ -151,8 +149,7 @@ export class Scene extends Container {
     private shoot(): void {
         const dmg = this.getDamage();
         if (this.current.isAuto()) {
-            this.splash.content = `Incoming ${dmg} damage!`;
-            this.secondLine.content = 'Select cargo taking the hit...';
+            this.info(`Incoming ${dmg} damage!`, 'Select cargo taking the hit...');
             this.ship.addDamage(dmg);
             return;
         }
@@ -162,10 +159,10 @@ export class Scene extends Container {
     private rollForCargo(): void {
         this.roll(2);
         this.action.visible = false;
-        this.splash.content = '';
+        this.info();
         
         setTimeout(() => {
-            this.splash.content = 'Would you like to roll again?';
+            this.info('Would you like to roll again?');
             this.yesButton.visible = true;
             this.noButton.visible = true;
         }, 500);
@@ -173,8 +170,7 @@ export class Scene extends Container {
 
     public nextTurn(): void {
         this.dice = [];
-        this.splash.content = '';
-        this.secondLine.content = '';
+        this.info();
         if (this.won) {
             this.promptSail();
             return;
@@ -206,13 +202,16 @@ export class Scene extends Container {
     }
 
     private showGreed(): void {
-        this.splash.content = 'Don\'t be greedy!';
-        this.secondLine.content = 'You can only take one...';
+        this.info('Don\'t be greedy!', 'You can only take one...');
+    }
+
+    public info(first: string = '', second: string = '', big: string = ''): void {
+        this.splash.content = first;
+        this.secondLine.content = second;
+        this.bigText.content = big;
     }
 
     private promptSail(): void {
-        this.splash.content = '';
-        this.secondLine.content = '';
         this.promptAction('SAIL', () => this.nextLevel());
     }
 
@@ -226,8 +225,7 @@ export class Scene extends Container {
         if (this.current.isDead()) {
             this.ship.pose(false);
             this.enemy.pose(true);
-            this.splash.content = 'Lost all your cargo!';
-            this.bigText.content = 'GAME OVER';
+            this.info('Lost all your cargo!', '', 'GAME OVER');
             return;
         }
         if (this.current.isAuto()) {
@@ -275,15 +273,27 @@ export class Scene extends Container {
         }
 
         this.enemy.makeAngry();
-        setTimeout(() => this.splash.content = 'COMMENCE COMBAT'!, 1000);
+        setTimeout(() => this.info('COMMENCE COMBAT!'), 1000);
         setTimeout(() => this.promptShot(), 2000);
+    }
+
+    private thank(): void {
+        this.info('There you go!', 'Hope that helps...');
+    }
+
+    private decline(): void {
+        this.info('Ok then!', 'Good luck on your journey...');
     }
 
     private doEvent(): void {
         this.promptAnswer('Hello there mate!', 'Would you like to reroll all your cargo?', () => {
             this.ship.rerollAll();
+            this.thank();
             setTimeout(() => this.promptSail(), 500);
-        }, () => this.promptSail());
+        }, () => {
+            this.decline();
+            this.promptSail();
+        });
     }
 
     private zoom(): void {
@@ -336,6 +346,7 @@ export class Scene extends Container {
         if (this.loot.length > 0 && mouse.pressing) {
             const looted = this.loot.find(l => l.isHovering());
             if (looted) {
+                this.info();
                 this.game.getAudio().buttonClick();
                 this.yesButton.visible = false;
                 this.noButton.visible = false;

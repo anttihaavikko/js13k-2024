@@ -20,6 +20,7 @@ export class Ship extends Entity {
     private dude: Dude;
     private phase: number;
     private dice: Dice[] = [];
+    private tempDice: Dice[] = [];
     private mp: Vector;
     private colors: string[];
     private opponent: Ship;
@@ -143,12 +144,20 @@ export class Ship extends Entity {
         return this.incoming > 0;
     }
 
+    public hasSpice(): boolean {
+        return this.dice.some(d => d.isSpice());
+    }
+
+    public allowSpicePick(): void {
+        this.dice.filter(d => d.isSpice()).forEach(d => d.allowPick(true));
+    }
+
     public update(tick: number, mouse: Mouse): void {
         super.update(tick, mouse);
         this.phase = Math.sin(tick * 0.005);
         this.dude.update(tick, mouse);
         this.effects.update(tick, mouse);
-        this.dice.forEach(d => d.update(tick, this.offsetMouse(mouse, this.game.getCamera())));
+        [...this.dice, ...this.tempDice].forEach(d => d.update(tick, this.offsetMouse(mouse, this.game.getCamera())));
         this.mp = this.offsetMouse(mouse, this.game.getCamera());
         if (this.recoil > 0) this.recoil = Math.max(0, this.recoil - 0.075);
         if (this.stagger > 0) this.stagger = Math.max(0, this.stagger - 0.05);
@@ -166,16 +175,46 @@ export class Ship extends Entity {
                 { force: { x: 0, y: 0.5 }, color: '#ffffffcc' }));
         }
 
-        if (this.incoming > 0 && mouse.pressing) {
+        if (mouse.pressing) {
             const d = this.dice.find(d => d.isHovering());
             if (d) {
-                this.opponent.shootAnim();
-                this.hurtDice(d, this.incoming);
-                this.incoming = 0;
-                this.dice.forEach(dd => dd.allowPick(false));
-                setTimeout(() => this.scene.nextTurn(), 500);
+                this.scene.pick(d);
+                if (this.incoming > 0) {
+                    this.opponent.shootAnim();
+                    this.hurtDice(d, this.incoming);
+                    this.incoming = 0;
+                    this.disablePicking();
+                    setTimeout(() => this.scene.nextTurn(), 500);
+                }
             }
         }
+    }
+
+    public hasDice(): boolean {
+        return this.dice.length > 0;
+    }
+
+    public giveDice(amount: number): void {
+        this.dice.slice(0, amount).forEach((d, i) => {
+            const dp = this.getDicePos(i);
+            d.p = offset(this.p, -dp.x - 50, dp.y);
+            this.remove(d);
+            this.tempDice.push(d);
+            d.move(offset(this.opponent.getDicePos(this.opponent.dice.length + i), this.opponent.p.x + 150, this.opponent.p.y), () => {
+                this.opponent.addDice(d);
+                this.tempDice = [];
+            });
+        });
+        this.game.getAudio().greet();
+        this.repositionDice();
+    }
+
+    public remove(d: Dice): void {
+        this.dice = this.dice.filter(dd => dd != d);
+    }
+
+    public disablePicking(): void {
+        this.dice.forEach(dd => dd.allowPick(false));
     }
 
     public offsetMouse(mouse: Mouse, cam: Camera, x: number = 0, y: number = 0): Mouse {
@@ -280,6 +319,7 @@ export class Ship extends Entity {
         ctx.restore();
 
         this.effects.draw(ctx);
+        this.tempDice.forEach(d => d.draw(ctx));
     }
 
     public rerollAll(): void {

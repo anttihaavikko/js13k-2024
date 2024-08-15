@@ -8,7 +8,7 @@ import { ButtonEntity } from './engine/button';
 import { Camera } from './engine/camera';
 import { offset } from './engine/vector';
 import { Ball } from './ball';
-import { randomCell } from './engine/random';
+import { randomCell, randomInt, randomSorter } from './engine/random';
 
 export class Scene extends Container {
     private ship: Ship;
@@ -33,7 +33,8 @@ export class Scene extends Container {
     private ball: Ball;
     private bigText: WobblyText;
     private loot: Dice[] = [];
-    private won: boolean = false;
+    private won: boolean;
+    private trading: boolean;
 
     constructor(game: Game) {
         super(game, 0, 0, []);
@@ -74,6 +75,7 @@ export class Scene extends Container {
         game.onKey((e) => {
             if (e.key == 'm') this.game.getAudio().toggleMute();
             // dev keys
+            if (e.key == 'e') this.doEvent();
             if (e.key == 's') this.ship.sail();
             if (e.key == 'k') this.ship.sink();
             if (e.key == 'x') this.ship.shoot(1);
@@ -184,12 +186,16 @@ export class Scene extends Container {
 
             const m = this.getMid() + (80 + this.cam.shift + 200) / this.cam.zoom;
             const amt = Math.min(this.level + 1, 6);
+            this.loot = [];
             for (let i = 0; i < amt; i++) {
                 const d = new Dice(this.game, m, 300);
                 d.roll(m + i * 120 - 120 * ((amt - 1) * 0.5), 420);
                 d.float(true);
+                d.allowPick(true);
                 this.loot.push(d);
             }
+
+            [...this.loot].sort(randomSorter).slice(0, 1).forEach(l => l.makeSpice());
 
             setTimeout(() => {
                 this.game.getAudio().win();
@@ -241,7 +247,9 @@ export class Scene extends Container {
     }
 
     private nextLevel(): void {
+        this.ship.disablePicking();
         this.won = false;
+        this.trading = false;
         this.current = this.ship;
         this.level++;
         this.targetZoom = 0.75;
@@ -294,17 +302,51 @@ export class Scene extends Container {
         this.enemy.sail(-1);
     }
 
+    public pick(d: Dice): void {
+        if (this.trading) {
+            this.game.getAudio().buttonClick();
+            d.allowPick(false);
+            this.enemy.giveDice(d.getValue());
+            this.ship.remove(d);
+            this.ship.repositionDice();
+            setTimeout(() => {
+                if (!this.ship.hasSpice() || !this.enemy.hasDice()) {
+                    this.trading = false;
+                    this.ship.disablePicking();
+                    this.thank();
+                }
+            }, 500);
+        }
+    }
+
     private doEvent(): void {
         this.game.getAudio().greet();
-        this.enemy.hop();
-        this.promptAnswer('Hello there mate!', 'Would you like to reroll all your cargo?', () => {
-            this.ship.rerollAll();
-            this.thank();
-            setTimeout(() => this.promptSail(), 500);
-        }, () => {
-            this.decline();
-            this.promptSail();
-        });
+        this.enemy?.hop();
+
+        const hasSpice = this.ship.hasSpice();
+
+        switch (randomInt(0, 1)) {
+            case 0:
+                this.promptSail();
+                this.info('Ahoy mate! Interested in trade?', hasSpice ? 'I\'ll give you fresh cargo for your spice...' : 'Looks like you don\'t have any spice though...');
+                if (hasSpice) {
+                    this.ship.allowSpicePick();
+                    this.trading = true;
+                }
+                break;
+            case 1:
+                this.promptAnswer('Hello there mate!', 'Would you like to reroll all your cargo?', () => {
+                    this.ship.rerollAll();
+                    this.thank();
+                    setTimeout(() => this.promptSail(), 500);
+                }, () => {
+                    this.decline();
+                    this.promptSail();
+                });
+                break;
+            default:
+                break;
+        }
     }
 
     private zoom(): void {

@@ -15,12 +15,21 @@ export class Dice extends Entity {
     private floating: boolean;
     private phase: number;
     private floatOffset: number;
+    private spice: boolean;
 
     constructor(game: Game, x: number, y: number, private damage: boolean = false) {
         super(game, x, y, 100, 100);
         this.randomize();
         this.fixRotation();
         this.floatOffset = Math.random();
+    }
+
+    public makeSpice(): void {
+        this.spice = true;
+    }
+
+    public isSpice(): boolean {
+        return this.spice;
     }
 
     public allowPick(state: boolean = true): void {
@@ -71,7 +80,6 @@ export class Dice extends Entity {
 
     public float(state: boolean): void {
         this.floating = state;
-        this.allowPick(state);
     }
 
     public isHovering(): boolean {
@@ -108,7 +116,8 @@ export class Dice extends Entity {
         ctx.beginPath();
         ctx.translate(this.p.x + 50, this.p.y + 50 + this.getHeight() + (this.rolling ? Math.sin(this.tween.time * Math.PI) * -150 : 0));
         ctx.rotate(this.rotation);
-        ctx.fillStyle = this.hovering || this.marked ? 'yellow' : '#fff';
+        ctx.fillStyle = this.spice ? 'orange' : '#fff';
+        if (this.hovering || this.marked) ctx.fillStyle = 'yellow';
         ctx.rect(-50, -50, 100, 100);
         ctx.fill();
         ctx.stroke();

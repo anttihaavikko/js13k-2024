@@ -31,6 +31,7 @@ export class AudioManager {
                 const wave = player.createWave();
                 this.audio.src = URL.createObjectURL(new Blob([wave], { type: 'audio/wav' }));
                 this.audio.loop = true;
+                this.audio.volume = 0.7;
                 clearInterval(timer);
             }
         }, 5);

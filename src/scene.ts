@@ -268,7 +268,7 @@ export class Scene extends Container {
 
         if (this.level % 2 == 0) {
             this.enemy.makeFriendly();
-            this.doEvent();
+            setTimeout(() => this.doEvent(), 1000);
             return;
         }
 

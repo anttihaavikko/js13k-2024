@@ -14,7 +14,7 @@ export class Ball extends Entity {
         this.visible = true;
         this.tween.setEase(quadEaseIn);
         this.p = from;
-        this.tween.move(offset(from, dir, 0), 0.4);
+        this.tween.move(offset(from, dir, -100), 0.4);
         setTimeout(() => this.visible = false, 400);
     }
 }

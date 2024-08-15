@@ -36,7 +36,7 @@ export class Ship extends Entity {
             randomCell(fabrics),
             randomCell(fabrics)
         ];
-        this.dude = new Dude(game, 50, -100, this.colors[4], this.colors[3], randomCell(woods));
+        this.dude = new Dude(game, 70, -100, this.colors[4], this.colors[3], randomCell(woods));
     }
 
     public setBall(ball: Ball) {
@@ -81,7 +81,7 @@ export class Ship extends Entity {
             this.game.getAudio().explosion();
             const dir = this.player ? 1 : -1;
             const pos = offset(this.p, dir * -50, -this.p.y + 340);
-            this.pulse(pos.x + 40, pos.y, 150);   
+            this.pulse(pos.x + 40, pos.y - 100, 200);
             if (target.hurt(amount)) {
                 this.dice = this.dice.filter(d => d != target);
                 this.repositionDice();
@@ -96,10 +96,10 @@ export class Ship extends Entity {
         this.recoil = 1;
         this.stagger = 1;
         const dir = this.player ? 1 : -1;
-        const muzzle = offset(this.p, dir * 300, -this.p.y + 340);
+        const muzzle = offset(this.p, dir * 300, -this.p.y + 320);
         this.ball.shoot(muzzle, 800 * dir);
         this.game.getCamera().shake(5, 0.1, 1);
-        this.pulse(muzzle.x + 40, muzzle.y, 80);
+        this.pulse(muzzle.x + 40, muzzle.y - 20, 80);
         this.game.getAudio().shoot();
     }
 
@@ -219,9 +219,11 @@ export class Ship extends Entity {
         this.dice.forEach(d => d.drawRim(ctx));
         // ctx.translate(this.p.x - off, this.p.y);
 
-        ctx.translate(120, 0);
+        ctx.translate(160, 0);
+        ctx.rotate(-0.1 - this.recoil * 0.1);
         if (!this.friendly) this.drawCannon(ctx);
-        ctx.translate(-120, 0);
+        ctx.rotate(0.1 +  + this.recoil * 0.1);
+        ctx.translate(-160, 0);
 
         ctx.save();
         ctx.scale(1.4, 1.4);
@@ -288,6 +290,10 @@ export class Ship extends Entity {
         ctx.moveTo(0, -200 - height);
         ctx.bezierCurveTo(-300, -200 - height * 2, -300, -200 + height * 2, 0, -200 + height);
         ctx.closePath();
+        ctx.fill();
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.rect(-20, -230, 20, 60);
         ctx.fill();
         ctx.stroke();
         ctx.restore();

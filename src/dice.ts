@@ -24,8 +24,8 @@ export class Dice extends Entity {
         this.floatOffset = Math.random();
     }
 
-    public makeSpice(): void {
-        this.spice = true;
+    public makeSpice(state: boolean = true): void {
+        this.spice = state;
     }
 
     public isSpice(): boolean {
@@ -83,7 +83,7 @@ export class Dice extends Entity {
     }
 
     public isHovering(): boolean {
-        return this.hovering;
+        return this.hovering || this.marked;
     }
 
     public hurt(amount: number): boolean {
@@ -94,13 +94,9 @@ export class Dice extends Entity {
 
     public drawRim(ctx: CanvasRenderingContext2D): void {
         if (!this.hovering && !this.marked) return;
-        ctx.save();
-        ctx.translate(this.p.x + 50, this.p.y + 50 + this.getHeight());
-        ctx.rotate(this.rotation);
         ctx.strokeStyle = 'orange';
         const borderWidth = 5;
         ctx.strokeRect(-50 - borderWidth, -50 - borderWidth, 100 + borderWidth * 2, 100 + borderWidth * 2);
-        ctx.restore();
     }
 
     public reroll(): void {
@@ -109,6 +105,10 @@ export class Dice extends Entity {
 
     private getHeight(): number {
         return this.floating ? this.phase * 7 : 0;
+    }
+
+    public getOrder(): number {
+        return (this.p.x - this.p.y) * (this.hovering ? 1 : 10);
     }
 
     public draw(ctx: CanvasRenderingContext2D): void {
@@ -135,6 +135,7 @@ export class Dice extends Entity {
             this.drawPip(ctx, { x: 0, y: -25 });
             this.drawPip(ctx, { x: 0, y: 25 });
         }
+        this.drawRim(ctx);
         ctx.fillStyle = '#fff';
         ctx.restore();
     }

@@ -123,7 +123,7 @@ export class Scene extends Container {
     private rollForDamage(): void {
         this.useDamageDice = true;
         this.roll(this.current.getDiceCount());
-        setTimeout(() => this.promptForReroll('Would you like to roll again?', '', () => this.shoot()), 500);
+        setTimeout(() => this.promptForReroll('Would you like to roll again?', `The total is ${this.getDamage()}...`, () => this.shoot()), 500);
     }
 
     private promptForReroll(first: string, second: string, after: () => void): void {
@@ -151,6 +151,10 @@ export class Scene extends Container {
 
     private shoot(): void {
         const dmg = this.getDamage();
+        if (dmg == 13 || dmg == 0) {
+            this.nextTurn();
+            return;
+        } 
         if (this.current.isAuto()) {
             this.info(`Incoming ${dmg} damage!`, 'Select cargo taking the hit...');
             this.ship.addDamage(dmg);
@@ -184,18 +188,7 @@ export class Scene extends Container {
             this.enemy.sink();
             this.current = this.ship;
 
-            const m = this.getMid() + (80 + this.cam.shift + 200) / this.cam.zoom;
-            const amt = Math.min(this.level + 1, 6);
-            this.loot = [];
-            for (let i = 0; i < amt; i++) {
-                const d = new Dice(this.game, m, 300);
-                d.roll(m + i * 120 - 120 * ((amt - 1) * 0.5), 420);
-                d.float(true);
-                d.allowPick(true);
-                this.loot.push(d);
-            }
-
-            [...this.loot].sort(randomSorter).slice(0, this.getSpiceCount()).forEach(l => l.makeSpice());
+            this.addLoot();
 
             setTimeout(() => {
                 this.game.getAudio().win();
@@ -207,8 +200,29 @@ export class Scene extends Container {
             return;
         }
         this.current = this.current.getOpponent();
+
+        if (this.current.isUnlucky() && !this.current.getOpponent().isUnlucky()) {
+            console.log('UNLUCKY!');
+            this.nextTurn();
+            return;
+        }
+
         this.current.pose(true);
         this.promptShot();
+    }
+
+    private addLoot(offset: number = 0): void {
+        const m = this.getMid() + (80 + this.cam.shift + 200) / this.cam.zoom + offset;
+        const amt = Math.min(this.level + 1, 6);
+        this.loot = [];
+        for (let i = 0; i < amt; i++) {
+            const d = new Dice(this.game, m, 300);
+            d.roll(m + i * 120 - 120 * ((amt - 1) * 0.5), 420);
+            d.float(true);
+            d.allowPick(true);
+            this.loot.push(d);
+        }
+        [...this.loot].sort(randomSorter).slice(0, this.getSpiceCount()).forEach(l => l.makeSpice());
     }
 
     private getSpiceCount(): number {
@@ -287,7 +301,7 @@ export class Scene extends Container {
 
         if (this.level % 2 == 0) {
             this.enemy.makeFriendly();
-            setTimeout(() => this.doEvent(), 1000);
+            this.doEvent();
             return;
         }
 
@@ -327,29 +341,41 @@ export class Scene extends Container {
     }
 
     private doEvent(): void {
-        this.game.getAudio().greet();
-        this.enemy?.hop();
-
         const hasSpice = this.ship.hasSpice();
 
-        switch (randomInt(0, 1)) {
+        switch (randomInt(0, 2)) {
             case 0:
-                this.promptSail();
-                this.info('Ahoy mate! Interested in trade?', hasSpice ? 'I\'ll give you fresh cargo for your spice...' : 'Looks like you don\'t have any spice though...');
-                if (hasSpice) {
-                    this.ship.allowSpicePick();
-                    this.trading = true;
-                }
+                this.enemy.removeSpice();
+                setTimeout(() => {
+                    this.game.getAudio().greet();
+                    this.enemy?.hop();
+                    this.promptSail();
+                    this.info('Ahoy mate! Interested in trade?', hasSpice ? 'I\'ll give you fresh cargo for your spice...' : 'Looks like you don\'t have any spice though...');
+                    if (hasSpice) {
+                        this.ship.allowSpicePick();
+                        this.trading = true;
+                    }
+                }, 1000);
                 break;
             case 1:
-                this.promptAnswer('Hello there mate!', 'Would you like to reroll all your cargo?', () => {
-                    this.ship.rerollAll();
-                    this.thank();
-                    setTimeout(() => this.promptSail(), 500);
-                }, () => {
-                    this.decline();
-                    this.promptSail();
-                });
+                setTimeout(() => {
+                    this.game.getAudio().greet();
+                    this.enemy?.hop();
+                    this.promptAnswer('Hello there mate!', 'Would you like to reroll all your cargo?', () => {
+                        this.ship.rerollAll();
+                        this.thank();
+                        setTimeout(() => this.promptSail(), 500);
+                    }, () => {
+                        this.decline();
+                        this.promptSail();
+                    });
+                }, 1000);
+                break;
+            case 2:
+                this.enemy.hide();
+                this.promptSail();
+                this.info('Someone must have sunk here!', 'Free loot I guess...');
+                this.addLoot(600);
                 break;
             default:
                 break;

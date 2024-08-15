@@ -31,6 +31,7 @@ export class Ship extends Entity {
     private friendly: boolean;
     private splashing: boolean;
     private effects: Container;
+    private hidden: boolean;
     
     constructor(game: Game, private name: string, x: number, private scene: Scene, private player: boolean) {
         super(game, x, 550, 0, 0);
@@ -175,7 +176,7 @@ export class Ship extends Entity {
                 { force: { x: 0, y: 0.5 }, color: '#ffffffcc' }));
         }
 
-        if (mouse.pressing) {
+        if (mouse.pressing && this.player) {
             const d = this.dice.find(d => d.isHovering());
             if (d) {
                 this.scene.pick(d);
@@ -241,6 +242,8 @@ export class Ship extends Entity {
     }
 
     public draw(ctx: CanvasRenderingContext2D): void {
+        if (this.hidden) return;
+        
         ctx.save();
         const mirror = this.player ? 1 : -1;
         ctx.translate(this.p.x - this.stagger * 20 * mirror, this.p.y);
@@ -273,8 +276,8 @@ export class Ship extends Entity {
         // const cam = this.game.getCamera();
         // const off = cam.pan.x / cam.zoom + (this.player ? 800 : -700);
         // ctx.translate(-this.p.x + off, -this.p.y);
-        this.dice.forEach(d => d.draw(ctx));
-        this.dice.forEach(d => d.drawRim(ctx));
+        this.dice.filter(d => !d.isHovering()).forEach(d => d.draw(ctx));
+        this.dice.filter(d => d.isHovering()).forEach(d => d.draw(ctx));
         // ctx.translate(this.p.x - off, this.p.y);
 
         ctx.translate(160, 0);
@@ -322,8 +325,20 @@ export class Ship extends Entity {
         this.tempDice.forEach(d => d.draw(ctx));
     }
 
+    public removeSpice(): void {
+        this.dice.forEach(d => d.makeSpice(false));
+    }
+
     public addSpice(amount: number): void {
         [...this.dice].sort(randomSorter).slice(0, amount).forEach(l => l.makeSpice());
+    }
+
+    public isUnlucky(): boolean {
+        return this.dice.reduce((sum, d) => sum + d.getValue(), 0) == 13;
+    }
+
+    public hide(): void {
+        this.hidden = true;
     }
 
     public rerollAll(): void {

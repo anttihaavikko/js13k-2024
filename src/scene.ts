@@ -277,19 +277,26 @@ export class Scene extends Container {
         }
 
         this.enemy.makeAngry();
-        setTimeout(() => this.info('COMMENCE COMBAT!'), 1000);
+        setTimeout(() => {
+            this.info('COMMENCE COMBAT!');
+            this.game.getAudio().warn();
+        }, 1000);
         setTimeout(() => this.promptShot(), 2000);
     }
 
     private thank(): void {
         this.info('There you go!', 'Hope that helps...');
+        setTimeout(() => this.enemy.sail(-1), 700);
     }
 
     private decline(): void {
         this.info('Ok then!', 'Good luck on your journey...');
+        this.enemy.sail(-1);
     }
 
     private doEvent(): void {
+        this.game.getAudio().greet();
+        this.enemy.hop();
         this.promptAnswer('Hello there mate!', 'Would you like to reroll all your cargo?', () => {
             this.ship.rerollAll();
             this.thank();

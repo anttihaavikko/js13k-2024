@@ -178,11 +178,15 @@ export class Ship extends Entity {
         this.dude.pose(state);
     }
 
+    public hop(): void {
+        this.dude.hopInPlace();
+    }
+
     public draw(ctx: CanvasRenderingContext2D): void {
         ctx.save();
         const mirror = this.player ? 1 : -1;
         ctx.translate(this.p.x - this.stagger * 20 * mirror, this.p.y);
-        // ctx.rotate(this.phase * 0.02 - this.stagger * 0.05 * mirror);
+        ctx.rotate(this.phase * 0.02 - this.stagger * 0.05 * mirror);
 
         if (!this.player) ctx.scale(-1, 1);
 
@@ -259,10 +263,10 @@ export class Ship extends Entity {
         this.dice.forEach(d => d.reroll());
     }
 
-    public sail(): void {
+    public sail(dir: number = 1): void {
         this.dude.hopInPlace();
         this.tween.setEase(quadEaseInOut);
-        this.tween.move(offset(this.p, 2000, 0), 6);
+        this.tween.move(offset(this.p, 2000 * dir, 0), 6);
         const delay = 750;
         for (let i = 0; i < (6 - 1) * 1000 / delay; i++) {
             setTimeout(() => this.game.getAudio().sail(0.1 + Math.random() * 0.3), i * delay);

@@ -51,8 +51,9 @@ document.onkeydown = (e: KeyboardEvent) => {
 };
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-document.ontouchstart = (e: TouchEvent) => {
-};
+// document.ontouchend = (e: TouchEvent) => {
+//     mouse.x = -999;
+// };
 
 document.onmousedown = () => {
     audio.play();

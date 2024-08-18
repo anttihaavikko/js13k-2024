@@ -359,15 +359,8 @@ export class Scene extends Container {
         }
 
         if (this.level == END_LEVEL - 1) this.enemy.addCrown();
-
-        if (this.level >= END_LEVEL - 1) {
-            for (let i = 0; i < 3; i++) {
-                const crew = this.enemy.createCrew(-70, -100);
-                crew.makeAngry(true);
-                crew.setRole(this.enemy.getAvailableRole());
-                this.enemy.addCrew(crew.clone());
-            }
-        }
+        if (this.level >= END_LEVEL - 1) this.addEnemyCrew(2);
+        if (this.level > 13) this.addEnemyCrew(1);
 
         this.enemy.makeAngry();
         setTimeout(() => {
@@ -376,6 +369,15 @@ export class Scene extends Container {
             this.game.getAudio().warn();
         }, 1000);
         setTimeout(() => this.promptShot(), 2000);
+    }
+
+    private addEnemyCrew(amount: number): void {
+        for (let i = 0; i < amount; i++) {
+            const crew = this.enemy.createCrew(-70, -100);
+            crew.makeAngry(true);
+            crew.setRole(this.enemy.getAvailableRole());
+            this.enemy.addCrew(crew.clone());
+        }
     }
 
     private thank(): void {

@@ -36,6 +36,7 @@ export class Ship extends Flashable {
     private message: WobblyText;
     private crew: Dude[] = [];
     private availableRoles: CrewRole[] = ['quartermaster', 'cannoneer', 'navigator'];
+    private hits: number = 0;
     
     constructor(game: Game, private name: string, x: number, private scene: Scene, private player: boolean) {
         super(game, x, 550, 0, 0);
@@ -172,11 +173,15 @@ export class Ship extends Flashable {
     public shoot(damage: number, first: boolean = true): void {
         this.shootAnim();
         this.opponent?.hurt(damage);
-        if (this.has('cannoneer') && first && (this.opponent.dice.length > 1 || this.opponent.getSum() > damage)) {
+        if (this.has('cannoneer') && first && this.opponent.canTake(damage)) {
             setTimeout(() => this.shoot(damage, false), 750);
             return;
         }
         setTimeout(() => this.scene.nextTurn(), 500);
+    }
+
+    private canTake(dmg: number): boolean {
+        return this.dice.length > 1 || this.getSum() > dmg;
     }
 
     public pulse(x: number, y: number, size: number): void {
@@ -247,8 +252,18 @@ export class Ship extends Flashable {
             if (d) {
                 this.scene.pick(d);
                 if (this.incoming > 0) {
+                    this.hits++;
                     this.opponent.shootAnim();
                     this.hurtDice(d, this.incoming);
+                    if (this.opponent.has('cannoneer') && this.hits < 2 && this.canTake(this.incoming)) {
+                        this.scene.info();
+                        setTimeout(() => {
+                            this.game.getAudio().incoming();
+                            this.scene.info(`Another ${this.incoming} damage!`, 'Choose cargo taking the hit...');
+                        }, 750);
+                        return;
+                    }
+                    this.hits = 0;
                     this.incoming = 0;
                     this.disablePicking();
                     setTimeout(() => this.scene.nextTurn(), 500);

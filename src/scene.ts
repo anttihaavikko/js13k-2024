@@ -185,6 +185,7 @@ export class Scene extends Container {
         if (dmg == 13) {
             this.current.talk('UNLUCKY 13!');
             this.game.getAudio().bad();
+            this.current.pose(false);
         }
         if (dmg == 13 || dmg == 0) {
             this.nextTurn();

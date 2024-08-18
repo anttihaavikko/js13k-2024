@@ -87,6 +87,11 @@ export class Scene extends Container {
             // if (e.key == 'z') this.targetZoom = Math.random() * 0.5 + 0.25;
             if (e.key == 'p') this.ship.pose(true);
             if (e.key == 'h') this.game.getCamera().shake(10, 0.15, 1);
+            if (e.key == 'c') {
+                const crew = this.ship.createCrew(-70, -100);
+                crew.setRole(this.ship.getAvailableRole());
+                this.ship.addCrew(crew.clone());
+            }
         });
     }
 
@@ -155,7 +160,10 @@ export class Scene extends Container {
     }
 
     private shoot(): void {
-        const dmg = this.getDamage();
+        this.shootFor(this.getDamage());
+    }
+
+    public shootFor(dmg: number): void {
         if (dmg == 13) {
             this.current.talk('UNLUCKY 13!');
             this.game.getAudio().bad();
@@ -362,6 +370,28 @@ export class Scene extends Container {
 
     private doEvent(): void {
         const hasSpice = this.ship.hasSpice();
+
+        this.enemy.clearCargo();
+        const crew = this.enemy.createCrew(-70, -100);
+        crew.setRole(this.ship.getAvailableRole());
+        this.enemy.addCrew(crew);
+        setTimeout(() => {
+            this.game.getAudio().greet();
+            this.enemy?.hop();
+            this.promptAnswer(`Oi! Want to hire this ${crew.getRole()}?`, crew.getRoleDescription(), () => {
+                this.enemy.removeCrew();
+                this.ship.addCrew(crew.clone());
+                setTimeout(() => {
+                    this.promptSail();
+                    this.thank();
+                }, 500);
+            }, () => {
+                this.promptSail();
+                this.decline();
+            });
+        }, 1000);
+
+        return; // temp
 
         switch (randomInt(0, 3)) {
             case 0:

@@ -10,6 +10,8 @@ import { Mouse } from './engine/mouse';
 import { randomCell } from './engine/random';
 import { Vector } from './engine/vector';
 
+export type CrewRole = 'quartermaster' | 'cannoneer' | 'navigator'
+
 export class Dude extends Entity {
     private phase = 0;
     private height = 0;
@@ -21,6 +23,9 @@ export class Dude extends Entity {
     private posing: boolean;
     private face: Face;
     private skin: string;
+    private animOffset: number;
+    private animSpeed: number;
+    private crewRole: CrewRole;
 
     constructor(game: Game, x: number, y: number, private mainColor: string, private secondaryColor: string, private cane: string) {
         super(game, x, y, 0, 0);
@@ -33,7 +38,58 @@ export class Dude extends Entity {
             mouthThickness: 12
         });
         this.skin = randomCell(skins);
+        this.animOffset = Math.random() * 9999;
+        this.animSpeed = 0.9 + Math.random() * 0.2;
     }
+
+    public getRole(): CrewRole {
+        return this.crewRole;
+    }
+
+    public getRoleDescription(): string {
+        switch (this.crewRole) {
+            case 'cannoneer':
+                return 'Something something about cannons';
+            case 'quartermaster':
+                return 'He will repair your worst cargo when you roll a blank...';
+            case 'navigator':
+                return 'Lorem ipsum for navigator';
+            default:
+                return '';
+        }
+    }
+
+    public is(role: CrewRole): boolean {
+        return this.crewRole === role;
+    }
+
+    public setRolePosition(): void {
+        switch (this.crewRole) {
+            case 'cannoneer':
+                this.p = { x: 170, y: -170 };
+                break;
+            case 'quartermaster':
+                this.p = { x: -80, y: -100 };
+                break;
+            case 'navigator':
+                this.p = { x: 0, y: -400 };
+                break;
+            default:
+                break;
+        }
+    }
+
+    public clone(): Dude {
+        const copy = new Dude(this.game, 0, 0, this.mainColor, this.secondaryColor, null);
+        copy.crewRole = this.crewRole;
+        copy.skin = this.skin;
+        copy.setRolePosition();
+        return copy;
+    }
+
+    public setRole(role: CrewRole): void {
+        this.crewRole = role;
+    } 
 
     public getCamera(): Camera {
         return this.game.getCamera();
@@ -45,7 +101,7 @@ export class Dude extends Entity {
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     public update(tick: number, mouse: Mouse): void {
-        this.phase = Math.abs(Math.sin(tick * 0.005));
+        this.phase = Math.abs(Math.sin(tick * 0.005 * this.animSpeed + this.animOffset));
         this.face.update(tick, mouse);
         if (this.height > 0) this.height = clamp01(this.height - 0.0025 * this.delta);
         this.air = Math.sin((1 - this.height) * Math.PI);
@@ -92,6 +148,10 @@ export class Dude extends Entity {
     public draw(ctx: CanvasRenderingContext2D): void {
         ctx.lineCap = 'round';
         ctx.save();
+        ctx.translate(this.p.x, this.p.y);
+        if (!this.cane) ctx.scale(0.9, 0.9);
+        ctx.translate(-this.p.x, -this.p.y);
+
         ctx.translate(0,  -this.air * 50 + this.ducking * 7 - (this.posing ? 10 : 0));
 
         this.drawLeg(ctx, 1, this.posing ? -45 : 0);
@@ -191,13 +251,13 @@ export class Dude extends Entity {
         const rise = this.air * -10;
         ctx.moveTo(0, diff - 15);
         const normal = () => this.curveTo(ctx, dir * 20 - this.wave * 5 + rise, -20 + diff * 1.2, dir * 15 + this.wave * 5, 0 + diff + rise);
-        if (dir < 0) {
+        if (dir < 0 || !this.cane) {
             normal();
         } else {
             this.curveTo(ctx, dir * 20 - this.wave * 10 + this.phase * 3, 5 + diff * 1.2 + yoff, 20 * dir, -25 + diff + yoff);
         }
         ctx.stroke();
-        if (dir > 0) {
+        if (dir > 0 && this.cane) {
             ctx.translate(20 * dir, -25 + diff + yoff);
             if (this.posing) ctx.rotate(-this.phase * 0.2);
             ctx.beginPath();

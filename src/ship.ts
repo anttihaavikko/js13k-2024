@@ -1,7 +1,7 @@
 import { Ball } from './ball';
 import { fabrics, woods } from './colors';
 import { Dice } from './dice';
-import { Dude } from './dude';
+import { CrewRole, Dude } from './dude';
 import { Camera } from './engine/camera';
 import { font } from './engine/constants';
 import { Container } from './engine/container';
@@ -34,6 +34,8 @@ export class Ship extends Flashable {
     private effects: Container;
     private hidden: boolean;
     private message: WobblyText;
+    private crew: Dude[] = [];
+    private availableRoles: CrewRole[] = ['quartermaster', 'cannoneer', 'navigator'];
     
     constructor(game: Game, private name: string, x: number, private scene: Scene, private player: boolean) {
         super(game, x, 550, 0, 0);
@@ -46,7 +48,29 @@ export class Ship extends Flashable {
         ];
         this.message = new WobblyText(game, '', 30, this.player ? 300: -300, -200, 0.5, 3, { shadow: 4, align: 'center', scales: true });
         this.effects = new Container(game);
-        this.dude = new Dude(game, 70, -100, this.colors[4], this.colors[3], randomCell(woods));
+        this.dude = this.createCrew(70, -100, true);
+        // this.addCrew(this.dude, 170, -170);
+    }
+
+    public removeCrew(): void {
+        this.crew = [];
+    }
+
+    public createCrew(x: number, y: number, isCap: boolean = false): Dude {
+        return new Dude(this.game, x, y, this.colors[4], this.colors[3], isCap ? randomCell(woods) : null);
+    }
+
+    public has(role: CrewRole): boolean {
+        return this.crew.some(c => c.is(role));
+    }
+
+    public getAvailableRole(): CrewRole {
+        return randomCell(this.availableRoles);
+    }
+
+    public addCrew(dude: Dude): void {
+        this.availableRoles = this.availableRoles.filter(role => role !== dude.getRole());
+        this.crew.push(dude);
     }
 
     public talk(text: string): void {
@@ -107,8 +131,12 @@ export class Ship extends Flashable {
         }, 500);
     }
 
+    private wholeCrew(): Dude[] {
+        return [this.dude, ...this.crew];
+    }
+
     public shootAnim(): void {
-        this.dude.hopInPlace();
+        this.wholeCrew().forEach(d => d.hopInPlace());
         setTimeout(() => this.dude.pose(false), 300);
         this.recoil = 1;
         this.stagger = 1;
@@ -166,7 +194,7 @@ export class Ship extends Flashable {
     public update(tick: number, mouse: Mouse): void {
         super.update(tick, mouse);
         this.phase = Math.sin(tick * 0.005);
-        this.dude.update(tick, mouse);
+        this.wholeCrew().forEach(c => c.update(tick, mouse));
         this.effects.update(tick, mouse);
         this.message.update(tick, mouse);
         [...this.dice, ...this.tempDice].forEach(d => d.update(tick, this.offsetMouse(mouse, this.game.getCamera())));
@@ -245,17 +273,18 @@ export class Ship extends Flashable {
 
     public sink(): void {
         this.game.getAudio().sink();
-        this.dude.hopInPlace();
+        this.wholeCrew().forEach(d => d.hopInPlace());
         this.tween.setEase(quadEaseIn);
         this.tween.move(offset(this.p, 0, 850), 1.5);
     }
 
     public pose(state: boolean): void {
+        this.crew.forEach(d => d.hopInPlace());
         this.dude.pose(state);
     }
 
     public hop(): void {
-        this.dude.hopInPlace();
+        this.wholeCrew().forEach(d => d.hopInPlace());
     }
 
     public getRollPos(): number {
@@ -315,7 +344,7 @@ export class Ship extends Flashable {
 
         ctx.save();
         ctx.scale(1.4, 1.4);
-        this.dude.draw(ctx);
+        this.wholeCrew().forEach(c => c.draw(ctx));
         ctx.restore();
 
         // hull
@@ -332,9 +361,21 @@ export class Ship extends Flashable {
         ctx.moveTo(-190 - extension + 5, -72);
         ctx.lineTo(215, -77);
         ctx.moveTo(-180 - extension + 5, -30);
-        ctx.lineTo(190, -30);
+        ctx.lineTo(195, -30);
         ctx.fill();
         ctx.stroke();
+
+        // nest
+        if (this.has('navigator')) {
+            ctx.beginPath();
+            ctx.moveTo(-60, -520);
+            ctx.lineTo(-60 - 20, -520 - 50);
+            ctx.lineTo(60 + 20, -520 - 50);
+            ctx.lineTo(60, -520);
+            ctx.closePath();
+            ctx.fill();
+            ctx.stroke();
+        }
 
         ctx.translate(-120, -100);
         ctx.scale(this.player ? 1 : -1, 1);
@@ -385,6 +426,10 @@ export class Ship extends Flashable {
         for (let i = 0; i < (6 - 1) * 1000 / delay; i++) {
             setTimeout(() => this.game.getAudio().sail(0.1 + Math.random() * 0.3), i * delay);
         }
+    }
+
+    public clearCargo(): void {
+        this.dice = [];
     }
 
     public getCargoWidth(): number {

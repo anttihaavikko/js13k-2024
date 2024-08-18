@@ -55,7 +55,7 @@ export class Dude extends Entity {
             case 'quartermaster':
                 return 'He will repair your worst cargo when you roll a blank...';
             case 'navigator':
-                return 'Lorem ipsum for navigator';
+                return 'He will allow you to reroll an extra time...';
             default:
                 return '';
         }

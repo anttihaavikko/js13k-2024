@@ -38,6 +38,7 @@ export class Scene extends Container {
     private trading: boolean;
     private mp: Mouse;
     private prompted: NodeJS.Timeout;
+    private extraRerollUsed: boolean;
 
     constructor(game: Game) {
         super(game, 0, 0, []);
@@ -159,6 +160,11 @@ export class Scene extends Container {
         this.promptAnswer(first, second, () => {
             this.reroll();
             setTimeout(() => {
+                if (this.current.has('navigator') && !this.extraRerollUsed) {
+                    this.extraRerollUsed = true;
+                    this.promptForReroll(first, second, after);
+                    return;
+                }
                 after();
                 this.dice = [];
             }, 750);
@@ -203,6 +209,7 @@ export class Scene extends Container {
     }
 
     public nextTurn(): void {
+        this.extraRerollUsed = false;
         this.dice = [];
         this.info();
         if (this.won) {
@@ -300,6 +307,7 @@ export class Scene extends Container {
     }
 
     private nextLevel(): void {
+        this.extraRerollUsed = false;
         this.ship.disablePicking();
         this.won = false;
         this.trading = false;

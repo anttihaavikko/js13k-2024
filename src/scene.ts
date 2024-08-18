@@ -37,6 +37,7 @@ export class Scene extends Container {
     private won: boolean;
     private trading: boolean;
     private mp: Mouse;
+    private prompted: NodeJS.Timeout;
 
     constructor(game: Game) {
         super(game, 0, 0, []);
@@ -109,7 +110,8 @@ export class Scene extends Container {
     }
 
     private promptAction(label: string, action: () => void): void {
-        setTimeout(() => {
+        clearTimeout(this.prompted);
+        this.prompted = setTimeout(() => {
             this.action.visible = true;
             this.action.setText(label);
             this.act = action;

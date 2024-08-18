@@ -281,7 +281,7 @@ export class Ship extends Flashable {
     }
 
     public pose(state: boolean): void {
-        this.crew.forEach(d => d.hopInPlace());
+        // this.crew.forEach(d => d.hopInPlace());
         this.dude.pose(state);
     }
 

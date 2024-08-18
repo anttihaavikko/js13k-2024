@@ -272,6 +272,10 @@ export class Ship extends Flashable {
         }
     }
 
+    public setName(name: string): void {
+        this.name = name;
+    }
+
     public hasDice(): boolean {
         return this.dice.length > 0;
     }

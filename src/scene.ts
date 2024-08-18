@@ -408,6 +408,7 @@ export class Scene extends Container {
             this.enemy.hide();
             setTimeout(() => {
                 this.ship.addCrown();
+                this.ship.setName('WIN');
                 this.ship.pose(true);
                 this.game.getAudio().win();
                 this.info('You\'ve defeated the whole 13th fleet!', '', 'THE END?');

@@ -165,7 +165,7 @@ export class Scene extends Container {
             setTimeout(() => {
                 if (this.current.has('navigator') && !this.extraRerollUsed) {
                     this.extraRerollUsed = true;
-                    this.promptForReroll(first, second, after);
+                    this.promptForReroll(first, this.loot.length > 0 ? second : `The total is ${this.getDamage()}...`, after);
                     return;
                 }
                 after();
@@ -348,6 +348,8 @@ export class Scene extends Container {
 
     private activateLevel(): void {
         this.zoom();
+
+        this.loot = [];
 
         if (this.level % 2 == 0 && this.level <= END_LEVEL) {
             this.enemy.makeFriendly();

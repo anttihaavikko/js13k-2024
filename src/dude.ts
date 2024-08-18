@@ -58,7 +58,7 @@ export class Dude extends Entity {
             case 'cannoneer':
                 return 'He will allow you to shoot twice every turn...';
             case 'quartermaster':
-                return 'He will repair your worst cargo when you roll a blank...';
+                return 'He will repair random cargo when you roll a blank...';
             case 'navigator':
                 return 'He will allow you to reroll an extra time...';
             default:

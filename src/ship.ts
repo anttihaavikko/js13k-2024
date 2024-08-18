@@ -63,7 +63,7 @@ export class Ship extends Flashable {
     public tryRepair(): void {
         const qm = this.crew.find(c => c.is('quartermaster'));
         if (qm) {
-            const target = [...this.dice].sort((a, b) => a.getValue() - b.getValue())[0];
+            const target = randomCell(this.dice);
             qm.hopInPlace();
             target.fix();
         }

@@ -90,6 +90,7 @@ export class Dude extends Entity {
         const copy = new Dude(this.game, 0, 0, this.mainColor, this.secondaryColor, null);
         copy.crewRole = this.crewRole;
         copy.skin = this.skin;
+        copy.face.angry = this.face.angry;
         copy.setRolePosition();
         return copy;
     }

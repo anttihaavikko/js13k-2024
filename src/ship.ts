@@ -395,7 +395,7 @@ export class Ship extends Flashable {
         ctx.stroke();
 
         // nest
-        if (this.player && this.has('navigator')) {
+        if (!this.friendly && this.has('navigator')) {
             ctx.beginPath();
             ctx.moveTo(-60, -535);
             ctx.lineTo(-60 - 20, -535 - 60);

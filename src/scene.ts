@@ -354,6 +354,17 @@ export class Scene extends Container {
             return;
         }
 
+        if (this.level == END_LEVEL - 1) this.enemy.addCrown();
+
+        if (this.level >= END_LEVEL - 1) {
+            for (let i = 0; i < 3; i++) {
+                const crew = this.enemy.createCrew(-70, -100);
+                crew.makeAngry(true);
+                crew.setRole(this.enemy.getAvailableRole());
+                this.enemy.addCrew(crew.clone());
+            }
+        }
+
         this.enemy.makeAngry();
         setTimeout(() => {
             this.info('COMMENCE COMBAT!', 'This will not end peacefully...');

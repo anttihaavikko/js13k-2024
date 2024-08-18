@@ -10,6 +10,8 @@ import { offset } from './engine/vector';
 import { Ball } from './ball';
 import { randomCell, randomInt, randomSorter } from './engine/random';
 
+const END_LEVEL = 2;
+
 export class Scene extends Container {
     private ship: Ship;
     private enemy: Ship;
@@ -84,7 +86,7 @@ export class Scene extends Container {
             if (e.key == 'v') this.doEvent();
             if (e.key == 'f') this.ship.tryRepair();
             if (e.key == 'z') this.zoom();
-            if (e.key == 's') this.ship.sail();
+            if (e.key == 's') this.nextLevel();
             if (e.key == 'd') this.ship.hurt(1);
             if (e.key == 'k') this.ship.sink();
             if (e.key == 'R') this.restart();
@@ -334,6 +336,7 @@ export class Scene extends Container {
     }
 
     private getEnemyName(): string {
+        if (this.level > END_LEVEL) return `∞ × ${this.level - END_LEVEL}`;
         return this.level % 2 == 0 ? randomCell(['VND', 'MRC', 'GIT', 'POO', 'SIN', 'CSS', 'ASH', 'CAP']) : (13 - (this.level - 1) * 0.5).toString();
     }
 
@@ -344,7 +347,7 @@ export class Scene extends Container {
     private activateLevel(): void {
         this.zoom();
 
-        if (this.level % 2 == 0) {
+        if (this.level % 2 == 0 && this.level <= END_LEVEL) {
             this.enemy.makeFriendly();
             this.doEvent();
             return;
@@ -388,6 +391,16 @@ export class Scene extends Container {
 
     private doEvent(): void {
         const hasSpice = this.ship.hasSpice();
+
+        if (this.level === END_LEVEL) {
+            this.enemy.hide();
+            setTimeout(() => {
+                this.game.getAudio().win();
+                this.info('You\'ve defeated the whole 13th fleet!', '', 'THE END?');
+                this.promptSail();
+            }, 1000);
+            return;
+        }
 
         switch (randomInt(0, 4 - (this.ship.getAvailableRole() ? 0 : 1))) {
             case 0: {

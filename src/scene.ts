@@ -309,6 +309,7 @@ export class Scene extends Container {
     }
 
     private nextLevel(): void {
+        this.ship.pose(false);
         this.extraRerollUsed = false;
         this.ship.disablePicking();
         this.won = false;
@@ -395,6 +396,8 @@ export class Scene extends Container {
         if (this.level === END_LEVEL) {
             this.enemy.hide();
             setTimeout(() => {
+                this.ship.addCrown();
+                this.ship.pose(true);
                 this.game.getAudio().win();
                 this.info('You\'ve defeated the whole 13th fleet!', '', 'THE END?');
                 this.promptSail();

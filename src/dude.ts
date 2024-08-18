@@ -27,6 +27,7 @@ export class Dude extends Entity {
     private animSpeed: number;
     private crewRole: CrewRole;
     private flipHat: number;
+    private crown: boolean;
 
     constructor(game: Game, x: number, y: number, private mainColor: string, private secondaryColor: string, private cane: string) {
         super(game, x, y, 0, 0);
@@ -42,6 +43,10 @@ export class Dude extends Entity {
         this.animOffset = Math.random() * 9999;
         this.animSpeed = 0.8 + Math.random() * 0.4;
         this.flipHat = Math.random() < 0.5 ? 1 : -1;
+    }
+
+    public addCrown(): void {
+        this.crown = true;
     }
 
     public getRole(): CrewRole {
@@ -203,6 +208,31 @@ export class Dude extends Entity {
         ctx.beginPath();
         ctx.translate(0, 20 - this.phase * 5);
         ctx.scale(1.5 * this.flipHat, 1.5);
+
+        if (this.crown) {
+            ctx.scale(0.75, 0.75);
+            ctx.translate(0, -12);
+            ctx.fillStyle = 'yellow';
+            ctx.moveTo(-12, -10);
+            ctx.lineTo(12, -10);
+            ctx.lineTo(12, -25);
+            ctx.lineTo(5, -19);
+            ctx.lineTo(0, -27);
+            ctx.lineTo(-5, -19);
+            ctx.lineTo(-12, -25);
+            // ctx.moveTo(-6, -15);
+            // ctx.lineTo(6, -15);
+            // ctx.lineTo(6, -20);
+            // ctx.lineTo(3, -18);
+            // ctx.lineTo(0, -23);
+            // ctx.lineTo(-3, -18);
+            // ctx.lineTo(-6, -20);
+            ctx.closePath();
+            ctx.stroke();
+            ctx.fill();
+            return;
+        }
+        
         ctx.moveTo(8, -15);
         ctx.bezierCurveTo(-12, -5, -12, -5, -20, -5);
         ctx.bezierCurveTo(-10, -26 + this.phase, -3, -26 + this.phase, 10, -18);

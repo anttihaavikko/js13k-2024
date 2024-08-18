@@ -116,6 +116,10 @@ export class Ship extends Flashable {
         return this.dice.length === 0;
     }
 
+    public addCrown(): void {
+        this.dude.addCrown();
+    }
+
     public addDamage(dmg: number): void {
         if (dmg <= 0) {
             this.scene.nextTurn();

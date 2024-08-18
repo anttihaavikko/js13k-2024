@@ -62,7 +62,7 @@ export class Scene extends Container {
 
         this.promptAction('ROLL', () => {
             this.rollForCargo();
-            setTimeout(() => this.promptAnswer('Would you like to roll again?', '', () => {
+            setTimeout(() => this.promptAnswerWith('ROLL', 'KEEP', 'Would you like to roll again?', '', () => {
                 this.reroll();
                 setTimeout(() => {
                     this.moveDiceTo(this.ship);
@@ -129,12 +129,18 @@ export class Scene extends Container {
         }, 500);
     }
 
-    private promptAnswer(first: string, second: string, yes: () => void, no: () => void): void {
+    private promptAnswerWith(positive: string, negative: string, first: string, second: string, yes: () => void, no: () => void): void {
+        this.yesButton.setText(positive);
+        this.noButton.setText(negative);
         this.info(first, second);
         this.yesButton.visible = true;
         this.noButton.visible = true;
         this.yesAct = yes;
         this.noAct = no;
+    }
+
+    private promptAnswer(first: string, second: string, yes: () => void, no: () => void): void {
+        this.promptAnswerWith('YEAH', 'NOPE', first, second, yes, no);
     }
 
     private buttonPress(): void {
@@ -160,7 +166,7 @@ export class Scene extends Container {
             this.shoot();
             return;
         }
-        this.promptAnswer(first, second, () => {
+        this.promptAnswerWith('ROLL', 'KEEP', first, second, () => {
             this.reroll();
             setTimeout(() => {
                 if (this.current.has('navigator') && !this.extraRerollUsed) {
@@ -447,7 +453,7 @@ export class Scene extends Container {
                 setTimeout(() => {
                     this.game.getAudio().greet();
                     this.enemy?.hop();
-                    this.promptAnswer('Hello there mate!', 'Would you like to reroll all your cargo?', () => {
+                    this.promptAnswerWith('ROLL', 'KEEP', 'Hello there mate!', 'Would you like to reroll all your cargo?', () => {
                         this.ship.rerollAll();
                         setTimeout(() => {
                             this.promptSail();

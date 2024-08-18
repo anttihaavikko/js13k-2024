@@ -104,7 +104,7 @@ export class Dice extends Flashable {
 
     public fix(): void {
         this.flash(0.2, '#afe6ac');
-        this.value = Math.min(this.value + 1, 6);
+        this.value = Math.min(this.value + 1, 9);
     }
 
     public drawRim(ctx: CanvasRenderingContext2D): void {
@@ -140,18 +140,22 @@ export class Dice extends Flashable {
         ctx.fill();
         ctx.stroke();
         ctx.closePath();
-        if (this.value === 1 || this.value === 3 || this.value === 5) this.drawPip(ctx, { x: 0, y: 0 });
+        if (this.value === 1 || this.value === 3 || this.value === 5 || this.value === 7 || this.value === 9) this.drawPip(ctx, { x: 0, y: 0 });
         if (this.value > 1) {
             this.drawPip(ctx, { x: -25, y: -25 });
             this.drawPip(ctx, { x: 25, y: 25 });
         }
-        if (this.value >= 4) {
+        if (this.value > 3) {
             this.drawPip(ctx, { x: -25, y: 25 });
             this.drawPip(ctx, { x: 25, y: -25 });
         }
-        if (this.value === 6) {
+        if (this.value > 5) {
             this.drawPip(ctx, { x: 0, y: -25 });
             this.drawPip(ctx, { x: 0, y: 25 });
+        }
+        if (this.value > 7) {
+            this.drawPip(ctx, { x: 25, y: 0 });
+            this.drawPip(ctx, { x: -25, y: 0 });
         }
         this.drawRim(ctx);
         ctx.fillStyle = '#fff';

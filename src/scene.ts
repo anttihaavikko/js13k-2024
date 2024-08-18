@@ -81,6 +81,7 @@ export class Scene extends Container {
         game.onKey((e) => {
             if (e.key == 'm') this.game.getAudio().toggleMute();
             // dev keys
+            // if (e.key == 'w') this.triggerWin();
             // if (e.key == 'a') this.ship.addDice(new Dice(this.game, 0, 0, false));
             // if (e.key == 'e') this.enemy.addDice(new Dice(this.game, 0, 0, false));
             // if (e.key == 'v') this.doEvent();
@@ -401,19 +402,23 @@ export class Scene extends Container {
         }
     }
 
+    private triggerWin(): void {
+        this.targetZoom = 0.75;
+        this.cam.shift = 0;
+        this.ship.addCrown();
+        this.ship.setName('WIN');
+        this.ship.pose(true);
+        this.game.getAudio().win();
+        this.info('You\'ve defeated the whole 13th fleet!', '', 'THE END?');
+        this.promptSail();
+    }
+
     private doEvent(): void {
         const hasSpice = this.ship.hasSpice();
 
         if (this.level === END_LEVEL) {
             this.enemy.hide();
-            setTimeout(() => {
-                this.ship.addCrown();
-                this.ship.setName('WIN');
-                this.ship.pose(true);
-                this.game.getAudio().win();
-                this.info('You\'ve defeated the whole 13th fleet!', '', 'THE END?');
-                this.promptSail();
-            }, 1000);
+            setTimeout(() => this.triggerWin(), 1000);
             return;
         }
 

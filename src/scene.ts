@@ -81,6 +81,7 @@ export class Scene extends Container {
             if (e.key == 'a') this.ship.addDice(new Dice(this.game, 0, 0, false));
             if (e.key == 'e') this.enemy.addDice(new Dice(this.game, 0, 0, false));
             if (e.key == 'v') this.doEvent();
+            if (e.key == 'f') this.ship.tryRepair();
             if (e.key == 'z') this.zoom();
             if (e.key == 's') this.ship.sail();
             if (e.key == 'd') this.ship.hurt(1);
@@ -493,6 +494,9 @@ export class Scene extends Container {
             d.roll(m + i * 120 - 120 * ((amount - 1) * 0.5), 450);
             this.dice.push(d);
         }
+        setTimeout(() => {
+            if (this.dice.some(d => d.getValue() === 0)) this.current.tryRepair();
+        }, 500);
     }
 
     public getButtons(): ButtonEntity[] {

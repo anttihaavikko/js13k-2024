@@ -59,6 +59,15 @@ export class Ship extends Flashable {
         return 6;
     }
 
+    public tryRepair(): void {
+        const qm = this.crew.find(c => c.is('quartermaster'));
+        if (qm) {
+            const target = [...this.dice].sort((a, b) => a.getValue() - b.getValue())[0];
+            qm.hopInPlace();
+            target.fix();
+        }
+    }
+
     public removeCrew(): void {
         this.crew = [];
     }
@@ -349,6 +358,8 @@ export class Ship extends Flashable {
         this.dice.filter(d => !d.isHovering()).forEach(d => d.draw(ctx));
         this.dice.filter(d => d.isHovering()).forEach(d => d.draw(ctx));
         // ctx.translate(this.p.x - off, this.p.y);
+
+        ctx.strokeStyle = this.getColor('#000');
 
         ctx.translate(160, 0);
         ctx.rotate(-0.1 - this.recoil * 0.1);

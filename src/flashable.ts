@@ -1,7 +1,7 @@
 import { Entity } from './engine/entity';
 
 export class Flashable extends Entity {
-    private flashing: boolean;
+    protected flashing: boolean;
     private color: string;
 
     protected getColor(normal: string): string {

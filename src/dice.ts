@@ -1,12 +1,12 @@
 import { font } from './engine/constants';
 import { drawCircle } from './engine/drawing';
-import { Entity } from './engine/entity';
 import { Game } from './engine/game';
 import { Mouse } from './engine/mouse';
 import { randomInt } from './engine/random';
 import { Vector } from './engine/vector';
+import { Flashable } from './flashable';
 
-export class Dice extends Entity {
+export class Dice extends Flashable {
     private value: number;
     private rolling: boolean;
     private hovering: boolean;
@@ -101,6 +101,11 @@ export class Dice extends Entity {
         return this.value <= 0;
     }
 
+    public fix(): void {
+        this.flash(0.2, '#afe6ac');
+        this.value = Math.min(this.value + 1, 6);
+    }
+
     public drawRim(ctx: CanvasRenderingContext2D): void {
         if (!this.hovering && !this.marked) return;
         ctx.strokeStyle = 'orange';
@@ -121,6 +126,7 @@ export class Dice extends Entity {
     }
 
     public draw(ctx: CanvasRenderingContext2D): void {
+        ctx.strokeStyle = this.flashing ? '#68ad65' : '#000';
         ctx.save();
         ctx.beginPath();
         ctx.translate(this.p.x + 50, this.p.y + 50 + this.getHeight() + (this.rolling ? Math.sin(this.tween.time * Math.PI) * -150 : 0));
@@ -128,6 +134,7 @@ export class Dice extends Entity {
         ctx.fillStyle = this.spice ? 'orange' : '#fff';
         if (this.plated) ctx.fillStyle = '#a9c5db';
         if (this.hovering || this.marked) ctx.fillStyle = 'yellow';
+        if (this.flashing) ctx.fillStyle = this.getColor('#fff');
         ctx.rect(-50, -50, 100, 100);
         ctx.fill();
         ctx.stroke();
@@ -151,12 +158,12 @@ export class Dice extends Entity {
     }
 
     private drawPip(ctx: CanvasRenderingContext2D, pos: Vector): void {
+        ctx.fillStyle = this.flashing ? '#68ad65' : '#000';
         if (this.damage) {
-            ctx.fillStyle = '#000';
             ctx.font =`45px ${font}`;
             ctx.fillText('✦', pos.x * 0.8 - 20, pos.y * 0.8 + 15);
             return;
         }
-        drawCircle(ctx, pos, this.damage ? 12 : 8, '#000', 'transparent');
+        drawCircle(ctx, pos, this.damage ? 12 : 8, ctx.fillStyle, 'transparent');
     }
 }

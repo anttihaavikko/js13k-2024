@@ -126,7 +126,7 @@ export class Ship extends Flashable {
     }
 
     public hurt(amount: number): void {
-        const target = this.dice.find(d => d.getValue() > amount) ?? this.dice.sort((a, b) => a.getValue() - b.getValue())[0];
+        const target = this.dice.find(d => d.getValue() > amount) ?? [...this.dice].sort((a, b) => a.getValue() - b.getValue())[0];
         if (!target) return;
         this.hurtDice(target, amount);
     }

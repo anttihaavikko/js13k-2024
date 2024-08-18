@@ -380,30 +380,8 @@ export class Scene extends Container {
     private doEvent(): void {
         const hasSpice = this.ship.hasSpice();
 
-        this.enemy.clearCargo();
-        const crew = this.enemy.createCrew(-70, -100);
-        crew.setRole(this.ship.getAvailableRole());
-        this.enemy.addCrew(crew);
-        setTimeout(() => {
-            this.game.getAudio().greet();
-            this.enemy?.hop();
-            this.promptAnswer(`Oi! Want to hire this ${crew.getRole()}?`, crew.getRoleDescription(), () => {
-                this.enemy.removeCrew();
-                this.ship.addCrew(crew.clone());
-                setTimeout(() => {
-                    this.promptSail();
-                    this.thank();
-                }, 500);
-            }, () => {
-                this.promptSail();
-                this.decline();
-            });
-        }, 1000);
-
-        return; // temp
-
-        switch (randomInt(0, 3)) {
-            case 0:
+        switch (randomInt(0, 4 - (this.ship.getAvailableRole() ? 0 : 1))) {
+            case 0: {
                 this.enemy.removeSpice();
                 setTimeout(() => {
                     this.game.getAudio().greet();
@@ -416,7 +394,8 @@ export class Scene extends Container {
                     }
                 }, 1000);
                 break;
-            case 1:
+            }
+            case 1: {
                 setTimeout(() => {
                     this.game.getAudio().greet();
                     this.enemy?.hop();
@@ -432,13 +411,15 @@ export class Scene extends Container {
                     });
                 }, 1000);
                 break;
-            case 2:
+            }
+            case 2: {
                 this.enemy.hide();
                 this.promptSail();
                 this.info('Someone must have sunk here!', 'Free loot I guess...');
                 this.addLoot();
                 break;
-            case 3:
+            }
+            case 3: {
                 this.enemy.addPlate();
                 setTimeout(() => {
                     this.game.getAudio().greet();
@@ -455,6 +436,29 @@ export class Scene extends Container {
                     });
                 }, 1000);
                 break;
+            }
+            case 4: {
+                this.enemy.clearCargo();
+                const crew = this.enemy.createCrew(-70, -100);
+                crew.setRole(this.ship.getAvailableRole());
+                this.enemy.addCrew(crew);
+                setTimeout(() => {
+                    this.game.getAudio().greet();
+                    this.enemy?.hop();
+                    this.promptAnswer(`Oi! Want to hire this ${crew.getRole()}?`, crew.getRoleDescription(), () => {
+                        this.enemy.removeCrew();
+                        this.ship.addCrew(crew.clone());
+                        setTimeout(() => {
+                            this.promptSail();
+                            this.thank();
+                        }, 500);
+                    }, () => {
+                        this.promptSail();
+                        this.decline();
+                    });
+                }, 1000);
+                break;
+            }
             default:
                 break;
         }

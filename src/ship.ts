@@ -49,7 +49,7 @@ export class Ship extends Entity {
         this.dude = new Dude(game, 70, -100, this.colors[4], this.colors[3], randomCell(woods));
     }
 
-    public shout(text: string): void {
+    public talk(text: string): void {
         this.message.toggle(text);
         setTimeout(() => this.message.toggle(''), 1000);
     }
@@ -59,6 +59,7 @@ export class Ship extends Entity {
     }
 
     public isAuto(): boolean {
+        // return true;
         return !this.player;
     }
 
@@ -256,11 +257,19 @@ export class Ship extends Entity {
         this.dude.hopInPlace();
     }
 
+    public getRollPos(): number {
+        return this.p.x + 100 * this.getDirection();
+    }
+
+    public getDirection(): number {
+        return this.player ? 1 : -1;
+    }
+
     public draw(ctx: CanvasRenderingContext2D): void {
         if (this.hidden) return;
         
         ctx.save();
-        const mirror = this.player ? 1 : -1;
+        const mirror = this.getDirection();
         ctx.translate(this.p.x - this.stagger * 20 * mirror, this.p.y);
         ctx.rotate(this.phase * 0.02 - this.stagger * 0.05 * mirror);
 

@@ -28,6 +28,7 @@ export class Scene extends Container {
     private targetZoom = 0.75;
     private camVelocity = 0;
     private wave: number;
+    private fastWave: number;
     private level: number = 0;
     private current: Ship;
     private ball: Ball;
@@ -35,6 +36,7 @@ export class Scene extends Container {
     private loot: Dice[] = [];
     private won: boolean;
     private trading: boolean;
+    private mp: Mouse;
 
     constructor(game: Game) {
         super(game, 0, 0, []);
@@ -75,15 +77,14 @@ export class Scene extends Container {
         game.onKey((e) => {
             if (e.key == 'm') this.game.getAudio().toggleMute();
             // dev keys
-            if (e.key == 'b') {
-                this.current.shout('UNLUCKY');
-                this.game.getAudio().bad();
-            }
-            if (e.key == 'e') this.doEvent();
+            if (e.key == 'a') this.ship.addDice(new Dice(this.game, 0, 0, false));
+            if (e.key == 'e') this.enemy.addDice(new Dice(this.game, 0, 0, false));
+            if (e.key == 'v') this.doEvent();
+            if (e.key == 'z') this.zoom();
             if (e.key == 's') this.ship.sail();
             if (e.key == 'k') this.ship.sink();
             if (e.key == 'x') this.ship.shoot(1);
-            if (e.key == 'z') this.targetZoom = Math.random() * 0.5 + 0.25;
+            // if (e.key == 'z') this.targetZoom = Math.random() * 0.5 + 0.25;
             if (e.key == 'p') this.ship.pose(true);
             if (e.key == 'h') this.game.getCamera().shake(10, 0.15, 1);
         });
@@ -155,11 +156,15 @@ export class Scene extends Container {
 
     private shoot(): void {
         const dmg = this.getDamage();
+        if (dmg == 13) {
+            this.current.talk('UNLUCKY 13!');
+            this.game.getAudio().bad();
+        }
         if (dmg == 13 || dmg == 0) {
             this.nextTurn();
             return;
         } 
-        if (this.current.isAuto()) {
+        if (!this.current.getOpponent().isAuto()) {
             this.info(`Incoming ${dmg} damage!`, 'Select cargo taking the hit...');
             this.ship.addDamage(dmg);
             return;
@@ -207,7 +212,8 @@ export class Scene extends Container {
 
         if (this.current.isUnlucky() && !this.current.getOpponent().isUnlucky()) {
             setTimeout(() => {
-                this.current.shout('UNLUCKY');
+                this.current.talk('UNLUCKY 13!');
+                this.game.getAudio().bad();
                 setTimeout(() => this.nextTurn(), 500);
             }, 500);
             return;
@@ -217,8 +223,9 @@ export class Scene extends Container {
         this.promptShot();
     }
 
-    private addLoot(offset: number = 0): void {
-        const m = this.getMid() + (80 + this.cam.shift + 200) / this.cam.zoom + offset;
+    private addLoot(): void {
+        // const m = this.getMid() + (80 + this.cam.shift + 200) / this.cam.zoom + offset;
+        const m = this.enemy.p.x - 100;
         const amt = Math.min(this.level + 1, 6);
         this.loot = [];
         for (let i = 0; i < amt; i++) {
@@ -300,13 +307,15 @@ export class Scene extends Container {
     }
 
     private getEnemyName(): string {
-        return this.level % 2 == 0 ? randomCell(['VND', 'MRC', 'GIT', 'POO', 'SIN', 'CSS', 'ASH']) : (13 - (this.level - 1) * 0.5).toString();
+        return this.level % 2 == 0 ? randomCell(['VND', 'MRC', 'GIT', 'POO', 'SIN', 'CSS', 'ASH', 'CAP']) : (13 - (this.level - 1) * 0.5).toString();
+    }
+
+    private getTaunt(): string {
+        return randomCell(['FILTHY RAT', 'HOW DARE YOU', 'YOU TRAITOR']);
     }
 
     private activateLevel(): void {
-        this.targetZoom = 0.5;
-        this.cam.pan.y = 350;
-        this.cam.shift = 100;
+        this.zoom();
 
         if (this.level % 2 == 0) {
             this.enemy.makeFriendly();
@@ -317,7 +326,7 @@ export class Scene extends Container {
         this.enemy.makeAngry();
         setTimeout(() => {
             this.info('COMMENCE COMBAT!', 'This will not end peacefully...');
-            this.enemy.shout('FILTHY RAT');
+            this.enemy.talk(this.getTaunt());
             this.game.getAudio().warn();
         }, 1000);
         setTimeout(() => this.promptShot(), 2000);
@@ -387,7 +396,7 @@ export class Scene extends Container {
                 this.enemy.hide();
                 this.promptSail();
                 this.info('Someone must have sunk here!', 'Free loot I guess...');
-                this.addLoot(600);
+                this.addLoot();
                 break;
             case 3:
                 this.enemy.addPlate();
@@ -412,17 +421,18 @@ export class Scene extends Container {
     }
 
     private zoom(): void {
-        // const left = this.ship.getCargoWidth();
-        // const right = this.enemy.getCargoWidth();
-        // this.game.getCamera().zoom = 500 / (1000 + left + right);
-        // this.game.getCamera().offset = { x: (right - left) * 0.5, y: 0 };
+        const left = this.ship?.getCargoWidth();
+        const right = this.enemy?.getCargoWidth() ?? 0;
+        const max = Math.max(left, right);
+        this.targetZoom = 500 / (1000 + left + right);
+        this.cam.pan.y = 350 + max;
+        this.cam.shift = 100 - max;
     }
 
     private moveDiceTo(ship: Ship): void {
         this.dice.forEach((d, i) => d.move(offset(ship.getDicePos(i + ship.getDiceCount()), this.ship.p.x, this.ship.p.y), () => ship.addDice(d)));
         setTimeout(() => {
             this.dice = [];
-            this.zoom();
         }, 300);
     }
 
@@ -433,7 +443,8 @@ export class Scene extends Container {
     public roll(amount: number): void {
         this.dice = [];
         for (let i = 0; i < amount; i++) {
-            const m = this.getMid() + (70 + this.cam.shift) / this.cam.zoom;
+            // const m = this.getMid() + (70 + this.cam.shift) / this.cam.zoom;
+            const m = this.current.getRollPos();
             const d = new Dice(this.game, m, 800, this.useDamageDice);
             d.roll(m + i * 120 - 120 * ((amount - 1) * 0.5), 450);
             this.dice.push(d);
@@ -448,8 +459,10 @@ export class Scene extends Container {
         super.update(tick, mouse);
         this.phase = Math.abs(Math.sin(tick * 0.002));
         this.wave = Math.sin(tick * 0.0003);
+        this.fastWave = Math.sin(tick * 0.0007);
         [this.ball, this.ship, this.enemy, ...this.dice, this.splash, this.secondLine, this.bigText, ...this.getButtons()].filter(e => !!e).forEach(e => e.update(tick, mouse));
-        this.loot.forEach(l => l.update(tick, this.ship.offsetMouse(mouse, this.cam, this.cam.pan.x + 200, 540)));
+        this.mp = this.ship.offsetMouse(mouse, this.cam, this.cam.pan.x + 200, 540);
+        this.loot.forEach(l => l.update(tick, this.mp));
         const diff = this.ship.p.x - this.getMid() + this.cam.shift;
         if (Math.abs(diff) > 10) this.camVelocity += Math.sign(diff);
         this.cam.pan.x += this.camVelocity;
@@ -508,7 +521,8 @@ export class Scene extends Container {
         ctx.lineTo(start, 2000);
         ctx.lineTo(start, 500 + this.phase * 5);
         for (let i = 0; i < 3000 / 50; i++) {
-            ctx.quadraticCurveTo(start + i * 50 - 25, 525 - this.phase * 5, start + i * 50, 500 + this.phase * 7 + Math.sin(i * this.wave * 0.5) * 5);
+            const top = Math.sin(start + i * 50 + 25 * this.wave) * 8 + Math.cos(start + i * 25 + 12 * this.fastWave) * 8 + 20;
+            ctx.quadraticCurveTo(start + i * 50 - 25, 525 - this.phase * 5 - top, start + i * 50, 500 + this.phase * 7 - top);
         }
         ctx.closePath();
         // ctx.rect(-10000, HEIGHT - 100 + this.phase * 5, 20000, HEIGHT + 70);
@@ -519,6 +533,11 @@ export class Scene extends Container {
         ctx.strokeStyle = '#000';
 
         [...this.dice, ...this.getChildren()].forEach(e => e.draw(ctx));
+
+        // draw mouse point
+        // ctx.fillRect((this.cam.pan.x - this.cam.shift) / this.cam.zoom + 400, 400, 20, 20);
+        ctx.fillRect(this.mp.x, this.mp.y, 20, 20);
+        
         ctx.resetTransform();
         
         [this.splash, this.secondLine, this.bigText, ...this.getButtons()].forEach(b => b.draw(ctx));

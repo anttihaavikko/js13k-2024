@@ -189,7 +189,7 @@ export class Scene extends Container {
             this.nextTurn();
             return;
         } 
-        if (!this.current.getOpponent().isAuto()) {
+        if (!this.current.getOpponent().isAuto() && this.current.getOpponent().getDiceCount() > 1) {
             this.game.getAudio().incoming();
             this.info(`Incoming ${dmg} damage!`, 'Select cargo taking the hit...');
             this.ship.addDamage(dmg);

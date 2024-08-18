@@ -535,8 +535,7 @@ export class Scene extends Container {
         [...this.dice, ...this.getChildren()].forEach(e => e.draw(ctx));
 
         // draw mouse point
-        // ctx.fillRect((this.cam.pan.x - this.cam.shift) / this.cam.zoom + 400, 400, 20, 20);
-        ctx.fillRect(this.mp.x, this.mp.y, 20, 20);
+        // ctx.fillRect(this.mp.x, this.mp.y, 20, 20);
         
         ctx.resetTransform();
         

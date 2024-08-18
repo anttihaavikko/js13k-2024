@@ -7,7 +7,6 @@ import { font } from './engine/constants';
 import { Container } from './engine/container';
 import { drawCircle } from './engine/drawing';
 import { quadEaseIn, quadEaseInOut } from './engine/easings';
-import { Entity } from './engine/entity';
 import { Game } from './engine/game';
 import { Mouse } from './engine/mouse';
 import { Pulse } from './engine/pulse';
@@ -15,9 +14,10 @@ import { randomCell, randomSorter } from './engine/random';
 import { RectParticle } from './engine/rect';
 import { offset, Vector } from './engine/vector';
 import { WobblyText } from './engine/wobbly';
+import { Flashable } from './flashable';
 import { Scene } from './scene';
 
-export class Ship extends Entity {
+export class Ship extends Flashable {
     private dude: Dude;
     private phase: number;
     private dice: Dice[] = [];
@@ -93,6 +93,7 @@ export class Ship extends Entity {
     public hurtDice(target: Dice, amount: number): void {
         target.mark();
         setTimeout(() => {
+            this.flash();
             this.game.getCamera().shake(10, 0.15, 1);
             this.game.getAudio().explosion();
             const dir = this.player ? 1 : -1;
@@ -267,6 +268,8 @@ export class Ship extends Entity {
 
     public draw(ctx: CanvasRenderingContext2D): void {
         if (this.hidden) return;
+
+        ctx.strokeStyle = this.getColor('#000');
         
         ctx.save();
         const mirror = this.getDirection();
@@ -276,7 +279,7 @@ export class Ship extends Entity {
         if (!this.player) ctx.scale(-1, 1);
 
         // mast
-        ctx.fillStyle = this.colors[0];
+        ctx.fillStyle = this.getColor(this.colors[0]);
         const mastPos = 40;
         ctx.beginPath();
         ctx.rect(-50 + mastPos, -550, 15, 520);
@@ -285,7 +288,7 @@ export class Ship extends Entity {
         ctx.closePath();
 
         // sail
-        ctx.fillStyle = this.colors[3];
+        ctx.fillStyle = this.getColor(this.colors[3]);
         ctx.beginPath();
         ctx.moveTo(-60 + mastPos, -520);
         ctx.lineTo(-60 + mastPos, -200);
@@ -316,7 +319,7 @@ export class Ship extends Entity {
         ctx.restore();
 
         // hull
-        ctx.fillStyle = this.colors[2];
+        ctx.fillStyle = this.getColor(this.colors[2]);
         ctx.beginPath();
         const extension = this.getCargoWidth();
         ctx.moveTo(-200 - extension, -150);
@@ -389,7 +392,7 @@ export class Ship extends Entity {
     }
 
     private drawCannon(ctx: CanvasRenderingContext2D): void {
-        ctx.fillStyle = '#666';
+        ctx.fillStyle = this.getColor('#666');
         // cannon
         ctx.save();
         ctx.rotate(-this.recoil * 0.2);
@@ -407,7 +410,7 @@ export class Ship extends Entity {
         ctx.stroke();
         ctx.restore();
 
-        ctx.fillStyle = this.colors[1];
+        ctx.fillStyle = this.getColor(this.colors[1]);
         // cannon base
         ctx.beginPath();
         ctx.moveTo(0, -150);
@@ -416,7 +419,7 @@ export class Ship extends Entity {
         ctx.fill();
         ctx.stroke();
 
-        drawCircle(ctx, { x: 35, y: -190 }, 8, '#000');
+        drawCircle(ctx, { x: 35, y: -190 }, 8, this.getColor('#000'));
     }
 
     public makeAngry(): void {

@@ -136,4 +136,9 @@ export class AudioManager {
         this.win();
         this.playEffect([1.5,,444,.1,.13,.34,1,1.2,,,-128,.06,.02,,1,.1,,.56,.19]);
     }
+
+    public incoming(): void {
+        this.playEffect([0.5,,541,.03,.16,.35,1,1.5,3,1,,,.07,,.6,,,.89,.17]);
+        this.playEffect([2.5,,93,.06,.01,.67,2,1.6,,3,,,,.5,,.6,.04,.32,.09]);
+    }
 }

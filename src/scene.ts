@@ -165,6 +165,7 @@ export class Scene extends Container {
             return;
         } 
         if (!this.current.getOpponent().isAuto()) {
+            this.game.getAudio().incoming();
             this.info(`Incoming ${dmg} damage!`, 'Select cargo taking the hit...');
             this.ship.addDamage(dmg);
             return;

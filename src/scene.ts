@@ -470,7 +470,7 @@ export class Scene extends Container {
         const right = this.enemy?.getCargoWidth() ?? 0;
         const max = Math.max(left, right);
         this.targetZoom = 500 / (1000 + left + right);
-        this.cam.pan.y = 350 + max;
+        this.cam.pan.y = 350 + max - 100 / this.cam.zoom;
         this.cam.shift = 100 - max;
     }
 
@@ -568,7 +568,7 @@ export class Scene extends Container {
         ctx.moveTo(start + 3000, 2000);
         ctx.lineTo(start, 2000);
         ctx.lineTo(start, 500 + this.phase * 5);
-        for (let i = 0; i < 3000 / 50; i++) {
+        for (let i = 0; i < 6000 / 50; i++) {
             const top = Math.sin(start + i * 50 + 25 * this.wave) * 8 + Math.cos(start + i * 25 + 12 * this.fastWave) * 8 + 20;
             ctx.quadraticCurveTo(start + i * 50 - 25, 525 - this.phase * 5 - top, start + i * 50, 500 + this.phase * 7 - top);
         }

@@ -101,7 +101,6 @@ export class Ship extends Flashable {
     }
 
     public isAuto(): boolean {
-        // return true;
         return !this.player;
     }
 
@@ -449,7 +448,8 @@ export class Ship extends Flashable {
     public repotionQuartermaster(): void {
         const qm = this.crew.find(c => c.is('quartermaster'));
         if (qm) {
-            qm.hop({ x: -95, y: -105 - Math.min(this.getStackHeight(), this.dice.length) * 70});
+            const height = this.getStackHeight();
+            qm.hop({ x: -45 - Math.max(Math.floor(this.dice.length / height), 1) * 40, y: -105 - Math.min(height, this.dice.length) * 70});
         }
     }
 

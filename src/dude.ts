@@ -31,7 +31,7 @@ export class Dude extends Entity {
     constructor(game: Game, x: number, y: number, private mainColor: string, private secondaryColor: string, private cane: string) {
         super(game, x, y, 0, 0);
         this.face = new Face(this.game, {
-            blush: '#f05107',
+            blush: '#ed4ea3aa',
             eyeSize: 10,
             width: 0.7,
             mouthWidth: 0.5,

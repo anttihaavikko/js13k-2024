@@ -92,7 +92,7 @@ export class Scene extends Container {
             // if (e.key == 'k') this.ship.sink();
             // if (e.key == 'R') this.restart();
             // if (e.key == 'x') this.ship.shoot(1);
-            // // if (e.key == 'z') this.targetZoom = Math.random() * 0.5 + 0.25;
+            // if (e.key == 'z') this.targetZoom = Math.random() * 0.5 + 0.25;
             // if (e.key == 'p') this.ship.pose(true);
             // if (e.key == 'h') this.game.getCamera().shake(10, 0.15, 1);
             // if (e.key == 'c') {
@@ -410,6 +410,7 @@ export class Scene extends Container {
     private triggerWin(): void {
         this.targetZoom = 0.75;
         this.cam.shift = 0;
+        this.cam.offset.y = 350;
         this.ship.addCrown();
         this.ship.setName('WIN');
         this.ship.pose(true);

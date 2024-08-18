@@ -512,7 +512,7 @@ export class Scene extends Container {
         const max = Math.max(left, right);
         this.targetZoom = 500 / (1000 + left + right);
         this.cam.pan.y = 350 + max - 100 / this.cam.zoom;
-        this.cam.shift = 100 - max;
+        this.cam.shift = 100 - left - right;
     }
 
     private moveDiceTo(ship: Ship): void {
@@ -550,8 +550,8 @@ export class Scene extends Container {
         this.wave = Math.sin(tick * 0.0003);
         this.fastWave = Math.sin(tick * 0.0007);
         [this.ball, this.ship, this.enemy, ...this.dice, this.splash, this.secondLine, this.bigText, ...this.getButtons()].filter(e => !!e).forEach(e => e.update(tick, mouse));
-        this.mp = this.ship.offsetMouse(mouse, this.cam, this.cam.pan.x - this.cam.shift + 101 / this.cam.zoom / this.cam.zoom - 100, 540);
         this.loot.forEach(l => l.update(tick, this.mp));
+        this.mp = { ...mouse };
         const diff = this.ship.p.x - this.getMid() + this.cam.shift;
         if (Math.abs(diff) > 10) this.camVelocity += Math.sign(diff);
         this.cam.pan.x += this.camVelocity;
@@ -624,9 +624,12 @@ export class Scene extends Container {
         [...this.dice, ...this.getChildren()].forEach(e => e.draw(ctx));
 
         // draw mouse point
-        // ctx.fillRect(this.mp.x, this.mp.y, 20, 20);
         
+        const p = new DOMPoint(this.mp.x, this.mp.y).matrixTransform(ctx.getTransform().inverse());
+        this.mp = { x: p.x, y: p.y };
+        // ctx.fillRect(p.x, p.y, 20, 20);
         ctx.resetTransform();
+        
         
         [this.splash, this.secondLine, this.bigText, ...this.getButtons()].forEach(b => b.draw(ctx));
     }

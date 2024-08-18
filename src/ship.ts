@@ -71,6 +71,7 @@ export class Ship extends Flashable {
     public addCrew(dude: Dude): void {
         this.availableRoles = this.availableRoles.filter(role => role !== dude.getRole());
         this.crew.push(dude);
+        this.repotionQuartermaster();
     }
 
     public talk(text: string): void {
@@ -177,6 +178,7 @@ export class Ship extends Flashable {
 
     public repositionDice(): void {
         this.dice.forEach((d, i) => d.move(this.getDicePos(i)));
+        this.repotionQuartermaster();
     }
 
     public notDone(): boolean {
@@ -369,8 +371,8 @@ export class Ship extends Flashable {
         if (this.has('navigator')) {
             ctx.beginPath();
             ctx.moveTo(-60, -520);
-            ctx.lineTo(-60 - 20, -520 - 50);
-            ctx.lineTo(60 + 20, -520 - 50);
+            ctx.lineTo(-60 - 20, -520 - 60);
+            ctx.lineTo(60 + 20, -520 - 60);
             ctx.lineTo(60, -520);
             ctx.closePath();
             ctx.fill();
@@ -394,6 +396,13 @@ export class Ship extends Flashable {
 
         this.effects.draw(ctx);
         this.tempDice.forEach(d => d.draw(ctx));
+    }
+
+    public repotionQuartermaster(): void {
+        const qm = this.crew.find(c => c.is('quartermaster'));
+        if (qm) {
+            qm.hop({ x: -95, y: -105 - Math.min(3, this.dice.length) * 70});
+        }
     }
 
     public removeSpice(): void {

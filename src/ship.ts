@@ -52,6 +52,13 @@ export class Ship extends Flashable {
         // this.addCrew(this.dude, 170, -170);
     }
 
+    private getStackHeight(): number {
+        if (this.dice.length < 10) return 3;
+        if (this.dice.length < 20) return 4;
+        if (this.dice.length < 30) return 5;
+        return 6;
+    }
+
     public removeCrew(): void {
         this.crew = [];
     }
@@ -174,9 +181,10 @@ export class Ship extends Flashable {
     }
 
     public getDicePos(i: number): Vector {
+        const stack = this.getStackHeight();
         return {
-            x: -105 * Math.floor(i / 3) - 180 + Math.random() * 20,
-            y: (i % 3) * -100 - 240
+            x: -105 * Math.floor(i / stack) - 180 + Math.random() * 20,
+            y: (i % stack) * -100 - 240
         };
     }
 
@@ -407,7 +415,7 @@ export class Ship extends Flashable {
     public repotionQuartermaster(): void {
         const qm = this.crew.find(c => c.is('quartermaster'));
         if (qm) {
-            qm.hop({ x: -95, y: -105 - Math.min(3, this.dice.length) * 70});
+            qm.hop({ x: -95, y: -105 - Math.min(this.getStackHeight(), this.dice.length) * 70});
         }
     }
 
@@ -453,7 +461,7 @@ export class Ship extends Flashable {
     }
 
     public getCargoWidth(): number {
-        return Math.floor(Math.max(0, this.dice.length - 1) / 3) * 100;
+        return Math.floor(Math.max(0, this.dice.length - 1) / this.getStackHeight()) * 100;
     }
 
     private drawCannon(ctx: CanvasRenderingContext2D): void {

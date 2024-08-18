@@ -505,7 +505,7 @@ export class Scene extends Container {
         this.wave = Math.sin(tick * 0.0003);
         this.fastWave = Math.sin(tick * 0.0007);
         [this.ball, this.ship, this.enemy, ...this.dice, this.splash, this.secondLine, this.bigText, ...this.getButtons()].filter(e => !!e).forEach(e => e.update(tick, mouse));
-        this.mp = this.ship.offsetMouse(mouse, this.cam, this.cam.pan.x + 200, 540);
+        this.mp = this.ship.offsetMouse(mouse, this.cam, this.cam.pan.x - this.cam.shift + 101 / this.cam.zoom / this.cam.zoom - 100, 540);
         this.loot.forEach(l => l.update(tick, this.mp));
         const diff = this.ship.p.x - this.getMid() + this.cam.shift;
         if (Math.abs(diff) > 10) this.camVelocity += Math.sign(diff);

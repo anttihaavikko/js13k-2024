@@ -40,7 +40,7 @@ export class Dude extends Entity {
         });
         this.skin = randomCell(skins);
         this.animOffset = Math.random() * 9999;
-        this.animSpeed = 0.9 + Math.random() * 0.2;
+        this.animSpeed = 0.8 + Math.random() * 0.4;
         this.flipHat = Math.random() < 0.5 ? 1 : -1;
     }
 

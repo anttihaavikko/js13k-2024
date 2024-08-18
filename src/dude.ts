@@ -51,7 +51,7 @@ export class Dude extends Entity {
     public getRoleDescription(): string {
         switch (this.crewRole) {
             case 'cannoneer':
-                return 'Something something about cannons';
+                return 'He will allow you to shoot twice every turn...';
             case 'quartermaster':
                 return 'He will repair your worst cargo when you roll a blank...';
             case 'navigator':

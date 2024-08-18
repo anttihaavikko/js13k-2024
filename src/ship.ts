@@ -149,9 +149,13 @@ export class Ship extends Flashable {
         this.game.getAudio().shoot();
     }
 
-    public shoot(damage: number): void {
+    public shoot(damage: number, first: boolean = true): void {
         this.shootAnim();
         this.opponent?.hurt(damage);
+        if (this.has('cannoneer') && first && (this.opponent.dice.length > 1 || this.opponent.getSum() > damage)) {
+            setTimeout(() => this.shoot(damage, false), 750);
+            return;
+        }
         setTimeout(() => this.scene.nextTurn(), 500);
     }
 
@@ -415,8 +419,12 @@ export class Ship extends Flashable {
         [...this.dice].sort(randomSorter).slice(0, amount).forEach(l => l.makeSpice());
     }
 
+    private getSum(): number {
+        return this.dice.reduce((sum, d) => sum + d.getValue(), 0);
+    }
+
     public isUnlucky(): boolean {
-        return this.dice.reduce((sum, d) => sum + d.getValue(), 0) == 13;
+        return this.getSum() == 13;
     }
 
     public hide(): void {

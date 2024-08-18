@@ -423,6 +423,7 @@ export class Ship extends Flashable {
 
     public rerollAll(): void {
         this.dice.forEach(d => d.reroll());
+        this.repotionQuartermaster();
     }
 
     public sail(dir: number = 1): void {

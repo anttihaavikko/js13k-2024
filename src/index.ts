@@ -14,7 +14,7 @@ audio.prepare();
 audio.play();
 const game = new Game(audio);
 const scene = new Scene(game);
-game.changeScene(scene);
+game.setScene(scene);
 
 canvas.id = 'game';
 canvas.width = WIDTH;

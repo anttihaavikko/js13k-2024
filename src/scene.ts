@@ -83,8 +83,9 @@ export class Scene extends Container {
             if (e.key == 'v') this.doEvent();
             if (e.key == 'z') this.zoom();
             if (e.key == 's') this.ship.sail();
-            if (e.key == 'd') this.ship.hurt(6);
+            if (e.key == 'd') this.ship.hurt(1);
             if (e.key == 'k') this.ship.sink();
+            if (e.key == 'R') this.restart();
             if (e.key == 'x') this.ship.shoot(1);
             // if (e.key == 'z') this.targetZoom = Math.random() * 0.5 + 0.25;
             if (e.key == 'p') this.ship.pose(true);
@@ -95,6 +96,10 @@ export class Scene extends Container {
                 this.ship.addCrew(crew.clone());
             }
         });
+    }
+
+    public restart(): void {
+        this.game.changeScene(new Scene(this.game));
     }
 
     public answer(answered: boolean): void {
@@ -130,7 +135,7 @@ export class Scene extends Container {
     private buttonPress(): void {
         this.info();
         this.action.visible = false;
-        this.act();
+        if (this.act) this.act();
     }
 
     private rollForDamage(): void {
@@ -281,7 +286,8 @@ export class Scene extends Container {
             this.ship.pose(false);
             this.enemy.pose(true);
             this.info('Lost all your cargo!', '', 'GAME OVER');
-            this.ship.sink();
+            this.promptAction('TRY AGAIN?', () => this.restart());
+            setTimeout(() => this.ship.sink(), 100);
             return;
         }
         if (this.current.isAuto()) {

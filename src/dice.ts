@@ -89,6 +89,7 @@ export class Dice extends Flashable {
 
     public plate(): void {
         this.plated = true;
+        this.flash(0.2, '#afe6ac');
     }
 
     public canPlate(): boolean {

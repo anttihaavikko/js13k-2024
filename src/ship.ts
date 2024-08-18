@@ -277,7 +277,7 @@ export class Ship extends Flashable {
         this.game.getAudio().sink();
         this.wholeCrew().forEach(d => d.hopInPlace());
         this.tween.setEase(quadEaseIn);
-        this.tween.move(offset(this.p, 0, 850), 1.5);
+        this.tween.move(offset(this.p, 0, 800 / this.game.getCamera().zoom), 1.5);
     }
 
     public pose(state: boolean): void {

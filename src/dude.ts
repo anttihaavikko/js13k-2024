@@ -26,6 +26,7 @@ export class Dude extends Entity {
     private animOffset: number;
     private animSpeed: number;
     private crewRole: CrewRole;
+    private flipHat: number;
 
     constructor(game: Game, x: number, y: number, private mainColor: string, private secondaryColor: string, private cane: string) {
         super(game, x, y, 0, 0);
@@ -40,6 +41,7 @@ export class Dude extends Entity {
         this.skin = randomCell(skins);
         this.animOffset = Math.random() * 9999;
         this.animSpeed = 0.9 + Math.random() * 0.2;
+        this.flipHat = Math.random() < 0.5 ? 1 : -1;
     }
 
     public getRole(): CrewRole {
@@ -200,7 +202,7 @@ export class Dude extends Entity {
         ctx.lineWidth = 6;
         ctx.beginPath();
         ctx.translate(0, 20 - this.phase * 5);
-        ctx.scale(1.5, 1.5);
+        ctx.scale(1.5 * this.flipHat, 1.5);
         ctx.moveTo(8, -15);
         ctx.bezierCurveTo(-12, -5, -12, -5, -20, -5);
         ctx.bezierCurveTo(-10, -26 + this.phase, -3, -26 + this.phase, 10, -18);

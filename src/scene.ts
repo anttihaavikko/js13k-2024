@@ -83,6 +83,7 @@ export class Scene extends Container {
             if (e.key == 'v') this.doEvent();
             if (e.key == 'z') this.zoom();
             if (e.key == 's') this.ship.sail();
+            if (e.key == 'd') this.ship.hurt(6);
             if (e.key == 'k') this.ship.sink();
             if (e.key == 'x') this.ship.shoot(1);
             // if (e.key == 'z') this.targetZoom = Math.random() * 0.5 + 0.25;

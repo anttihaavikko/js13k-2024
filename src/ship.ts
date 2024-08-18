@@ -374,13 +374,13 @@ export class Ship extends Flashable {
         // nest
         if (this.player && this.has('navigator')) {
             ctx.beginPath();
-            ctx.moveTo(-60, -520);
-            ctx.lineTo(-60 - 20, -520 - 60);
-            ctx.lineTo(60 + 20, -520 - 60);
-            ctx.lineTo(60, -520);
+            ctx.moveTo(-60, -535);
+            ctx.lineTo(-60 - 20, -535 - 60);
+            ctx.lineTo(60 + 20, -535 - 60);
+            ctx.lineTo(60, -535);
             ctx.closePath();
-            ctx.moveTo(-70, -550);
-            ctx.lineTo(70, -550);
+            ctx.moveTo(-70, -535 - 30);
+            ctx.lineTo(70, -535 - 30);
             ctx.fill();
             ctx.stroke();
         }

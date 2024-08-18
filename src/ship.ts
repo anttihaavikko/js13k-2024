@@ -375,6 +375,8 @@ export class Ship extends Flashable {
             ctx.lineTo(60 + 20, -520 - 60);
             ctx.lineTo(60, -520);
             ctx.closePath();
+            ctx.moveTo(-70, -550);
+            ctx.lineTo(70, -550);
             ctx.fill();
             ctx.stroke();
         }

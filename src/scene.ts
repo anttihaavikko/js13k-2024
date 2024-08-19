@@ -89,6 +89,7 @@ export class Scene extends Container {
             // if (e.key == 'z') this.zoom();
             // if (e.key == 's') this.nextLevel();
             // if (e.key == 'd') this.ship.hurt(1);
+            // if (e.key == 'j') this.ship.hop();
             // if (e.key == 'k') this.ship.sink();
             // if (e.key == 'R') this.restart();
             // if (e.key == 'x') this.ship.shoot(1);

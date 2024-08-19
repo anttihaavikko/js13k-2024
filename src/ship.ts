@@ -12,6 +12,7 @@ import { Mouse } from './engine/mouse';
 import { Pulse } from './engine/pulse';
 import { randomCell, randomSorter } from './engine/random';
 import { RectParticle } from './engine/rect';
+import { TextEntity } from './engine/text';
 import { offset, Vector } from './engine/vector';
 import { WobblyText } from './engine/wobbly';
 import { Flashable } from './flashable';
@@ -22,7 +23,6 @@ export class Ship extends Flashable {
     private phase: number;
     private dice: Dice[] = [];
     private tempDice: Dice[] = [];
-    private mp: Vector;
     private colors: string[];
     private opponent: Ship;
     private recoil: number = 0;
@@ -59,6 +59,10 @@ export class Ship extends Flashable {
         if (this.dice.length < 20) return 4;
         if (this.dice.length < 30) return 5;
         return 6;
+    }
+
+    private pop(text: string, x: number, y: number): void {
+        this.effects.add(new TextEntity(this.game, text, 60, this.p.x + x * this.getDir(), this.p.y + y, 1.2, { x: 0, y: -2.5 }, { shadow: 4, scales: true }));
     }
 
     public tryRepair(): void {
@@ -137,15 +141,19 @@ export class Ship extends Flashable {
         return amount - target.getValue();
     }
 
+    private getDir(): number {
+        return this.player ? 1 : -1;
+    }
+
     public hurtDice(target: Dice, amount: number): void {
         target.mark();
         setTimeout(() => {
             this.flash();
             this.game.getCamera().shake(10, 0.15, 1);
             this.game.getAudio().explosion();
-            const dir = this.player ? 1 : -1;
-            const pos = offset(this.p, dir * -50, -this.p.y + 340);
+            const pos = offset(this.p, this.getDir() * -50, -this.p.y + 340);
             this.pulse(pos.x + 40, pos.y - 100, 200);
+            this.pop(amount.toString(), target.p.x + 25, target.p.y);
             if (target.hurt(amount)) {
                 this.dice = this.dice.filter(d => d != target);
                 this.repositionDice();
@@ -163,7 +171,7 @@ export class Ship extends Flashable {
         setTimeout(() => this.dude.pose(false), 300);
         this.recoil = 1;
         this.stagger = 1;
-        const dir = this.player ? 1 : -1;
+        const dir = this.getDir();
         const muzzle = offset(this.p, dir * 300, -this.p.y + 320);
         this.ball.shoot(muzzle, 800 * dir);
         this.game.getCamera().shake(5, 0.1, 1);
@@ -231,12 +239,10 @@ export class Ship extends Flashable {
         this.effects.update(tick, mouse);
         this.message.update(tick, mouse);
         [...this.dice, ...this.tempDice].forEach(d => d.update(tick, this.offsetMouse(mouse, this.game.getCamera())));
-        this.mp = this.offsetMouse(mouse, this.game.getCamera());
         if (this.recoil > 0) this.recoil = Math.max(0, this.recoil - 0.075);
         if (this.stagger > 0) this.stagger = Math.max(0, this.stagger - 0.05);
 
         if (this.splashing) {
-            const dir = this.player ? 1 : -1;
             this.effects.add(new RectParticle(
                 this.game,
                 this.p.x - 180 + 370 * Math.random(),
@@ -244,7 +250,7 @@ export class Ship extends Flashable {
                 10,
                 10,
                 0.3,
-                { x: (-2 - Math.random() * 5) * dir, y: -4 - Math.random() * 3 },
+                { x: (-2 - Math.random() * 5) * this.getDir(), y: -4 - Math.random() * 3 },
                 { force: { x: 0, y: 0.5 }, color: '#ffffffcc' }));
         }
 
@@ -316,7 +322,7 @@ export class Ship extends Flashable {
     public addPlate(): void {
         if (this.player) this.game.getAudio().greet();
         const options = this.dice.filter(d => d.canPlate());
-        if (options.length > 0) randomCell(options).plate(); 
+        if (options.length > 0) randomCell(options).plate();
     }
 
     public sink(): void {
@@ -336,11 +342,7 @@ export class Ship extends Flashable {
     }
 
     public getRollPos(): number {
-        return this.p.x + 100 * this.getDirection();
-    }
-
-    public getDirection(): number {
-        return this.player ? 1 : -1;
+        return this.p.x + 100 * this.getDir();
     }
 
     public draw(ctx: CanvasRenderingContext2D): void {
@@ -349,11 +351,11 @@ export class Ship extends Flashable {
         ctx.strokeStyle = this.getColor('#000');
         
         ctx.save();
-        const mirror = this.getDirection();
+        const mirror = this.getDir();
         ctx.translate(this.p.x - this.stagger * 20 * mirror, this.p.y - Math.cos(this.phase) * 10);
         ctx.rotate(this.phase * 0.02 - this.stagger * 0.05 * mirror);
 
-        if (!this.player) ctx.scale(-1, 1);
+        ctx.scale(mirror, 1);
 
         // mast
         ctx.fillStyle = this.getColor(this.colors[0]);

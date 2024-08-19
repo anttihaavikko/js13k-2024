@@ -16,9 +16,9 @@ export class Game extends Entity {
         this.blinders = new Blinders(this, 400);
     }
 
-    public goFullScreen(): void {
-        this.canvas.requestFullscreen();
-    }
+    // public goFullScreen(): void {
+    //     this.canvas.requestFullscreen();
+    // }
 
     public getScene(): Container {
         return this.scene;

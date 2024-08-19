@@ -130,10 +130,11 @@ export class Ship extends Flashable {
         this.dice.forEach(d => d.allowPick());
     }
 
-    public hurt(amount: number): void {
+    public hurt(amount: number): number {
         const target = this.dice.find(d => d.getValue() > amount) ?? [...this.dice].sort((a, b) => a.getValue() - b.getValue())[0];
         if (!target) return;
         this.hurtDice(target, amount);
+        return amount - target.getValue();
     }
 
     public hurtDice(target: Dice, amount: number): void {
@@ -172,9 +173,9 @@ export class Ship extends Flashable {
 
     public shoot(damage: number, first: boolean = true): void {
         this.shootAnim();
-        this.opponent?.hurt(damage);
-        if (this.has('cannoneer') && first && this.opponent.canTake(damage)) {
-            setTimeout(() => this.shoot(damage, false), 750);
+        const more = this.opponent?.hurt(damage);
+        if (this.has('cannoneer') && more > 0 && first && this.opponent.canTake(more)) {
+            setTimeout(() => this.shoot(more, false), 750);
             return;
         }
         setTimeout(() => this.scene.nextTurn(), 500);
@@ -255,7 +256,8 @@ export class Ship extends Flashable {
                     this.hits++;
                     this.opponent.shootAnim();
                     this.hurtDice(d, this.incoming);
-                    if (this.opponent.has('cannoneer') && this.hits < 2 && this.canTake(this.incoming)) {
+                    this.incoming = this.incoming - d.getValue();
+                    if (this.opponent.has('cannoneer') && this.incoming > 0 && this.hits < 2 && this.canTake(this.incoming)) {
                         this.scene.info();
                         setTimeout(() => {
                             this.game.getAudio().incoming();

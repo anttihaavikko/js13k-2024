@@ -348,7 +348,7 @@ export class Ship extends Flashable {
         
         ctx.save();
         const mirror = this.getDirection();
-        ctx.translate(this.p.x - this.stagger * 20 * mirror, this.p.y);
+        ctx.translate(this.p.x - this.stagger * 20 * mirror, this.p.y - Math.cos(this.phase) * 10);
         ctx.rotate(this.phase * 0.02 - this.stagger * 0.05 * mirror);
 
         if (!this.player) ctx.scale(-1, 1);

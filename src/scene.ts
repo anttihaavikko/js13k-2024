@@ -325,6 +325,7 @@ export class Scene extends Container {
     }
 
     private nextLevel(): void {
+        clearTimeout(this.prompted);
         this.ship.pose(false);
         this.extraRerollUsed = false;
         this.ship.disablePicking();

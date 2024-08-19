@@ -351,7 +351,7 @@ export class Scene extends Container {
     }
 
     private getTaunt(): string {
-        return randomCell(['FILTHY RAT', 'HOW DARE YOU', 'YOU TRAITOR']);
+        return randomCell(['FILTHY RAT', 'HOW DARE YOU', 'YOU TRAITOR', 'LAND LUBBER']);
     }
 
     private activateLevel(): void {

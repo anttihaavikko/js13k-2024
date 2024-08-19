@@ -158,7 +158,7 @@ export class Dude extends Entity {
         ctx.save();
         ctx.translate(this.p.x, this.p.y);
         if (!this.cane) ctx.scale(0.9, 0.9);
-        if (this.crown) ctx.scale(1.2, 1.2);
+        if (this.crown && this.face.angry) ctx.scale(1.3, 1.3);
         ctx.translate(-this.p.x, -this.p.y);
         
         ctx.translate(0,  -this.air * 50 + this.ducking * 7 - (this.posing ? 10 : 0));

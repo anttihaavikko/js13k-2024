@@ -15,9 +15,7 @@ export type CrewRole = 'quartermaster' | 'cannoneer' | 'navigator'
 export class Dude extends Entity {
     private phase = 0;
     private height = 0;
-    private dip = 0;
     private air = 0;
-    private ducking = 0;
     private hopDir: number;
     private wave = 0;
     private posing: boolean;
@@ -113,8 +111,6 @@ export class Dude extends Entity {
         this.face.update(tick, mouse);
         if (this.height > 0) this.height = clamp01(this.height - 0.0025 * this.delta);
         this.air = Math.sin((1 - this.height) * Math.PI);
-        if (this.dip > 0) this.dip = clamp01(this.dip - 0.0015 * this.delta);
-        this.ducking = Math.sin((1 - this.dip) * Math.PI);
         this.wave = Math.sin(tick * 0.005);
         super.update(tick, mouse);
     }
@@ -123,24 +119,12 @@ export class Dude extends Entity {
         this.face.angry = state;
     }
 
-    // public think(state: boolean): void {
-    //     // if (state && !this.face.thinking) this.getAudio().think();
-    //     this.face.thinking = state;
-    // }
-
-    public duck(): void {
-        this.dip = 0.7;
-    }
-
     public hop(to: Vector): void {
         this.hopDir = -Math.sign(to.x - this.p.x);
         this.height = 1;
         this.tween.move(to, 0.3);
         this.game.getAudio().jump();
-        setTimeout(() => {
-            this.game.getAudio().land();
-            // this.game.getScene().add(...bits(this.game, offset(this.getCenter(), 0, 10), COLORS.border));
-        }, 370);
+        setTimeout(() => this.game.getAudio().land(), 370);
         setTimeout(() => this.hopDir = 0, 300);
     }
 
@@ -161,8 +145,7 @@ export class Dude extends Entity {
         if (this.crown && this.face.angry) ctx.scale(1.3, 1.3);
         ctx.translate(-this.p.x, -this.p.y);
         
-        ctx.translate(0,  -this.air * 50 + this.ducking * 7 - (this.posing ? 10 : 0));
-
+        ctx.translate(0,  -this.air * 50 - (this.posing ? 10 : 0));
 
         this.drawLeg(ctx, 1, this.posing ? -45 : 0);
         this.drawLeg(ctx, -1, 0);
@@ -171,7 +154,7 @@ export class Dude extends Entity {
         ctx.rotate(this.wave * 0.05 - (this.posing ? 0.3 : 0));
         ctx.translate(-this.p.x, -this.p.y);
 
-        ctx.translate(0,  -this.phase * 10 + this.ducking * 3);
+        ctx.translate(0,  -this.phase * 10);
 
         ctx.beginPath();
         ctx.moveTo(this.p.x, this.p.y - 40);

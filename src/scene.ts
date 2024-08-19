@@ -22,7 +22,7 @@ export class Scene extends Container {
     private action: ButtonEntity;
     private yesButton: ButtonEntity;
     private noButton: ButtonEntity;
-    private fullScreenButton: ButtonEntity;
+    // private fullScreenButton: ButtonEntity;
     private act: () => void;
     private yesAct: () => void;
     private noAct: () => void;
@@ -218,7 +218,7 @@ export class Scene extends Container {
     }
 
     private rollForCargo(): void {
-        this.fullScreenButton.visible = false;
+        // this.fullScreenButton.visible = false;
         this.roll(2, -80, -40);
         this.action.visible = false;
         this.info();

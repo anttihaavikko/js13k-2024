@@ -64,7 +64,7 @@ export class Scene extends Container {
 
         this.promptAction('ROLL', () => {
             this.rollForCargo();
-            setTimeout(() => this.promptAnswerWith('ROLL', 'KEEP', 'Would you like to roll again?', '', () => {
+            setTimeout(() => this.promptAnswerWith('ROLL', 'KEEP', 'Cast the dice once more?', '', () => {
                 this.reroll();
                 setTimeout(() => {
                     this.moveDiceTo(this.ship);
@@ -224,7 +224,7 @@ export class Scene extends Container {
         this.info();
         
         setTimeout(() => {
-            this.info('Would you like to roll again?');
+            this.info('Cast the dice once more?');
             this.yesButton.visible = true;
             this.noButton.visible = true;
         }, 500);
@@ -302,7 +302,7 @@ export class Scene extends Container {
     }
 
     private promptSail(): void {
-        this.promptAction('SAIL', () => this.nextLevel());
+        this.promptAction('SET SAIL', () => this.nextLevel());
     }
 
     private getDamage(): number {
@@ -400,7 +400,7 @@ export class Scene extends Container {
     }
 
     private thank(): void {
-        this.info('There you go!', 'Hope that helps...');
+        this.info('All aboard, you\'re good to go!', 'May that steer you true...');
         setTimeout(() => this.npcLeave(), 500);
     }
 
@@ -410,7 +410,9 @@ export class Scene extends Container {
     }
 
     private decline(): void {
-        this.info('Ok then!', 'Good luck on your journey...');
+        this.info('Aye, all set!', 'Fair winds on your voyage...');
+        // "May the tides be ever in your favor..."
+        // "Safe travels on the open seas..."
         this.npcLeave();
     }
 

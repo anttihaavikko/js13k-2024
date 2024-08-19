@@ -161,20 +161,22 @@ export class Scene extends Container {
         setTimeout(() => this.promptForReroll('Would you like to roll again?', `The total is ${this.getDamage()}...`, () => this.shoot()), 500);
     }
 
+    private rerollOrAct(first: string, second: string, after: () => void): void {
+        if (this.current.has('navigator') && !this.extraRerollUsed) {
+            this.extraRerollUsed = true;
+            this.promptForReroll(first, this.loot.length > 0 ? second : `The total is ${this.getDamage()}...`, after);
+            return;
+        }
+        after();
+        this.dice = [];
+    }
+
     private promptForReroll(first: string, second: string, after: () => void): void {
         if (this.current.isAuto()) {
             const dmg = this.getDamage();
             if (dmg < this.dice.length) {
                 this.roll(this.dice.length);
-                setTimeout(() => {
-                    // TODO: maybe optimize?
-                    if (this.current.has('navigator') && !this.extraRerollUsed) {
-                        this.extraRerollUsed = true;
-                        this.promptForReroll(first, second, after);
-                        return;
-                    }
-                    after();
-                }, 750);
+                setTimeout(() => this.rerollOrAct(first, second, after), 750);
                 return;
             }
             this.shoot();
@@ -182,15 +184,7 @@ export class Scene extends Container {
         }
         this.promptAnswerWith('ROLL', 'KEEP', first, second, () => {
             this.reroll();
-            setTimeout(() => {
-                if (this.current.has('navigator') && !this.extraRerollUsed) {
-                    this.extraRerollUsed = true;
-                    this.promptForReroll(first, this.loot.length > 0 ? second : `The total is ${this.getDamage()}...`, after);
-                    return;
-                }
-                after();
-                this.dice = [];
-            }, 750);
+            setTimeout(() => this.rerollOrAct(first, second, after), 750);
         }, () => {
             after();
             this.dice = [];

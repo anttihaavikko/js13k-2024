@@ -570,7 +570,8 @@ export class Scene extends Container {
     }
 
     public getButtons(): ButtonEntity[] {
-        return [this.action, this.yesButton, this.noButton, this.fullScreenButton];
+        // return [this.action, this.yesButton, this.noButton, this.fullScreenButton];
+        return [this.action, this.yesButton, this.noButton];
     }
 
     public update(tick: number, mouse: Mouse): void {

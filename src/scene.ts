@@ -135,6 +135,7 @@ export class Scene extends Container {
     }
 
     private promptAnswerWith(positive: string, negative: string, first: string, second: string, yes: () => void, no: () => void): void {
+        clearTimeout(this.prompted);
         this.yesButton.setText(positive);
         this.noButton.setText(negative);
         this.info(first, second);

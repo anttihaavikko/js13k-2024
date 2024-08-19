@@ -31,11 +31,10 @@ export class WobblyText extends TextEntity {
     public draw(ctx: CanvasRenderingContext2D): void {
         ctx.save();
         ctx.rotate(this.options?.angle ?? 0);
-        const mod = this.options?.scales ? this.ratio : 1;
-        ctx.font =`${this.fontSize * mod}px ${font}`;
-        ctx.textAlign = 'left';
-
         this.ratio = clamp01(this.scale.x);
+        const mod = this.options?.scales ? this.ratio : 1;
+        ctx.textAlign = 'left';
+        ctx.font =`${this.fontSize * mod}px ${font}`;
 
         // if(this.options?.shadow) {
         //     ctx.fillStyle = "#000";
@@ -52,6 +51,7 @@ export class WobblyText extends TextEntity {
         let offset = this.options?.align === 'center' || !this.options?.align ? -w * 0.5 : 0;
         if (this.options?.align == 'right') offset = -w;
         this.content.split('').forEach((letter, i) => {
+            // ctx.font =`${this.fontSize * mod * (this.content[i - 1] === ' ' ? 1.2 : 1)}px ${font}`;
             if (this.options?.shadow) {
                 ctx.fillStyle = '#000';
                 ctx.fillText(letter, this.p.x + spacing * i + this.options.shadow + offset, this.p.y + this.options.shadow + Math.sin(this.time * 0.005 + i * this.frequency) * this.amplitude);

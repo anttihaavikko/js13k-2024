@@ -4,7 +4,7 @@ import { Mouse } from './engine/mouse';
 import { Scene } from './scene';
 
 export const WIDTH = 800;
-export const HEIGHT = 600;
+export const HEIGHT = 400;
 
 const canvas: HTMLCanvasElement = document.createElement('canvas');
 const ctx: CanvasRenderingContext2D = canvas.getContext('2d');

@@ -50,12 +50,12 @@ export class Scene extends Container {
         this.ship = new Ship(game, '14', 0, this, true);
         this.current = this.ship;
 
-        this.splash = new WobblyText(game, 'Lets start by rolling for your cargo!', 35, 400, 120, 0.2, 3, { shadow: 4, align: 'center', scales: true });
-        this.secondLine = new WobblyText(game, '', 25, 400, 165, 0.2, 3, { shadow: 3, align: 'center', scales: true });
-        this.bigText = new WobblyText(game, '~ COUP AHOO ~', 80, 400, 210, 0.2, 3, { shadow: 6, align: 'center', scales: true });
-        this.action = new ButtonEntity(game, 'ROLL', 400, 550, 200, 55, () => this.buttonPress(), game.getAudio(), 20);
-        this.yesButton = new ButtonEntity(game, 'YEAH', 480, 550, 140, 55, () => this.answer(true), game.getAudio(), 20);
-        this.noButton = new ButtonEntity(game, 'NOPE', 320, 550, 140, 55, () => this.answer(false), game.getAudio(), 20);
+        this.splash = new WobblyText(game, 'Lets start by rolling for your cargo!', 35, 400, 60, 0.2, 3, { shadow: 4, align: 'center', scales: true });
+        this.secondLine = new WobblyText(game, '', 25, 400, 105, 0.2, 3, { shadow: 3, align: 'center', scales: true });
+        this.bigText = new WobblyText(game, '~ COUP AHOO ~', 80, 400, 150, 0.2, 3, { shadow: 6, align: 'center', scales: true });
+        this.action = new ButtonEntity(game, 'ROLL', 800 - 100 - 10, 360, 200, 55, () => this.buttonPress(), game.getAudio(), 20);
+        this.yesButton = new ButtonEntity(game, 'YEAH', 800 - 70 - 10, 360, 140, 55, () => this.answer(true), game.getAudio(), 20);
+        this.noButton = new ButtonEntity(game, 'NOPE', 800 - 70 * 3 - 10 * 2, 360, 140, 55, () => this.answer(false), game.getAudio(), 20);
 
         this.yesButton.visible = false;
         this.noButton.visible = false;
@@ -76,7 +76,7 @@ export class Scene extends Container {
 
         this.cam = game.getCamera();
         this.cam.zoom = this.targetZoom;
-        this.cam.pan = { x: -100, y: 50 };
+        this.cam.pan = { x: -100, y: -20 };
 
         game.onKey((e) => {
             if (e.key == 'm') this.game.getAudio().toggleMute();
@@ -121,8 +121,7 @@ export class Scene extends Container {
     }
 
     private reroll(): void {
-        this.roll(this.dice.length);
-        this.loot.forEach(l => l.reroll());
+        [...this.dice, ...this.loot].forEach(l => l.reroll());
     }
 
     private promptAction(label: string, action: () => void): void {
@@ -191,11 +190,8 @@ export class Scene extends Container {
         });
     }
 
-    private shoot(): void {
-        this.shootFor(this.getDamage());
-    }
-
-    public shootFor(dmg: number): void {
+    public shoot(): void {
+        const dmg = this.getDamage();
         if (dmg == 13) {
             this.current.talk('UNLUCKY 13!');
             this.game.getAudio().bad();
@@ -215,7 +211,7 @@ export class Scene extends Container {
     }
 
     private rollForCargo(): void {
-        this.roll(2);
+        this.roll(2, -80, -40);
         this.action.visible = false;
         this.info();
         
@@ -335,7 +331,7 @@ export class Scene extends Container {
         this.level++;
         this.targetZoom = 0.75;
         this.cam.shift = 0;
-        this.cam.pan.y = 50;
+        this.cam.pan.y = -25;
         this.ship.sail();
         this.action.setText('');
         this.action.visible = false;
@@ -425,7 +421,7 @@ export class Scene extends Container {
     private triggerWin(): void {
         this.targetZoom = 0.75;
         this.cam.shift = 0;
-        this.cam.pan.y = 150;
+        this.cam.pan.y = -50;
         this.ship.addCrown();
         this.ship.setName('WIN');
         this.ship.pose(true);
@@ -532,7 +528,7 @@ export class Scene extends Container {
         const right = this.enemy?.getCargoWidth() ?? 0;
         const max = Math.max(left, right);
         this.targetZoom = 500 / (1000 + left + right);
-        this.cam.pan.y = 350 + max - 100 / this.cam.zoom;
+        this.cam.pan.y = 220 + max - 100 / this.cam.zoom;
         this.cam.shift = 100 - left - right;
     }
 
@@ -548,7 +544,7 @@ export class Scene extends Container {
         return (this.cam.pan.x + 400 - this.cam.shift);
     }
 
-    public roll(amount: number): void {
+    public roll(amount: number, offX: number = 0, offY: number = 0): void {
         const perRow = 9;
         let row = 0;
         this.dice = [];
@@ -557,7 +553,7 @@ export class Scene extends Container {
             // const m = this.getMid() + (70 + this.cam.shift) / this.cam.zoom;
             const m = this.current.getRollPos();
             const d = new Dice(this.game, m, 800, this.useDamageDice);
-            d.roll(m + i * 120 - 120 * (Math.min(amount - 1, perRow) * 0.5) - 120 * perRow * Math.floor(i / perRow), 450 + row * 120);
+            d.roll(m + offX + i * 120 - 120 * (Math.min(amount - 1, perRow) * 0.5) - 120 * perRow * Math.floor(i / perRow), 450 + row * 120 + offY);
             this.dice.push(d);
         }
         setTimeout(() => {

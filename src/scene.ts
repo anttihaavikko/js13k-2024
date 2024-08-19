@@ -536,6 +536,7 @@ export class Scene extends Container {
     }
 
     private moveDiceTo(ship: Ship): void {
+        this.game.getAudio().pick();
         this.dice.forEach((d, i) => d.move(offset(ship.getDicePos(i + ship.getDiceCount()), this.ship.p.x, this.ship.p.y), () => ship.addDice(d)));
         setTimeout(() => {
             this.dice = [];

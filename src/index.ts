@@ -12,7 +12,7 @@ const mouse: Mouse = { x: 0, y: 0 };
 const audio = new AudioManager(!!localStorage.getItem('KeybGameMute'));
 audio.prepare();
 audio.play();
-const game = new Game(audio);
+const game = new Game(audio, canvas);
 const scene = new Scene(game);
 game.setScene(scene);
 

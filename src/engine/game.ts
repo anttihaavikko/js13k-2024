@@ -11,9 +11,13 @@ export class Game extends Entity {
     private camera = new Camera();
     private blinders: Blinders;
 
-    constructor(private audio: AudioManager) {
+    constructor(private audio: AudioManager, private canvas: HTMLCanvasElement) {
         super(null, 0, 0, 0, 0);
         this.blinders = new Blinders(this, 400);
+    }
+
+    public goFullScreen(): void {
+        this.canvas.requestFullscreen();
     }
 
     public getScene(): Container {

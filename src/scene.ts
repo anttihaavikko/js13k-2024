@@ -22,6 +22,7 @@ export class Scene extends Container {
     private action: ButtonEntity;
     private yesButton: ButtonEntity;
     private noButton: ButtonEntity;
+    private fullScreenButton: ButtonEntity;
     private act: () => void;
     private yesAct: () => void;
     private noAct: () => void;
@@ -56,6 +57,7 @@ export class Scene extends Container {
         this.action = new ButtonEntity(game, 'ROLL', 800 - 100 - 10, 360, 200, 55, () => this.buttonPress(), game.getAudio(), 20);
         this.yesButton = new ButtonEntity(game, 'YEAH', 800 - 70 - 10, 360, 140, 55, () => this.answer(true), game.getAudio(), 20);
         this.noButton = new ButtonEntity(game, 'NOPE', 800 - 70 * 3 - 10 * 2, 360, 140, 55, () => this.answer(false), game.getAudio(), 20);
+        this.fullScreenButton = new ButtonEntity(game, '[ ]', 10 + 27, 360, 55, 55, () => this.goFullScreen(), game.getAudio(), 20);
 
         this.yesButton.visible = false;
         this.noButton.visible = false;
@@ -106,6 +108,11 @@ export class Scene extends Container {
             //     this.enemy.addCrew(crew.clone());
             // }
         });
+    }
+
+    private goFullScreen(): void {
+        this.fullScreenButton.visible = false;
+        this.game.goFullScreen();
     }
 
     public restart(): void {
@@ -211,6 +218,7 @@ export class Scene extends Container {
     }
 
     private rollForCargo(): void {
+        this.fullScreenButton.visible = false;
         this.roll(2, -80, -40);
         this.action.visible = false;
         this.info();
@@ -562,7 +570,7 @@ export class Scene extends Container {
     }
 
     public getButtons(): ButtonEntity[] {
-        return [this.action, this.yesButton, this.noButton];
+        return [this.action, this.yesButton, this.noButton, this.fullScreenButton];
     }
 
     public update(tick: number, mouse: Mouse): void {

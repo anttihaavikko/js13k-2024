@@ -81,30 +81,30 @@ export class Scene extends Container {
         game.onKey((e) => {
             if (e.key == 'm') this.game.getAudio().toggleMute();
             // dev keys
-            if (e.key == 'w') this.triggerWin();
-            if (e.key == 'a') this.ship.addDice(new Dice(this.game, 0, 0, false));
-            if (e.key == 'e') this.enemy.addDice(new Dice(this.game, 0, 0, false));
-            if (e.key == 'v') this.doEvent();
-            if (e.key == 'f') this.ship.tryRepair();
-            if (e.key == 'z') this.zoom();
-            if (e.key == 's') this.nextLevel();
-            if (e.key == 'd') this.ship.hurt(1);
-            if (e.key == 'j') this.ship.hop();
-            if (e.key == 'k') this.ship.sink();
-            if (e.key == 'R') this.restart();
-            if (e.key == 'x') this.ship.shoot(1);
-            if (e.key == 'p') this.ship.pose(true);
-            if (e.key == 'h') this.game.getCamera().shake(10, 0.15, 1);
-            if (e.key == 'c') {
-                const crew = this.ship.createCrew(-70, -100);
-                crew.setRole(this.ship.getAvailableRole());
-                this.ship.addCrew(crew.clone());
-            }
-            if (e.key == 'C') {
-                const crew = this.enemy.createCrew(-70, -100);
-                crew.setRole(this.enemy.getAvailableRole());
-                this.enemy.addCrew(crew.clone());
-            }
+            // if (e.key == 'w') this.triggerWin();
+            // if (e.key == 'a') this.ship.addDice(new Dice(this.game, 0, 0, false));
+            // if (e.key == 'e') this.enemy.addDice(new Dice(this.game, 0, 0, false));
+            // if (e.key == 'v') this.doEvent();
+            // if (e.key == 'f') this.ship.tryRepair();
+            // if (e.key == 'z') this.zoom();
+            // if (e.key == 's') this.nextLevel();
+            // if (e.key == 'd') this.ship.hurt(1);
+            // if (e.key == 'j') this.ship.hop();
+            // if (e.key == 'k') this.ship.sink();
+            // if (e.key == 'R') this.restart();
+            // if (e.key == 'x') this.ship.shoot(1);
+            // if (e.key == 'p') this.ship.pose(true);
+            // if (e.key == 'h') this.game.getCamera().shake(10, 0.15, 1);
+            // if (e.key == 'c') {
+            //     const crew = this.ship.createCrew(-70, -100);
+            //     crew.setRole(this.ship.getAvailableRole());
+            //     this.ship.addCrew(crew.clone());
+            // }
+            // if (e.key == 'C') {
+            //     const crew = this.enemy.createCrew(-70, -100);
+            //     crew.setRole(this.enemy.getAvailableRole());
+            //     this.enemy.addCrew(crew.clone());
+            // }
         });
     }
 

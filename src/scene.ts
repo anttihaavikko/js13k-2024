@@ -82,8 +82,8 @@ export class Scene extends Container {
             if (e.key == 'm') this.game.getAudio().toggleMute();
             // dev keys
             // if (e.key == 'w') this.triggerWin();
-            if (e.key == 'a') this.ship.addDice(new Dice(this.game, 0, 0, false));
-            if (e.key == 'e') this.enemy.addDice(new Dice(this.game, 0, 0, false));
+            // if (e.key == 'a') this.ship.addDice(new Dice(this.game, 0, 0, false));
+            // if (e.key == 'e') this.enemy.addDice(new Dice(this.game, 0, 0, false));
             // if (e.key == 'v') this.doEvent();
             // if (e.key == 'f') this.ship.tryRepair();
             // if (e.key == 'z') this.zoom();
@@ -101,11 +101,11 @@ export class Scene extends Container {
             //     crew.setRole(this.ship.getAvailableRole());
             //     this.ship.addCrew(crew.clone());
             // }
-            if (e.key == 'C') {
-                const crew = this.enemy.createCrew(-70, -100);
-                crew.setRole(this.enemy.getAvailableRole());
-                this.enemy.addCrew(crew.clone());
-            }
+            // if (e.key == 'C') {
+            //     const crew = this.enemy.createCrew(-70, -100);
+            //     crew.setRole(this.enemy.getAvailableRole());
+            //     this.enemy.addCrew(crew.clone());
+            // }
         });
     }
 

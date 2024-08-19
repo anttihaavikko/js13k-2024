@@ -77,10 +77,15 @@ export class AudioManager {
     }
 
     public buttonClick(): void {
-        this.playEffect([1.5,,321,.01,,.02,,.7,-62,-30,116,.15,,.6,35,,.04,.51,.03,,99]);
+        this.playEffect([2.5,,321,.01,,.02,,.7,-62,-30,116,.15,,.6,35,,.04,.51,.03,,99]);
     }
 
     public buttonHover(): void {
+    }
+
+    public pick(): void {
+        this.buttonClick();
+        this.playEffect([1.5,,419,.02,.03,.01,3,3.5,-49,5,283,.49,.09,,,,.04,.69,.02,.12,-1280]);
     }
 
     public shoot(): void {

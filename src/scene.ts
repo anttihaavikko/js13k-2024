@@ -304,7 +304,7 @@ export class Scene extends Container {
         if (this.current.isDead()) {
             this.ship.pose(false);
             this.enemy.pose(true);
-            this.info('Lost all your cargo!', '', 'GAME OVER');
+            this.info('Down to Davy Jones\'s Locker...', '', 'GAME OVER');
             this.promptAction('TRY AGAIN?', () => this.restart());
             setTimeout(() => this.ship.sink(), 100);
             return;
@@ -399,7 +399,7 @@ export class Scene extends Container {
 
     public pick(d: Dice): void {
         if (this.trading) {
-            this.game.getAudio().buttonClick();
+            this.game.getAudio().pick();
             d.allowPick(false);
             this.enemy.giveDice(d.getValue());
             this.ship.remove(d);
@@ -470,7 +470,7 @@ export class Scene extends Container {
             case 2: {
                 this.enemy.hide();
                 this.promptSail();
-                this.info('Someone must have sunk here!', 'Free loot I guess...');
+                this.info('Free cargo floating in the drink!', 'A vessel must have sunken here...');
                 this.addLoot();
                 break;
             }
@@ -580,7 +580,7 @@ export class Scene extends Container {
             const looted = this.loot.find(l => l.isHovering());
             if (looted) {
                 this.showGreed();
-                this.game.getAudio().buttonClick();
+                this.game.getAudio().pick();
                 this.yesButton.visible = false;
                 this.noButton.visible = false;
                 this.loot.forEach(l => l.allowPick(false));

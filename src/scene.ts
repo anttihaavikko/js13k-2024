@@ -401,12 +401,16 @@ export class Scene extends Container {
 
     private thank(): void {
         this.info('There you go!', 'Hope that helps...');
-        setTimeout(() => this.enemy.sail(-1), 700);
+        setTimeout(() => {
+            this.enemy.sail(-1);
+            this.promptSail();
+        }, 500);
     }
 
     private decline(): void {
         this.info('Ok then!', 'Good luck on your journey...');
         this.enemy.sail(-1);
+        this.promptSail();
     }
 
     public pick(d: Dice): void {
@@ -468,14 +472,8 @@ export class Scene extends Container {
                     this.enemy?.hop();
                     this.promptAnswerWith('ROLL', 'KEEP', 'Hello there mate!', 'Would you like to reroll all your cargo?', () => {
                         this.ship.rerollAll();
-                        setTimeout(() => {
-                            this.promptSail();
-                            this.thank();
-                        }, 500);
-                    }, () => {
-                        this.promptSail();
-                        this.decline();
-                    });
+                        this.thank();
+                    }, () => this.decline());
                 }, 1000);
                 break;
             }
@@ -493,14 +491,8 @@ export class Scene extends Container {
                     this.enemy?.hop();
                     this.promptAnswer('Ahoy! I could plate one of your cargo!', 'It\'ll only be able to receive 1 damage at a time....', () => {
                         this.ship.addPlate();
-                        setTimeout(() => {
-                            this.promptSail();
-                            this.thank();
-                        }, 500);
-                    }, () => {
-                        this.promptSail();
-                        this.decline();
-                    });
+                        this.thank();
+                    }, () => this.decline());
                 }, 1000);
                 break;
             }
@@ -515,14 +507,8 @@ export class Scene extends Container {
                     this.promptAnswer(`Oi! Want to hire this ${crew.getRole()}?`, crew.getRoleDescription(), () => {
                         this.enemy.removeCrew();
                         this.ship.addCrew(crew.clone());
-                        setTimeout(() => {
-                            this.promptSail();
-                            this.thank();
-                        }, 500);
-                    }, () => {
-                        this.promptSail();
-                        this.decline();
-                    });
+                        this.thank();
+                    }, () => this.decline());
                 }, 1000);
                 break;
             }

@@ -310,7 +310,7 @@ export class Scene extends Container {
         if (this.current.isDead()) {
             this.ship.pose(false);
             this.enemy.pose(true);
-            this.info('Down to Davy Jones\'s Locker...', '', 'GAME OVER');
+            this.info('Down to Davy Jones\' Locker...', '', 'GAME OVER');
             this.promptAction('TRY AGAIN?', () => this.restart());
             setTimeout(() => this.ship.sink(), 100);
             return;

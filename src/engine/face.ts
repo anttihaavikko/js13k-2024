@@ -32,7 +32,7 @@ const defaultOptions: FaceOptions = {
 
 export class Face extends Entity {
     public angry: boolean;
-    public thinking: boolean;
+    // public thinking: boolean;
 
     private openess = 0;
     private targetOpeness = 0;
@@ -96,23 +96,24 @@ export class Face extends Entity {
             ctx.stroke();
         }
 
-        if (this.thinking && !this.angry) {
-            ctx.beginPath();
-            ctx.moveTo((-40 * this.options.width + 10) * this.mirrorer, -20);
-            ctx.lineTo((-40 * this.options.width - 20) * this.mirrorer, -20);
-            ctx.stroke();
-            ctx.beginPath();
-            ctx.moveTo((40 * this.options.width - 10) * this.mirrorer, -40);
-            ctx.lineTo((40 * this.options.width + 20) * this.mirrorer, -35);
-            ctx.stroke();
-        }
+        // if (this.thinking && !this.angry) {
+        //     ctx.beginPath();
+        //     ctx.moveTo((-40 * this.options.width + 10) * this.mirrorer, -20);
+        //     ctx.lineTo((-40 * this.options.width - 20) * this.mirrorer, -20);
+        //     ctx.stroke();
+        //     ctx.beginPath();
+        //     ctx.moveTo((40 * this.options.width - 10) * this.mirrorer, -40);
+        //     ctx.lineTo((40 * this.options.width + 20) * this.mirrorer, -35);
+        //     ctx.stroke();
+        // }
 
         // mouth
         ctx.save();
         ctx.scale(this.mirrorer, 1);
         ctx.beginPath();
         const mw = this.options.width * this.options.mouthWidth;
-        const start = this.thinking ? 25 : 20;
+        // const start = this.thinking ? 25 : 20;
+        const start = 20;
         ctx.moveTo(-40 * mw, start);
         const curve = this.angry ? -30 : 0;
         ctx.quadraticCurveTo(0, 40 - 60 * mw * this.openess + curve, 40 * mw, 20);

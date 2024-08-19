@@ -123,10 +123,10 @@ export class Dude extends Entity {
         this.face.angry = state;
     }
 
-    public think(state: boolean): void {
-        // if (state && !this.face.thinking) this.getAudio().think();
-        this.face.thinking = state;
-    }
+    // public think(state: boolean): void {
+    //     // if (state && !this.face.thinking) this.getAudio().think();
+    //     this.face.thinking = state;
+    // }
 
     public duck(): void {
         this.dip = 0.7;

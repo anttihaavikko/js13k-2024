@@ -401,16 +401,17 @@ export class Scene extends Container {
 
     private thank(): void {
         this.info('There you go!', 'Hope that helps...');
-        setTimeout(() => {
-            this.enemy.sail(-1);
-            this.promptSail();
-        }, 500);
+        setTimeout(() => this.npcLeave(), 500);
+    }
+
+    private npcLeave(): void {
+        this.enemy.sail(-1);
+        this.promptSail();
     }
 
     private decline(): void {
         this.info('Ok then!', 'Good luck on your journey...');
-        this.enemy.sail(-1);
-        this.promptSail();
+        this.npcLeave();
     }
 
     public pick(d: Dice): void {

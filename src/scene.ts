@@ -55,8 +55,8 @@ export class Scene extends Container {
         this.secondLine = new WobblyText(game, '', 25, 400, 105, 0.2, 3, { shadow: 3, align: 'center', scales: true });
         this.bigText = new WobblyText(game, '~ COUP AHOO ~', 80, 400, 150, 0.2, 3, { shadow: 6, align: 'center', scales: true });
         this.action = new ButtonEntity(game, 'ROLL', 800 - 100 - 10, 360, 200, 55, () => this.buttonPress(), game.getAudio(), 20);
-        this.yesButton = new ButtonEntity(game, 'YEAH', 800 - 70 - 10, 360, 140, 55, () => this.answer(true), game.getAudio(), 20);
-        this.noButton = new ButtonEntity(game, 'NOPE', 800 - 70 * 3 - 10 * 2, 360, 140, 55, () => this.answer(false), game.getAudio(), 20);
+        this.yesButton = new ButtonEntity(game, '', 800 - 70 - 10, 360, 140, 55, () => this.answer(true), game.getAudio(), 20);
+        this.noButton = new ButtonEntity(game, '', 800 - 70 * 3 - 10 * 2, 360, 140, 55, () => this.answer(false), game.getAudio(), 20);
         // this.fullScreenButton = new ButtonEntity(game, '[ ]', 10 + 27, 360, 55, 55, () => this.goFullScreen(), game.getAudio(), 20);
 
         this.yesButton.visible = false;

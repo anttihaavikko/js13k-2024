@@ -168,7 +168,7 @@ export class Scene extends Container {
     }
 
     private rerollOrAct(first: string, second: string, after: () => void): void {
-        if (this.current.has('navigator') && !this.extraRerollUsed) {
+        if (this.current.has('n') && !this.extraRerollUsed) {
             this.extraRerollUsed = true;
             this.promptForReroll(first, this.loot.length > 0 ? second : `The total is ${this.getDamage()}...`, after);
             return;

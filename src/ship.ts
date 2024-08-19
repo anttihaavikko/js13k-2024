@@ -35,7 +35,7 @@ export class Ship extends Flashable {
     private hidden: boolean;
     private message: WobblyText;
     private crew: Dude[] = [];
-    private availableRoles: CrewRole[] = ['quartermaster', 'cannoneer', 'navigator'];
+    private availableRoles: CrewRole[] = ['q', 'c', 'n'];
     private hits: number = 0;
     
     constructor(game: Game, private name: string, x: number, private scene: Scene, private player: boolean) {
@@ -66,7 +66,7 @@ export class Ship extends Flashable {
     }
 
     public tryRepair(): void {
-        const qm = this.crew.find(c => c.is('quartermaster'));
+        const qm = this.crew.find(c => c.is('q'));
         if (qm) {
             const target = randomCell(this.dice);
             qm.hopInPlace();
@@ -182,7 +182,7 @@ export class Ship extends Flashable {
     public shoot(damage: number, first: boolean = true): void {
         this.shootAnim();
         const more = this.opponent?.hurt(damage);
-        if (this.has('cannoneer') && more > 0 && first && this.opponent.canTake(more)) {
+        if (this.has('c') && more > 0 && first && this.opponent.canTake(more)) {
             setTimeout(() => this.shoot(more, false), 750);
             return;
         }
@@ -263,7 +263,7 @@ export class Ship extends Flashable {
                     this.opponent.shootAnim();
                     this.hurtDice(d, this.incoming);
                     this.incoming = this.incoming - d.getValue();
-                    if (this.opponent.has('cannoneer') && this.incoming > 0 && this.hits < 2 && this.canTake(this.incoming)) {
+                    if (this.opponent.has('c') && this.incoming > 0 && this.hits < 2 && this.canTake(this.incoming)) {
                         this.scene.info();
                         setTimeout(() => {
                             this.game.getAudio().incoming();
@@ -418,7 +418,7 @@ export class Ship extends Flashable {
         ctx.stroke();
 
         // nest
-        if (!this.friendly && this.has('navigator')) {
+        if (!this.friendly && this.has('n')) {
             ctx.beginPath();
             ctx.moveTo(-60, -535);
             ctx.lineTo(-60 - 20, -535 - 60);
@@ -451,7 +451,7 @@ export class Ship extends Flashable {
     }
 
     public repotionQuartermaster(): void {
-        const qm = this.crew.find(c => c.is('quartermaster'));
+        const qm = this.crew.find(c => c.is('q'));
         if (qm) {
             const height = this.getStackHeight();
             qm.hop({ x: -45 - Math.max(Math.floor(this.dice.length / height), 1) * 40, y: -105 - Math.min(height, this.dice.length) * 70});
@@ -500,7 +500,7 @@ export class Ship extends Flashable {
     }
 
     public getCargoWidth(): number {
-        return Math.floor(Math.max(this.has('navigator') ? 2 : 1, this.dice.length - 1) / this.getStackHeight()) * 100;
+        return Math.floor(Math.max(this.has('n') ? 2 : 1, this.dice.length - 1) / this.getStackHeight()) * 100;
     }
 
     private drawCannon(ctx: CanvasRenderingContext2D): void {

@@ -50,15 +50,11 @@ document.onkeydown = (e: KeyboardEvent) => {
     game.pressed(e);
 };
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-// document.ontouchend = (e: TouchEvent) => {
-//     mouse.x = -999;
-// };
-
 document.onmousedown = () => {
     audio.play();
     mouse.pressing = true;
     game.click(mouse);
+    // setTimeout(() => mouse.x = -999, 100);
 };
 
 // document.onmouseup = () => mouse.pressing = false;

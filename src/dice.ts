@@ -109,7 +109,7 @@ export class Dice extends Flashable {
 
     public drawRim(ctx: CanvasRenderingContext2D): void {
         if (!this.hovering && !this.marked) return;
-        ctx.strokeStyle = 'orange';
+        ctx.strokeStyle = '#e92';
         const borderWidth = 5;
         ctx.strokeRect(-50 - borderWidth, -50 - borderWidth, 100 + borderWidth * 2, 100 + borderWidth * 2);
     }
@@ -132,9 +132,9 @@ export class Dice extends Flashable {
         ctx.beginPath();
         ctx.translate(this.p.x + 50, this.p.y + 50 + this.getHeight() + (this.rolling ? Math.sin(this.tween.time * Math.PI) * -150 : 0));
         ctx.rotate(this.rotation);
-        ctx.fillStyle = this.spice ? 'orange' : '#fff';
+        ctx.fillStyle = this.spice ? '#e92' : '#fff';
         if (this.plated) ctx.fillStyle = '#a9c5db';
-        if (this.hovering || this.marked) ctx.fillStyle = 'yellow';
+        if (this.hovering || this.marked) ctx.fillStyle = '#ff3';
         if (this.flashing) ctx.fillStyle = this.getColor('#fff');
         ctx.rect(-50, -50, 100, 100);
         ctx.fill();

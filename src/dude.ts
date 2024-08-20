@@ -115,7 +115,7 @@ export class Dude extends Entity {
         super.update(tick, mouse);
     }
 
-    public makeAngry(state: boolean): void {
+    public makeAngry(state: boolean = true): void {
         this.face.angry = state;
     }
 

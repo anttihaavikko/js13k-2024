@@ -542,7 +542,7 @@ export class Ship extends Flashable {
     }
 
     public makeAngry(): void {
-        this.dude.makeAngry(true);
+        this.dude.makeAngry();
     }
 
     public makeFriendly(): void {

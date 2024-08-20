@@ -37,6 +37,7 @@ export class Ship extends Flashable {
     private crew: Dude[] = [];
     private availableRoles: CrewRole[] = ['quartermaster', 'cannoneer', 'navigator'];
     private hits: number = 0;
+    private time: number;
     
     constructor(game: Game, private name: string, x: number, private scene: Scene, private player: boolean) {
         super(game, x, 550, 0, 0);
@@ -245,6 +246,7 @@ export class Ship extends Flashable {
 
     public update(tick: number, mouse: Mouse): void {
         super.update(tick, mouse);
+        this.time = tick;
         this.phase = Math.sin(tick * 0.005);
         this.wholeCrew().forEach(c => c.update(tick, mouse));
         this.effects.update(tick, mouse);
@@ -386,6 +388,18 @@ export class Ship extends Flashable {
         ctx.closePath();
         ctx.fill();
         ctx.stroke();
+
+        // small flag
+        // ctx.beginPath();
+        // ctx.translate(0, -480);
+        // ctx.moveTo(-60 + mastPos, -40);
+        // const diff = Math.sin(this.time * 0.01 + Math.PI * 0.5) * 10;
+        // ctx.quadraticCurveTo(-100, diff - 10, -200 + mastPos - this.phase * 5, Math.sin(this.time * 0.01) * 10);
+        // ctx.quadraticCurveTo(-100, diff, -60 + mastPos, 20);
+        // ctx.closePath();
+        // ctx.fill();
+        // ctx.stroke();
+        // ctx.translate(0, 480);
 
         // draw mouse point
         // if (this.player) ctx.fillRect(this.mp.x, this.mp.y, 20, 20);

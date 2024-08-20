@@ -157,7 +157,7 @@ export class Ship extends Flashable {
         setTimeout(() => {
             this.openMouth();
             this.flash();
-            this.game.getCamera().shake(10, 0.15, 1);
+            this.game.getCamera().shake(20, 0.3, 2);
             this.game.getAudio().explosion();
             const pos = offset(this.p, this.getDir() * -50, -this.p.y + 340);
             this.pulse(pos.x + 40, pos.y - 100, 200);
@@ -183,7 +183,7 @@ export class Ship extends Flashable {
         const dir = this.getDir();
         const muzzle = offset(this.p, dir * 300, -this.p.y + 320);
         this.ball.shoot(muzzle, 800 * dir);
-        this.game.getCamera().shake(5, 0.1, 1);
+        this.game.getCamera().shake(15, 0.2, 1.25);
         this.pulse(muzzle.x + 40, muzzle.y - 20, 80);
         this.game.getAudio().shoot();
     }

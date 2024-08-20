@@ -181,11 +181,11 @@ export class Scene extends Container {
         if (this.current.isAuto()) {
             const dmg = this.getDamage();
             if (dmg < this.dice.length) {
-                this.roll(this.dice.length);
+                this.reroll();
                 setTimeout(() => this.rerollOrAct(first, second, after), 750);
                 return;
             }
-            this.shoot();
+            after();
             return;
         }
         this.promptAnswerWith('ROLL', 'KEEP', first, second, () => {
@@ -205,7 +205,6 @@ export class Scene extends Container {
         }
         if (dmg == 13 || dmg == 0) {
             this.nextTurn();
-            this.current.pose(false);
             return;
         } 
         if (!this.current.getOpponent().isAuto() && this.current.getOpponent().getDiceCount() > 1) {

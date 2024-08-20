@@ -2,7 +2,7 @@ import { WIDTH } from '../index';
 import { Entity } from './entity';
 import { Game } from './game';
 import { Mouse } from './mouse';
-import { TextEntity } from './text';
+import { MultilineTextEntity } from './multiline-text';
 import { ZERO } from './vector';
 
 export type BubbleDirection = 'auto' | 'center' | 'left' | 'right';
@@ -19,7 +19,7 @@ export interface BubbleOptions {
 export class Bubble extends Entity {
     private phase: number;
 
-    private text: TextEntity;
+    private text: MultilineTextEntity;
     private options: BubbleOptions;
     private messagePos: number;
     private message: string;
@@ -43,7 +43,7 @@ export class Bubble extends Entity {
             sound: () => {},
             ...options
         };
-        this.text = new TextEntity(game, content, 15, 0, 0, -1, ZERO, { color: this.options.color, align: 'left' });
+        this.text = new MultilineTextEntity(game, content, 15, 0, 0, -1, ZERO, { color: this.options.color, align: 'left' });
         this.text.content = '';
         this.messagePos = 0;
         this.message = content;

@@ -386,7 +386,7 @@ export class Scene extends Container {
 
         this.enemy.makeAngry();
         setTimeout(() => {
-            this.info('COMMENCE COMBAT!', 'This will not end peacefully...');
+            this.info('Man the cannons! Battle stations!', 'There\'s no parley in sight...');
             this.enemy.talk(this.getTaunt());
             this.game.getAudio().warn();
         }, 1000);

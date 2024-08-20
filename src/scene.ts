@@ -82,6 +82,7 @@ export class Scene extends Container {
 
         game.onKey((e) => {
             if (e.key == 'm') this.game.getAudio().toggleMute();
+            // if (e.key == 'f') this.game.goFullScreen();
             // dev keys
             // if (e.key == 'w') this.triggerWin();
             // if (e.key == 'a') this.ship.addDice(new Dice(this.game, 0, 0, false));

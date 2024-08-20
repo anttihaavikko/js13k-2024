@@ -9,6 +9,7 @@ import { Camera } from './engine/camera';
 import { offset } from './engine/vector';
 import { Ball } from './ball';
 import { randomCell, randomInt, randomSorter } from './engine/random';
+import { Pitcher } from './engine/pitcher';
 
 const END_LEVEL = 13 * 2;
 
@@ -42,9 +43,12 @@ export class Scene extends Container {
     private mp: Mouse;
     private prompted: NodeJS.Timeout;
     private extraRerollUsed: boolean;
+    private pitcher: Pitcher;
 
     constructor(game: Game) {
         super(game, 0, 0, []);
+
+        this.pitcher = new Pitcher(this.game.getAudio());
 
         this.ball = new Ball(this.game, 100, 100, 0, 0);
 
@@ -92,6 +96,7 @@ export class Scene extends Container {
             // if (e.key == 'f') this.ship.tryRepair();
             // if (e.key == 'z') this.zoom();
             // if (e.key == 's') this.nextLevel();
+            // if (e.key == 'l') this.current.badLuck();
             // if (e.key == 'd') this.ship.hurt(1);
             // if (e.key == 'j') this.ship.hop();
             // if (e.key == 'k') this.ship.sink();
@@ -203,8 +208,7 @@ export class Scene extends Container {
     public shoot(): void {
         const dmg = this.getDamage();
         if (dmg == 13) {
-            this.current.talk('UNLUCKY 13!');
-            this.game.getAudio().bad();
+            this.current.badLuck();
         }
         if (dmg == 13 || dmg == 0) {
             this.nextTurn();
@@ -261,7 +265,7 @@ export class Scene extends Container {
 
         if (this.current.isUnlucky() && !this.current.getOpponent().isUnlucky()) {
             setTimeout(() => {
-                this.current.talk('UNLUCKY 13!');
+                this.current.badLuck();
                 this.game.getAudio().bad();
                 setTimeout(() => this.nextTurn(), 500);
             }, 500);
@@ -544,6 +548,10 @@ export class Scene extends Container {
         }, 300);
     }
 
+    public pitch(target: number, speed: number): void {
+        this.pitcher.pitch(target, speed);
+    }
+
     private getMid(): number {
         return (this.cam.pan.x + 400 - this.cam.shift);
     }
@@ -586,6 +594,7 @@ export class Scene extends Container {
         // const z = this.cam.zoom - this.targetZoom
         const z = this.targetZoom - this.cam.zoom;
         if (Math.abs(z) > 0.01) this.cam.zoom += Math.sign(z) * 0.0075;
+        this.pitcher.update(tick);
 
         if (this.loot.length > 0 && mouse.pressing) {
             const looted = this.loot.find(l => l.isHovering());

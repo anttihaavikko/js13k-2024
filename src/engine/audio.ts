@@ -32,9 +32,19 @@ export class AudioManager {
                 this.audio.src = URL.createObjectURL(new Blob([wave], { type: 'audio/wav' }));
                 this.audio.loop = true;
                 this.audio.volume = 0.7;
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                (this.audio as any).preservesPitch = false;
                 clearInterval(timer);
             }
         }, 5);
+    }
+
+    public getPitch(): number {
+        return this.audio.playbackRate;
+    }
+
+    public setPitch(target: number): void {
+        this.audio.playbackRate = target;
     }
 
     public isMuted(): boolean {

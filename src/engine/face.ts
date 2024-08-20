@@ -16,6 +16,7 @@ export interface FaceOptions {
     mouthWidth?: number;
     mouthThickness?: number;
     color?: string;
+    blushOffset?: number;
 }
 
 const defaultOptions: FaceOptions = {
@@ -27,6 +28,7 @@ const defaultOptions: FaceOptions = {
     blushSize: 1,
     mouthWidth: 1,
     mouthThickness: 7,
+    blushOffset: 0,
     color: '#000'
 };
 
@@ -76,8 +78,8 @@ export class Face extends Entity {
     }
 
     public draw(ctx: CanvasRenderingContext2D): void {
-        drawEllipse(ctx, { x: -65 * this.options.width, y: 20 }, 15 * this.options.blushSize, 10 * this.options.blushSize, this.options.blush);
-        drawEllipse(ctx, { x: 65 * this.options.width, y: 20 }, 15 * this.options.blushSize, 10 * this.options.blushSize, this.options.blush);
+        drawEllipse(ctx, { x: -65 * this.options.width - this.options.blushOffset, y: 20 }, 15 * this.options.blushSize, 10 * this.options.blushSize, this.options.blush);
+        drawEllipse(ctx, { x: 65 * this.options.width + this.options.blushOffset, y: 20 }, 15 * this.options.blushSize, 10 * this.options.blushSize, this.options.blush);
 
         ctx.lineCap = 'round';
         ctx.lineJoin = 'round';

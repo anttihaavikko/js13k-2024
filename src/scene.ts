@@ -128,6 +128,7 @@ export class Scene extends Container {
     }
 
     private reroll(): void {
+        this.current.openMouth();
         [...this.dice, ...this.loot].forEach(l => l.reroll());
     }
 
@@ -340,6 +341,7 @@ export class Scene extends Container {
         this.cam.shift = 0;
         this.cam.pan.y = -25;
         this.ship.sail();
+        this.ship.openMouth();
         this.action.setText('');
         this.action.visible = false;
         setTimeout(() => {
@@ -592,6 +594,7 @@ export class Scene extends Container {
                 this.loot.forEach(l => l.allowPick(false));
                 looted.float(false);
                 looted.move(offset(this.ship.getDicePos(this.ship.getDiceCount()), this.ship.p.x, this.ship.p.y), () => this.ship.addDice(looted));
+                this.ship.openMouth();
                 setTimeout(() => {
                     this.loot = this.loot.filter(l => l != looted);
                     this.promptSail();

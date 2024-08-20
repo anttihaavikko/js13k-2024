@@ -31,9 +31,11 @@ export class Dude extends Entity {
         super(game, x, y, 0, 0);
         this.face = new Face(this.game, {
             blush: '#ed4ea3aa',
-            width: 0.7,
-            mouthWidth: 0.75,
-            mouthThickness: 11
+            width: 0.6,
+            mouthWidth: 0.7,
+            mouthThickness: 11,
+            blushOffset: 5,
+            blushSize: 1.1
         });
         this.skin = randomCell(skins);
         this.animOffset = Math.random() * 9999;
@@ -131,7 +133,7 @@ export class Dude extends Entity {
     }
 
     public openMouth(): void {
-        this.face.openMouth(1.5, 0.2);
+        this.face.openMouth(1.5, 0.175);
     }
 
     public pose(state: boolean): void {
@@ -178,10 +180,12 @@ export class Dude extends Entity {
         this.drawArm(ctx, 1, this.posing ? -30 : 10 + this.phase * 10);
         this.drawArm(ctx, -1, 0);
 
-        ctx.translate(this.p.x, this.p.y - 50 - this.phase * 5);
+        ctx.translate(this.p.x + 4, this.p.y - 50 - this.phase * 5);
 
         ctx.scale(0.3, 0.3);
+        ctx.globalCompositeOperation = 'multiply';
         this.face.draw(ctx);
+        ctx.globalCompositeOperation = 'source-over';
 
         ctx.scale(4.5, 4.5);
         ctx.translate(0, -18 + this.phase * 7 - clamp01(this.air - 0.5) * 20);

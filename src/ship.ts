@@ -100,6 +100,7 @@ export class Ship extends Flashable {
     public talk(text: string): void {
         this.message.toggle(text);
         this.dude.openMouth();
+        setTimeout(() => this.dude.openMouth(), 320);
         setTimeout(() => this.message.toggle(''), 1000);
     }
 
@@ -154,6 +155,7 @@ export class Ship extends Flashable {
     public hurtDice(target: Dice, amount: number): void {
         target.mark();
         setTimeout(() => {
+            this.openMouth();
             this.flash();
             this.game.getCamera().shake(10, 0.15, 1);
             this.game.getAudio().explosion();
@@ -173,6 +175,7 @@ export class Ship extends Flashable {
     }
 
     public shootAnim(): void {
+        this.dude.openMouth();
         this.wholeCrew().forEach(d => d.hopInPlace());
         setTimeout(() => this.dude.pose(false), 300);
         this.recoil = 1;

@@ -44,7 +44,7 @@ export class Game extends Entity {
 
     public pressed(event: KeyboardEvent): void {
         if (event.repeat) return;
-        if (event.key.toLowerCase() == 'm' && event.ctrlKey) this.audio.toggleMute();
+        // if (event.key.toLowerCase() == 'm' && event.ctrlKey) this.audio.toggleMute();
         this.keyListeners.forEach(k => k(event));
     }
 

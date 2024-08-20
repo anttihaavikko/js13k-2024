@@ -44,6 +44,7 @@ export class AudioManager {
     }
 
     public setPitch(target: number): void {
+        if (target < 0.1) return;
         this.audio.playbackRate = target;
     }
 

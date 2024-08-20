@@ -108,7 +108,7 @@ export class Ship extends Flashable {
     public badLuck(): void {
         this.talk('UNLUCKY 13!');
         this.game.getAudio().bad();
-        if (this.player) this.scene.pitch(0.7, 1.5);
+        if (this.player) this.game.getPitcher().pitchFrom(0.7, 1.5);
     }
 
     public setBall(ball: Ball) {
@@ -162,7 +162,7 @@ export class Ship extends Flashable {
     public hurtDice(target: Dice, amount: number): void {
         target.mark();
         setTimeout(() => {
-            this.scene.pitch(this.player ? 0.85 : 1.25, this.player ? 1 : 2.5);
+            this.game.getPitcher().pitchFrom(this.player ? 0.85 : 1.25, this.player ? 1 : 2.5);
             this.openMouth();
             this.flash();
             this.game.getCamera().shake(20, 0.3, 2);

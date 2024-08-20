@@ -9,7 +9,6 @@ import { Camera } from './engine/camera';
 import { offset } from './engine/vector';
 import { Ball } from './ball';
 import { randomCell, randomInt, randomSorter } from './engine/random';
-import { Pitcher } from './engine/pitcher';
 
 const END_LEVEL = 13 * 2;
 
@@ -42,12 +41,9 @@ export class Scene extends Container {
     private mp: Mouse;
     private prompted: NodeJS.Timeout;
     private extraRerollUsed: boolean;
-    private pitcher: Pitcher;
 
     constructor(game: Game) {
         super(game, 0, 0, []);
-
-        this.pitcher = new Pitcher(this.game.getAudio());
 
         this.ball = new Ball(this.game, 100, 100, 0, 0);
 
@@ -101,6 +97,7 @@ export class Scene extends Container {
             // if (e.key == 'd') this.ship.hurt(1);
             // if (e.key == 'j') this.ship.hop();
             // if (e.key == 'k') this.ship.sink();
+            // if (e.key == 'p') this.game.getPitcher().pitchTo(0, 5);
             // if (e.key == 'R') this.restart();
             // if (e.key == 'x') this.ship.shoot(1);
             // if (e.key == 'p') this.ship.pose(true);
@@ -124,6 +121,7 @@ export class Scene extends Container {
     // }
 
     public restart(): void {
+        this.game.getPitcher().pitchTo(1, 5);
         this.game.changeScene(new Scene(this.game));
     }
 
@@ -322,6 +320,7 @@ export class Scene extends Container {
         if (this.current.isDead()) {
             this.ship.pose(false);
             this.enemy.pose(true);
+            this.game.getPitcher().pitchTo(0, 5);
             this.info('Down to Davy Jones\' Locker...', '', 'GAME OVER');
             this.promptAction('TRY AGAIN?', () => this.restart());
             setTimeout(() => this.ship.sink(), 100);
@@ -549,10 +548,6 @@ export class Scene extends Container {
         }, 300);
     }
 
-    public pitch(target: number, speed: number): void {
-        this.pitcher.pitch(target, speed);
-    }
-
     private getMid(): number {
         return (this.cam.pan.x + 400 - this.cam.shift);
     }
@@ -594,7 +589,6 @@ export class Scene extends Container {
         // const z = this.cam.zoom - this.targetZoom
         const z = this.targetZoom - this.cam.zoom;
         if (Math.abs(z) > 0.01) this.cam.zoom += Math.sign(z) * 0.0075;
-        this.pitcher.update(this.delta);
 
         if (this.loot.length > 0 && mouse.pressing) {
             const looted = this.loot.find(l => l.isHovering());

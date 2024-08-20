@@ -4,15 +4,18 @@ import { Camera } from './camera';
 import { Container } from './container';
 import { Entity } from './entity';
 import { Mouse } from './mouse';
+import { Pitcher } from './pitcher';
 
 export class Game extends Entity {
     private scene: Container;
     private keyListeners: ((event: KeyboardEvent) => void)[] = [];
     private camera = new Camera();
     private blinders: Blinders;
+    private pitcher: Pitcher;
 
     constructor(private audio: AudioManager, private canvas: HTMLCanvasElement) {
         super(null, 0, 0, 0, 0);
+        this.pitcher = new Pitcher(audio);
         this.blinders = new Blinders(this, 400);
     }
 
@@ -32,6 +35,10 @@ export class Game extends Entity {
         return this.audio;
     }
 
+    public getPitcher(): Pitcher {
+        return this.pitcher;
+    }
+
     public click(mouse: Mouse): void {
         this.scene?.getButtons().forEach(b => {
             if (b.visible && b.isInside(mouse)) b.trigger();
@@ -49,9 +56,11 @@ export class Game extends Entity {
     }
 
     public update(tick: number, mouse: Mouse): void {
+        super.update(tick, mouse);
         this.scene?.update(tick, mouse);
         this.camera.update();
         this.blinders.update(tick, mouse);
+        this.pitcher.update(this.delta);
         mouse.pressing = false;
     }
 

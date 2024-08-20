@@ -1,23 +1,28 @@
 import { AudioManager } from './audio';
 
 export class Pitcher {
-    private target: number;
-    private time: number;
+    private value: number;
     private speed: number;
+    private target: number;
 
     constructor(private audio: AudioManager) {
-        this.target = this.audio.getPitch();
+        this.value = this.target = this.audio.getPitch();
     }
 
     public update(delta: number): void {
-        const diff = 1 - this.target;
+        const diff = this.target - this.value;
         if (Math.abs(diff) < 0.01) return;
-        this.target += Math.sign(diff) * 0.0001 * delta * this.speed;
-        this.audio.setPitch(this.target);
+        this.value += Math.sign(diff) * 0.0001 * delta * this.speed;
+        this.audio.setPitch(this.value);
     }
 
-    public pitch(to: number, speed: number = 1): void {
+    public pitchFrom(to: number, speed: number = 1): void {
         this.speed = speed;
-        this.target = to;
+        this.value = to;
+    }
+
+    public pitchTo(t: number, speed: number = 1): void {
+        this.speed = speed;
+        this.target = t;
     }
 }

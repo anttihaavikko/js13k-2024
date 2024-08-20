@@ -229,10 +229,12 @@ export class Dude extends Entity {
             ctx.fill();
             return;
         }
+
+        ctx.translate(Math.max(-this.flipHat * 3, 0), -1);
         
         ctx.moveTo(8, -15);
-        ctx.bezierCurveTo(-12, -5, -12, -5, -20, -5);
-        ctx.bezierCurveTo(-10, -26 + this.phase, -3, -26 + this.phase, 10, -18);
+        ctx.bezierCurveTo(-12, -5, -12, -5, -20, -5 - this.phase * 2);
+        ctx.bezierCurveTo(-10, -26, -3, -26 + this.phase * 2, 10, -18);
         ctx.closePath();
         ctx.stroke();
         ctx.fill();
@@ -240,9 +242,9 @@ export class Dude extends Entity {
         ctx.fillStyle = this.secondaryColor;
         ctx.lineWidth = 5;
         ctx.beginPath();
-        ctx.moveTo(10, -15);
-        ctx.bezierCurveTo(6, -25, 6, -25, 15 - this.phase * 2, -35);
-        ctx.bezierCurveTo(16, -25, 16, -25, 10, -15);
+        ctx.moveTo(9, -17);
+        ctx.bezierCurveTo(7, -25, 7, -25, 15 - this.phase * 2 - this.wave, -35);
+        ctx.bezierCurveTo(15, -25, 15, -25, 9, -17);
         ctx.stroke();
         ctx.fill();
     }

@@ -107,7 +107,7 @@ export class Dice extends Flashable {
         this.value = Math.min(this.value + 1, 9);
     }
 
-    public drawRim(ctx: CanvasRenderingContext2D): void {
+    private drawRim(ctx: CanvasRenderingContext2D): void {
         if (!this.hovering && !this.marked) return;
         ctx.strokeStyle = '#e92';
         const borderWidth = 5;

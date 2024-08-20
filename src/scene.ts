@@ -626,7 +626,6 @@ export class Scene extends Container {
         this.ball.draw(ctx);
 
         this.loot.forEach(l => l.draw(ctx));
-        this.loot.forEach(l => l.drawRim(ctx));
 
         ctx.strokeStyle = '#ffffffcc';
         ctx.fillStyle = '#03fcf4cc';

@@ -1,5 +1,4 @@
 import { font } from './constants';
-import { drawColoredText } from './drawing';
 import { Game } from './game';
 import { Particle } from './particle';
 import { Vector } from './vector';
@@ -24,7 +23,8 @@ export class TextEntity extends Particle {
                 ctx.fillStyle = '#000';
                 ctx.fillText(line.replace(/\|/g, ''), this.p.x + this.options.shadow, this.p.y + this.options.shadow + offset);
             }
-            drawColoredText(ctx, line, this.p.x, this.p.y + offset, this.options?.color ?? '#fff', this.options?.markColors ?? []);
+            ctx.fillStyle = this.options?.color ?? '#fff';
+            ctx.fillText(line, this.p.x, this.p.y + offset);
         });
         
         ctx.restore();

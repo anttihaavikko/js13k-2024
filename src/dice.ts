@@ -137,35 +137,34 @@ export class Dice extends Flashable {
         ctx.fill();
         ctx.stroke();
         ctx.closePath();
-        if (this.value === 1 || this.value === 3 || this.value === 5 || this.value === 7 || this.value === 9) this.drawPip(ctx, { x: 0, y: 0 });
+        if (this.value === 1 || this.value === 3 || this.value === 5 || this.value === 7 || this.value === 9) this.drawPip(ctx, 0, 0);
         if (this.value > 1) {
-            this.drawPip(ctx, { x: -25, y: -25 });
-            this.drawPip(ctx, { x: 25, y: 25 });
+            this.drawPip(ctx, -25, -25);
+            this.drawPip(ctx, 25, 25);
         }
         if (this.value > 3) {
-            this.drawPip(ctx, { x: -25, y: 25 });
-            this.drawPip(ctx, { x: 25, y: -25 });
+            this.drawPip(ctx, -25, 25);
+            this.drawPip(ctx, 25, -25);
         }
         if (this.value > 5) {
-            this.drawPip(ctx, { x: 0, y: -25 });
-            this.drawPip(ctx, { x: 0, y: 25 });
+            this.drawPip(ctx, 0, -25);
+            this.drawPip(ctx, 0, 25);
         }
         if (this.value > 7) {
-            this.drawPip(ctx, { x: 25, y: 0 });
-            this.drawPip(ctx, { x: -25, y: 0 });
+            this.drawPip(ctx, 25, 0);
+            this.drawPip(ctx, -25, 0);
         }
         this.drawRim(ctx);
-        ctx.fillStyle = '#fff';
         ctx.restore();
     }
 
-    private drawPip(ctx: CanvasRenderingContext2D, pos: Vector): void {
+    private drawPip(ctx: CanvasRenderingContext2D, x: number, y: number): void {
         ctx.fillStyle = this.flashing ? '#68ad65' : '#000';
         if (this.damage) {
             ctx.font =`45px ${font}`;
-            ctx.fillText('✦', pos.x * 0.8 - 20, pos.y * 0.8 + 15);
+            ctx.fillText('✦', x * 0.8 - 20, y * 0.8 + 15);
             return;
         }
-        drawCircle(ctx, pos, this.damage ? 12 : 8, ctx.fillStyle, 'transparent');
+        drawCircle(ctx, { x, y }, this.damage ? 12 : 8, ctx.fillStyle, 'transparent');
     }
 }

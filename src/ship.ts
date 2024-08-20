@@ -410,20 +410,16 @@ export class Ship extends Flashable {
         // draw mouse point
         // if (this.player) ctx.fillRect(this.mp.x, this.mp.y, 20, 20);
 
-        // const cam = this.game.getCamera();
-        // const off = cam.pan.x / cam.zoom + (this.player ? 800 : -700);
-        // ctx.translate(-this.p.x + off, -this.p.y);
         this.dice.filter(d => !d.isHovering()).forEach(d => d.draw(ctx));
         this.dice.filter(d => d.isHovering()).forEach(d => d.draw(ctx));
-        // ctx.translate(this.p.x - off, this.p.y);
 
         ctx.strokeStyle = this.getColor('#000');
 
+        ctx.save();
         ctx.translate(160, 0);
         ctx.rotate(-0.1 - this.recoil * 0.1);
         if (!this.friendly) this.drawCannon(ctx);
-        ctx.rotate(0.1 +  + this.recoil * 0.1);
-        ctx.translate(-160, 0);
+        ctx.restore();
 
         ctx.save();
         ctx.scale(1.4, 1.4);
@@ -472,7 +468,6 @@ export class Ship extends Flashable {
         ctx.strokeText(this.name, 0, 0);
         ctx.fillText(this.name, 0, 0);
 
-        // ctx.translate(0, this.phase * 5);
         this.message.draw(ctx);
 
         ctx.restore();

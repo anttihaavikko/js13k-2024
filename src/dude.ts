@@ -146,9 +146,7 @@ export class Dude extends Entity {
         ctx.translate(this.p.x, this.p.y);
         if (!this.cane) ctx.scale(0.9, 0.9);
         if (this.isBoss()) ctx.scale(1.3, 1.3);
-        ctx.translate(-this.p.x, -this.p.y);
-        
-        ctx.translate(0,  -this.air * 50 - (this.posing ? 10 : 0));
+        ctx.translate(-this.p.x, -this.p.y - this.air * 50 - (this.posing ? 10 : 0));
 
         const raisePos = this.isBoss() ? -35 : -45;
         this.drawLeg(ctx, 1, this.posing ? raisePos : 0);
@@ -156,9 +154,7 @@ export class Dude extends Entity {
         
         ctx.translate(this.p.x, this.p.y);
         ctx.rotate(this.wave * 0.05 - (this.posing ? 0.3 : 0));
-        ctx.translate(-this.p.x, -this.p.y);
-
-        ctx.translate(0,  -this.animationPhaseAbs * 10);
+        ctx.translate(-this.p.x, -this.p.y - this.animationPhaseAbs * 10);
 
         ctx.beginPath();
         ctx.moveTo(this.p.x, this.p.y - 40);
@@ -186,10 +182,6 @@ export class Dude extends Entity {
         ctx.translate(0, -18 + this.animationPhaseAbs * 7 - clamp01(this.air - 0.5) * 20);
         ctx.rotate(clamp01(this.air - 0.75) * 0.5 * this.hopDir);
         this.drawHat(ctx);
-
-        ctx.translate(0, -30);
-
-        ctx.rotate(this.wave * -0.05);
 
         ctx.restore();
     }
@@ -230,12 +222,10 @@ export class Dude extends Entity {
         ctx.moveTo(8, -15);
         ctx.bezierCurveTo(-12, -5, -12, -5, -20, -5 - this.animationPhaseAbs * 2);
         ctx.bezierCurveTo(-10, -26, -3, -26 + this.animationPhaseAbs * 2, 10, -18);
-        ctx.closePath();
         ctx.stroke();
         ctx.fill();
 
         ctx.fillStyle = this.secondaryColor;
-        ctx.lineWidth = 5;
         ctx.beginPath();
         ctx.moveTo(9, -17);
         ctx.bezierCurveTo(7, -25, 7, -25, 15 - this.animationPhaseAbs * 2 - this.wave, -35);

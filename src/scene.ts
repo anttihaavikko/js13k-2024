@@ -639,8 +639,8 @@ export class Scene extends Container {
 
         ctx.strokeStyle = '#ffffffcc';
         ctx.fillStyle = '#03fcf4cc';
-        // ctx.translate(this.cam.pan.x, 0);
-        // ctx.rotate(this.phase * 0.1);
+
+        // water
         // ctx.globalCompositeOperation = 'screen';
         ctx.beginPath();
         ctx.moveTo(start + 3000, 2000);
@@ -650,24 +650,15 @@ export class Scene extends Container {
             const top = Math.sin(start + i * 50 + 25 * this.wave) * 8 + Math.cos(start + i * 25 + 12 * this.fastWave) * 8 + 20;
             ctx.quadraticCurveTo(start + i * 50 - 25, 525 - this.animationPhaseAbs * 5 - top, start + i * 50, 500 + this.animationPhaseAbs * 7 - top);
         }
-        ctx.closePath();
-        // ctx.rect(-10000, HEIGHT - 100 + this.phase * 5, 20000, HEIGHT + 70);
         ctx.fill();
         ctx.stroke();
-        // ctx.resetTransform();
-
         // ctx.globalCompositeOperation = 'source-over';
-        ctx.strokeStyle = '#000';
 
         [...this.dice, ...this.getChildren()].forEach(e => e.draw(ctx));
 
-        // draw mouse point
-        
         const p = new DOMPoint(this.mp.x, this.mp.y).matrixTransform(ctx.getTransform().inverse());
         this.mp = { x: p.x, y: p.y };
-        // ctx.fillRect(p.x, p.y, 20, 20);
         ctx.resetTransform();
-        
         
         [this.splash, this.secondLine, this.bigText, ...this.getButtons()].forEach(b => b.draw(ctx));
     }

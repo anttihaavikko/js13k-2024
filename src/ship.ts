@@ -382,7 +382,7 @@ export class Ship extends Flashable {
         ctx.beginPath();
         ctx.moveTo(-60 + mastPos, -520);
         ctx.lineTo(-60 + mastPos, -200);
-        ctx.lineTo(-300 + mastPos - this.phase * 10, -200 - this.phase * 10);
+        ctx.lineTo(-340 + mastPos - this.phase * 10, -200 - this.phase * 10);
         ctx.closePath();
         ctx.fill();
         ctx.stroke();

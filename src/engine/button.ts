@@ -23,9 +23,10 @@ export class ButtonEntity extends Entity {
         this.onClick();
     }
 
-    public setBorderThickness(thickness: number): void {
-        this.borderThickness = thickness;
-    }
+    // TODO: commented for optimization
+    // public setBorderThickness(thickness: number): void {
+    //     this.borderThickness = thickness;
+    // }
 
     public setText(text: string): void {
         this.content = text;

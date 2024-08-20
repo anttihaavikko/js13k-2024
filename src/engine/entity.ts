@@ -47,9 +47,10 @@ export abstract class Entity {
         };
     }
 
-    public setPosition(x: number, y: number): void {
-        this.p = { x, y };
-    }
+    // TODO: commented for optimization
+    // public setPosition(x: number, y: number): void {
+    //     this.p = { x, y };
+    // }
 
     public isInside(point: Vector, radius = 0): boolean {
         const c = this.getCenter();

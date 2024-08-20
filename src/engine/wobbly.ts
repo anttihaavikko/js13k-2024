@@ -57,11 +57,12 @@ export class WobblyText extends TextEntity {
                 ctx.fillText(letter, this.p.x + spacing * i + this.options.shadow + offset, this.p.y + this.options.shadow + Math.sin(this.time * 0.005 + i * this.frequency) * this.amplitude);
             }
             ctx.fillStyle = this.options?.color ?? '#fff';
-            if (this.options?.outline) {
-                ctx.strokeStyle = '#000';
-                ctx.lineWidth = this.options.outline;
-                ctx.strokeText(letter, this.p.x + spacing * i + offset, this.p.y + Math.sin(this.time * 0.005 + i * this.frequency) * this.amplitude);
-            }
+            // TODO: commented for optimization
+            // if (this.options?.outline) {
+            //     ctx.strokeStyle = '#000';
+            //     ctx.lineWidth = this.options.outline;
+            //     ctx.strokeText(letter, this.p.x + spacing * i + offset, this.p.y + Math.sin(this.time * 0.005 + i * this.frequency) * this.amplitude);
+            // }
             ctx.fillText(letter, this.p.x + spacing * i + offset, this.p.y + Math.sin(this.time * 0.005 + i * this.frequency) * this.amplitude);
             offset += ctx.measureText(letter).width;
         });

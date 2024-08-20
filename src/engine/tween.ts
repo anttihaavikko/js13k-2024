@@ -32,12 +32,13 @@ export class Tween {
         this.startTween(target, duration);
     }
 
-    public rotate(target: number, duration: number): void {
-        this.type = 'rotate';
-        const rot = this.entity.rotation;
-        this.start = { x: rot, y: rot };
-        this.startTween({ x: target, y: target }, duration);
-    }
+    // TODO: commented for optimization
+    // public rotate(target: number, duration: number): void {
+    //     this.type = 'rotate';
+    //     const rot = this.entity.rotation;
+    //     this.start = { x: rot, y: rot };
+    //     this.startTween({ x: target, y: target }, duration);
+    // }
 
     public setEase(ease: (val: number) => number): void {
         this.easeFn = ease;
@@ -50,10 +51,11 @@ export class Tween {
         this.startTime = -1;
     }
 
-    public stop(): void {
-        this.type == 'none';
-        this.active = false;
-    }
+    // TODO: commented for optimization
+    // public stop(): void {
+    //     this.type == 'none';
+    //     this.active = false;
+    // }
 
     public update(tick: number): void {
         if (this.startTime < 0 || this.type == 'none') {

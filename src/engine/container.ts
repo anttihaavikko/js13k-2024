@@ -19,13 +19,15 @@ export class Container extends Entity {
         }
     }
 
-    public hide(duration = 0.3): void {
-        this.tween.scale({ x: 0, y: 0 }, duration);
-    }
+    // TODO: commented for optimization
+    // public hide(duration = 0.3): void {
+    //     this.tween.scale({ x: 0, y: 0 }, duration);
+    // }
 
-    public show(duration = 0.3): void {
-        this.tween.scale({ x: 1, y: 1 }, duration);
-    }
+    // TODO: commented for optimization
+    // public show(duration = 0.3): void {
+    //     this.tween.scale({ x: 1, y: 1 }, duration);
+    // }
 
     public draw(ctx: CanvasRenderingContext2D): void {
         ctx.save();
@@ -33,9 +35,10 @@ export class Container extends Entity {
         ctx.restore();
     }
 
-    public getChild(index: number): Entity {
-        return this.children[index];
-    }
+    // TODO: commented for optimization
+    // public getChild(index: number): Entity {
+    //     return this.children[index];
+    // }
 
     public getChildren(): Entity[] {
         return this.children;
@@ -45,9 +48,10 @@ export class Container extends Entity {
         this.children.push(...entity);
     }
 
-    public clear(): void {
-        this.children = [];
-    }
+    // TODO: commented for optimization
+    // public clear(): void {
+    //     this.children = [];
+    // }
 
     public getButtons(): ButtonEntity[] {
         return [];

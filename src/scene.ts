@@ -344,6 +344,7 @@ export class Scene extends Container {
         this.ship.openMouth();
         this.action.setText('');
         this.action.visible = false;
+        this.loot.forEach(l => l.allowPick(false));
         setTimeout(() => {
             this.enemy = new Ship(this.game, this.getEnemyName(), (this.level - 1) * 2000 + 3000, this, false);
             this.ship.setOpponent(this.enemy);

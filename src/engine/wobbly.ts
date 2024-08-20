@@ -68,10 +68,4 @@ export class WobblyText extends TextEntity {
 
         ctx.restore();
     }
-
-    public getWidth(ctx: CanvasRenderingContext2D): number {
-        const mod = this.options?.scales ? this.ratio : 1;
-        ctx.font =`${this.fontSize * mod}px ${font}`;
-        return ctx.measureText(this.content).width;
-    }
 }

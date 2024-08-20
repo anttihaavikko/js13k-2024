@@ -182,11 +182,13 @@ export class Ship extends Flashable {
     public shoot(damage: number, first: boolean = true): void {
         this.shootAnim();
         const more = this.opponent?.hurt(damage);
-        if (this.has('c') && more > 0 && first && this.opponent.canTake(more)) {
-            setTimeout(() => this.shoot(more, false), 750);
-            return;
-        }
-        setTimeout(() => this.scene.nextTurn(), 500);
+        setTimeout(() => {
+            if (this.has('c') && more > 0 && first && this.opponent.canTake(more)) {
+                this.shoot(more, false);
+                return;
+            }
+            this.scene.nextTurn();
+        }, 500);
     }
 
     private canTake(dmg: number): boolean {

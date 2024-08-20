@@ -20,7 +20,6 @@ import { Scene } from './scene';
 
 export class Ship extends Flashable {
     private dude: Dude;
-    private phase: number;
     private dice: Dice[] = [];
     private tempDice: Dice[] = [];
     private colors: string[];
@@ -41,6 +40,7 @@ export class Ship extends Flashable {
     
     constructor(game: Game, private name: string, x: number, private scene: Scene, private player: boolean) {
         super(game, x, 550, 0, 0);
+        this.animationSpeed = 0.005;
         this.colors = [
             randomCell(woods),
             randomCell(woods),
@@ -254,7 +254,6 @@ export class Ship extends Flashable {
     public update(tick: number, mouse: Mouse): void {
         super.update(tick, mouse);
         this.time = tick;
-        this.phase = Math.sin(tick * 0.005);
         this.wholeCrew().forEach(c => c.update(tick, mouse));
         this.effects.update(tick, mouse);
         this.message.update(tick, mouse);
@@ -372,8 +371,8 @@ export class Ship extends Flashable {
         
         ctx.save();
         const mirror = this.getDir();
-        ctx.translate(this.p.x - this.stagger * 20 * mirror, this.p.y - Math.cos(this.phase) * 10);
-        ctx.rotate(this.phase * 0.02 - this.stagger * 0.05 * mirror);
+        ctx.translate(this.p.x - this.stagger * 20 * mirror, this.p.y - Math.cos(this.animationPhase) * 10);
+        ctx.rotate(this.animationPhase * 0.02 - this.stagger * 0.05 * mirror);
 
         ctx.scale(mirror, 1);
 
@@ -390,7 +389,7 @@ export class Ship extends Flashable {
         ctx.fillStyle = this.getColor(this.colors[3]);
         ctx.beginPath();
         ctx.moveTo(-60 + mastPos, -520);
-        ctx.quadraticCurveTo(-200 - this.phase * 10, -400, -340 + mastPos - this.phase * 10, -180 - this.phase * 10);
+        ctx.quadraticCurveTo(-200 - this.animationPhase * 10, -400, -340 + mastPos - this.animationPhase * 10, -180 - this.animationPhase * 10);
         ctx.lineTo(-60 + mastPos, -180);
         ctx.closePath();
         ctx.fill();

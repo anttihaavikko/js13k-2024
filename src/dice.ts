@@ -13,8 +13,6 @@ export class Dice extends Flashable {
     private marked: boolean;
     private pickable: boolean;
     private floating: boolean;
-    private phase: number;
-    private floatOffset: number;
     private spice: boolean;
     private plated: boolean;
 
@@ -22,7 +20,7 @@ export class Dice extends Flashable {
         super(game, x, y, 100, 100);
         this.randomize();
         this.fixRotation();
-        this.floatOffset = Math.random();
+        this.animationSpeed = 0.005;
     }
 
     public makeSpice(state: boolean = true): void {
@@ -71,7 +69,6 @@ export class Dice extends Flashable {
 
     public update(tick: number, mouse: Mouse): void {
         super.update(tick, mouse);
-        this.phase = Math.sin(tick * 0.005 + this.floatOffset);
         this.hovering = this.pickable && this.isInside(mouse, 5);
         if (this.rolling) {
             this.randomize();
@@ -119,7 +116,7 @@ export class Dice extends Flashable {
     }
 
     private getHeight(): number {
-        return this.floating ? this.phase * 7 : 0;
+        return this.floating ? this.animationPhase * 7 : 0;
     }
 
     public getOrder(): number {

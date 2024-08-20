@@ -17,8 +17,6 @@ export interface BubbleOptions {
 }
 
 export class Bubble extends Entity {
-    private phase: number;
-
     private text: MultilineTextEntity;
     private options: BubbleOptions;
     private messagePos: number;
@@ -47,12 +45,12 @@ export class Bubble extends Entity {
         this.text.content = '';
         this.messagePos = 0;
         this.message = content;
+        this.animationSpeed = 0.004;
     }
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     public update(tick: number, mouse: Mouse): void {
         super.update(tick, mouse);
-        this.phase = Math.abs(Math.sin(tick * 0.004)) * 6;
         if (this.messagePos < this.message.length && Math.random() < 0.025 * this.delta) {
             this.messagePos++;
             this.text.content = this.message.substring(0, this.messagePos);
@@ -96,17 +94,18 @@ export class Bubble extends Entity {
         ctx.strokeStyle = this.options.color;
         ctx.lineWidth = this.options.lineWidth;
         ctx.beginPath();
-        ctx.moveTo(this.p.x, this.p.y - this.phase);
-        ctx.lineTo(this.p.x - 10, this.p.y - 10 - this.phase);
-        ctx.lineTo(this.p.x - 20 - offset, this.p.y - 10 - this.phase);
-        ctx.lineTo(this.p.x - 20 - offset, this.p.y - 10 - height - this.phase);
-        ctx.lineTo(this.p.x + 0 + width - offset, this.p.y - 10 - height - this.phase);
-        ctx.lineTo(this.p.x + 0 + width - offset, this.p.y - 10 - this.phase);
-        ctx.lineTo(this.p.x + 10, this.p.y - 10 - this.phase);
+        const phase = this.animationPhaseAbs * 6;
+        ctx.moveTo(this.p.x, this.p.y - phase);
+        ctx.lineTo(this.p.x - 10, this.p.y - 10 - phase);
+        ctx.lineTo(this.p.x - 20 - offset, this.p.y - 10 - phase);
+        ctx.lineTo(this.p.x - 20 - offset, this.p.y - 10 - height - phase);
+        ctx.lineTo(this.p.x + 0 + width - offset, this.p.y - 10 - height - phase);
+        ctx.lineTo(this.p.x + 0 + width - offset, this.p.y - 10 - phase);
+        ctx.lineTo(this.p.x + 10, this.p.y - 10 - phase);
         ctx.closePath();
         ctx.fill();
         if (this.options.lineWidth > 0) ctx.stroke();
-        ctx.translate(this.p.x - 10 - offset, this.p.y - 25 - this.phase);
+        ctx.translate(this.p.x - 10 - offset, this.p.y - 25 - phase);
         this.text.draw(ctx);
         ctx.resetTransform();
     }

@@ -16,7 +16,6 @@ const END_LEVEL = 13 * 2;
 export class Scene extends Container {
     private ship: Ship;
     private enemy: Ship;
-    private phase: number;
     private dice: Dice[] = [];
     private splash: WobblyText;
     private secondLine: WobblyText;
@@ -54,6 +53,8 @@ export class Scene extends Container {
 
         this.ship = new Ship(game, '14', 0, this, true);
         this.current = this.ship;
+
+        this.animationSpeed = 0.002;
 
         this.splash = new WobblyText(game, 'Lets start by rolling for your cargo!', 35, 400, 60, 0.2, 3, { shadow: 4, align: 'center', scales: true });
         this.secondLine = new WobblyText(game, '', 25, 400, 105, 0.2, 3, { shadow: 3, align: 'center', scales: true });
@@ -581,7 +582,6 @@ export class Scene extends Container {
 
     public update(tick: number, mouse: Mouse): void {
         super.update(tick, mouse);
-        this.phase = Math.abs(Math.sin(tick * 0.002));
         this.wave = Math.sin(tick * 0.0003);
         this.fastWave = Math.sin(tick * 0.0007);
         [this.ball, this.ship, this.enemy, ...this.dice, this.splash, this.secondLine, this.bigText, ...this.getButtons()].filter(e => !!e).forEach(e => e.update(tick, mouse));
@@ -645,10 +645,10 @@ export class Scene extends Container {
         ctx.beginPath();
         ctx.moveTo(start + 3000, 2000);
         ctx.lineTo(start, 2000);
-        ctx.lineTo(start, 500 + this.phase * 5);
+        ctx.lineTo(start, 500 + this.animationPhaseAbs * 5);
         for (let i = 0; i < 6000 / 50; i++) {
             const top = Math.sin(start + i * 50 + 25 * this.wave) * 8 + Math.cos(start + i * 25 + 12 * this.fastWave) * 8 + 20;
-            ctx.quadraticCurveTo(start + i * 50 - 25, 525 - this.phase * 5 - top, start + i * 50, 500 + this.phase * 7 - top);
+            ctx.quadraticCurveTo(start + i * 50 - 25, 525 - this.animationPhaseAbs * 5 - top, start + i * 50, 500 + this.animationPhaseAbs * 7 - top);
         }
         ctx.closePath();
         // ctx.rect(-10000, HEIGHT - 100 + this.phase * 5, 20000, HEIGHT + 70);

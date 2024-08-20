@@ -13,7 +13,6 @@ import { Vector } from './engine/vector';
 export type CrewRole = 'quartermaster' | 'cannoneer' | 'navigator'
 
 export class Dude extends Entity {
-    private phase = 0;
     private height = 0;
     private air = 0;
     private hopDir: number;
@@ -21,8 +20,6 @@ export class Dude extends Entity {
     private posing: boolean;
     private face: Face;
     private skin: string;
-    private animOffset: number;
-    private animSpeed: number;
     private crewRole: CrewRole;
     private flipHat: number;
     private crown: boolean;
@@ -38,9 +35,8 @@ export class Dude extends Entity {
             blushSize: 1.1
         });
         this.skin = randomCell(skins);
-        this.animOffset = Math.random() * 9999;
-        this.animSpeed = 0.8 + Math.random() * 0.4;
         this.flipHat = Math.random() < 0.5 ? 1 : -1;
+        this.animationSpeed = 0.005 * (0.8 + Math.random() * 0.4);
     }
 
     public addCrown(): void {
@@ -107,7 +103,6 @@ export class Dude extends Entity {
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     public update(tick: number, mouse: Mouse): void {
-        this.phase = Math.abs(Math.sin(tick * 0.005 * this.animSpeed + this.animOffset));
         this.face.update(tick, mouse);
         if (this.height > 0) this.height = clamp01(this.height - 0.0025 * this.delta);
         this.air = Math.sin((1 - this.height) * Math.PI);
@@ -163,7 +158,7 @@ export class Dude extends Entity {
         ctx.rotate(this.wave * 0.05 - (this.posing ? 0.3 : 0));
         ctx.translate(-this.p.x, -this.p.y);
 
-        ctx.translate(0,  -this.phase * 10);
+        ctx.translate(0,  -this.animationPhaseAbs * 10);
 
         ctx.beginPath();
         ctx.moveTo(this.p.x, this.p.y - 40);
@@ -177,10 +172,10 @@ export class Dude extends Entity {
 
         ctx.translate(0, -20);
 
-        this.drawArm(ctx, 1, this.posing ? -30 : 10 + this.phase * 10);
+        this.drawArm(ctx, 1, this.posing ? -30 : 10 + this.animationPhaseAbs * 10);
         this.drawArm(ctx, -1, 0);
 
-        ctx.translate(this.p.x + 4, this.p.y - 50 - this.phase * 5);
+        ctx.translate(this.p.x + 4, this.p.y - 50 - this.animationPhaseAbs * 5);
 
         ctx.scale(0.3, 0.3);
         ctx.globalCompositeOperation = 'multiply';
@@ -188,7 +183,7 @@ export class Dude extends Entity {
         ctx.globalCompositeOperation = 'source-over';
 
         ctx.scale(4.5, 4.5);
-        ctx.translate(0, -18 + this.phase * 7 - clamp01(this.air - 0.5) * 20);
+        ctx.translate(0, -18 + this.animationPhaseAbs * 7 - clamp01(this.air - 0.5) * 20);
         ctx.rotate(clamp01(this.air - 0.75) * 0.5 * this.hopDir);
         this.drawHat(ctx);
 
@@ -203,7 +198,7 @@ export class Dude extends Entity {
         ctx.fillStyle = this.mainColor;
         ctx.lineWidth = 6;
         ctx.beginPath();
-        ctx.translate(0, 20 - this.phase * 5);
+        ctx.translate(0, 20 - this.animationPhaseAbs * 5);
         ctx.scale(1.5 * this.flipHat, 1.5);
 
         if (this.crown) {
@@ -233,8 +228,8 @@ export class Dude extends Entity {
         ctx.translate(Math.max(-this.flipHat * 3, 0), -1);
         
         ctx.moveTo(8, -15);
-        ctx.bezierCurveTo(-12, -5, -12, -5, -20, -5 - this.phase * 2);
-        ctx.bezierCurveTo(-10, -26, -3, -26 + this.phase * 2, 10, -18);
+        ctx.bezierCurveTo(-12, -5, -12, -5, -20, -5 - this.animationPhaseAbs * 2);
+        ctx.bezierCurveTo(-10, -26, -3, -26 + this.animationPhaseAbs * 2, 10, -18);
         ctx.closePath();
         ctx.stroke();
         ctx.fill();
@@ -243,7 +238,7 @@ export class Dude extends Entity {
         ctx.lineWidth = 5;
         ctx.beginPath();
         ctx.moveTo(9, -17);
-        ctx.bezierCurveTo(7, -25, 7, -25, 15 - this.phase * 2 - this.wave, -35);
+        ctx.bezierCurveTo(7, -25, 7, -25, 15 - this.animationPhaseAbs * 2 - this.wave, -35);
         ctx.bezierCurveTo(15, -25, 15, -25, 9, -17);
         ctx.stroke();
         ctx.fill();
@@ -254,11 +249,11 @@ export class Dude extends Entity {
         ctx.lineWidth = 7;
         ctx.beginPath();
         ctx.lineJoin = 'round';
-        ctx.moveTo(this.p.x, this.p.y - 30 - this.phase * 10);
+        ctx.moveTo(this.p.x, this.p.y - 30 - this.animationPhaseAbs * 10);
         const diff = clamp01(this.air - 0.5) * 20;
         ctx.quadraticCurveTo(
-            this.p.x + dir * 30 * (1 + this.phase * 0.2) - diff * 0.2 * dir,
-            this.p.y - 30 - this.phase * 5 + diff - diff * 0.2 * dir + yoff,
+            this.p.x + dir * 30 * (1 + this.animationPhaseAbs * 0.2) - diff * 0.2 * dir,
+            this.p.y - 30 - this.animationPhaseAbs * 5 + diff - diff * 0.2 * dir + yoff,
             this.p.x + dir * 22 - diff * dir,
             this.p.y + diff + yoff
         );
@@ -274,23 +269,23 @@ export class Dude extends Entity {
 
     private drawArm(ctx: CanvasRenderingContext2D, dir: number, yoff: number): void {
         ctx.save();
-        ctx.translate(this.p.x + dir * 22, this.p.y - 15 + this.phase * 10);
+        ctx.translate(this.p.x + dir * 22, this.p.y - 15 + this.animationPhaseAbs * 10);
         ctx.strokeStyle = '#000';
         ctx.lineWidth = 7;
         ctx.beginPath();
-        const diff = this.phase * -15;
+        const diff = this.animationPhaseAbs * -15;
         const rise = this.air * -10;
         ctx.moveTo(0, diff - 15);
         const normal = () => this.curveTo(ctx, dir * 20 - this.wave * 5 + rise, -20 + diff * 1.2, dir * 15 + this.wave * 5, 0 + diff + rise);
         if (dir < 0 || !this.cane) {
             normal();
         } else {
-            this.curveTo(ctx, dir * 20 - this.wave * 10 + this.phase * 3, 5 + diff * 1.2 + yoff, 20 * dir, -25 + diff + yoff);
+            this.curveTo(ctx, dir * 20 - this.wave * 10 + this.animationPhaseAbs * 3, 5 + diff * 1.2 + yoff, 20 * dir, -25 + diff + yoff);
         }
         ctx.stroke();
         if (dir > 0 && this.cane) {
             ctx.translate(20 * dir, -25 + diff + yoff);
-            if (this.posing) ctx.rotate(-this.phase * 0.2);
+            if (this.posing) ctx.rotate(-this.animationPhaseAbs * 0.2);
             ctx.beginPath();
             ctx.moveTo(0, -10);
             ctx.lineTo(0, 50);

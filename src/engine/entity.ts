@@ -9,11 +9,12 @@ export abstract class Entity {
     public dead: boolean;
     public p: Vector;
     public rotation = 0;
+    private animationOffset = 0;
+    private previousTick = 0;
+
     protected animationPhase = 0;
     protected animationPhaseAbs = 0;
     protected animationSpeed = 0.005;
-    private animationOffset = 0;
-    private previousTick = 0;
     protected delta = 0;
     
     protected s: Vector;

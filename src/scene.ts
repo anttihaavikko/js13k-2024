@@ -79,6 +79,7 @@ export class Scene extends Container {
         this.cam = game.getCamera();
         this.cam.zoom = this.targetZoom;
         this.cam.pan = { x: -100, y: -20 };
+        this.cam.shift = 0;
 
         game.onKey((e) => {
             if (e.key == 'm') this.game.getAudio().toggleMute();

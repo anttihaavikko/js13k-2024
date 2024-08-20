@@ -287,7 +287,7 @@ export class Scene extends Container {
     }
 
     private getSpiceCount(): number {
-        return (this.level - 1) / 3 + 1;
+        return Math.min((this.level - 1) / 3 + 1, 3);
     }
 
     private showGreed(): void {

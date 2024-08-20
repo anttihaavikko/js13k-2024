@@ -508,7 +508,7 @@ export class Ship extends Flashable {
     }
 
     public getCargoWidth(): number {
-        return Math.floor(Math.max(this.has('navigator') ? 2 : 1, this.dice.length - 1) / this.getStackHeight()) * 100;
+        return Math.floor(Math.max(this.has('navigator') ? 4 : 1, this.dice.length - 1) / this.getStackHeight()) * 100;
     }
 
     private drawCannon(ctx: CanvasRenderingContext2D): void {

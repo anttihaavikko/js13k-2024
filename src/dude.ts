@@ -10,7 +10,7 @@ import { Mouse } from './engine/mouse';
 import { randomCell } from './engine/random';
 import { Vector } from './engine/vector';
 
-export type CrewRole = 'q' | 'c' | 'n'
+export type CrewRole = 'quartermaster' | 'cannoneer' | 'navigator'
 
 export class Dude extends Entity {
     private phase = 0;
@@ -53,11 +53,11 @@ export class Dude extends Entity {
 
     public getRoleDescription(): string {
         switch (this.crewRole) {
-            case 'c':
+            case 'cannoneer':
                 return 'He will allow you to make up to two shots every turn...';
-            case 'q':
+            case 'quartermaster':
                 return 'He will repair random cargo when you roll a blank...';
-            case 'n':
+            case 'navigator':
                 return 'He will allow you to reroll an extra time...';
             default:
                 return '';
@@ -70,13 +70,13 @@ export class Dude extends Entity {
 
     public setRolePosition(): void {
         switch (this.crewRole) {
-            case 'c':
+            case 'cannoneer':
                 this.p = { x: 170, y: -170 };
                 break;
-            case 'q':
+            case 'quartermaster':
                 this.p = { x: -80, y: -100 };
                 break;
-            case 'n':
+            case 'navigator':
                 this.p = { x: 0, y: -400 };
                 break;
             default:
@@ -130,6 +130,10 @@ export class Dude extends Entity {
 
     public hopInPlace(): void {
         this.hop(this.p);
+    }
+
+    public openMouth(): void {
+        this.face.openMouth(1.5, 0.2);
     }
 
     public pose(state: boolean): void {

@@ -168,7 +168,7 @@ export class Scene extends Container {
     }
 
     private rerollOrAct(first: string, second: string, after: () => void): void {
-        if (this.current.has('n') && !this.extraRerollUsed) {
+        if (this.current.has('navigator') && !this.extraRerollUsed) {
             this.extraRerollUsed = true;
             this.promptForReroll(first, this.loot.length > 0 ? second : `The total is ${this.getDamage()}...`, after);
             return;
@@ -399,6 +399,7 @@ export class Scene extends Container {
     }
 
     private thank(): void {
+        this.enemy.openMouth();
         this.info('All aboard, you\'re good to go!', 'May that steer you true...');
         setTimeout(() => this.npcLeave(), 500);
     }
@@ -409,6 +410,7 @@ export class Scene extends Container {
     }
 
     private decline(): void {
+        this.enemy.openMouth();
         this.info('Aye, all set!', 'Fair winds on your voyage...');
         // "May the tides be ever in your favor..."
         // "Safe travels on the open seas..."
@@ -529,6 +531,7 @@ export class Scene extends Container {
     }
 
     private moveDiceTo(ship: Ship): void {
+        ship.openMouth();
         this.game.getAudio().pick();
         this.dice.forEach((d, i) => d.move(offset(ship.getDicePos(i + ship.getDiceCount()), this.ship.p.x, this.ship.p.y), () => ship.addDice(d)));
         setTimeout(() => {
@@ -541,6 +544,7 @@ export class Scene extends Container {
     }
 
     public roll(amount: number, offX: number = 0, offY: number = 0): void {
+        this.current.openMouth();
         const perRow = 9;
         let row = 0;
         this.dice = [];

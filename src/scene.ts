@@ -594,7 +594,7 @@ export class Scene extends Container {
         // const z = this.cam.zoom - this.targetZoom
         const z = this.targetZoom - this.cam.zoom;
         if (Math.abs(z) > 0.01) this.cam.zoom += Math.sign(z) * 0.0075;
-        this.pitcher.update(tick);
+        this.pitcher.update(this.delta);
 
         if (this.loot.length > 0 && mouse.pressing) {
             const looted = this.loot.find(l => l.isHovering());

@@ -9,9 +9,7 @@ export class Pitcher {
         this.target = this.audio.getPitch();
     }
 
-    public update(tick: number): void {
-        const delta = tick - this.time;
-        this.time = tick;
+    public update(delta: number): void {
         const diff = 1 - this.target;
         if (Math.abs(diff) < 0.01) return;
         this.target += Math.sign(diff) * 0.0001 * delta * this.speed;

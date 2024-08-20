@@ -4,12 +4,15 @@ export class Pitcher {
     private value: number;
     private speed: number;
     private target: number;
+    private disabled: boolean;
 
     constructor(private audio: AudioManager) {
         this.value = this.target = this.audio.getPitch();
+        this.disabled = ['iphone', 'ipad'].some(s => navigator.userAgent.toLowerCase().includes(s));
     }
 
     public update(delta: number): void {
+        if (this.disabled) return;
         const diff = this.target - this.value;
         if (Math.abs(diff) < 0.01) return;
         this.value += Math.sign(diff) * 0.0001 * delta * this.speed;

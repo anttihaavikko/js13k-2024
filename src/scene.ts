@@ -632,6 +632,7 @@ export class Scene extends Container {
         ctx.fillStyle = '#03fcf4cc';
         // ctx.translate(this.cam.pan.x, 0);
         // ctx.rotate(this.phase * 0.1);
+        // ctx.globalCompositeOperation = 'screen';
         ctx.beginPath();
         ctx.moveTo(start + 3000, 2000);
         ctx.lineTo(start, 2000);
@@ -646,6 +647,7 @@ export class Scene extends Container {
         ctx.stroke();
         // ctx.resetTransform();
 
+        // ctx.globalCompositeOperation = 'source-over';
         ctx.strokeStyle = '#000';
 
         [...this.dice, ...this.getChildren()].forEach(e => e.draw(ctx));

@@ -52,6 +52,7 @@ export class Ship extends Flashable {
         this.dude = this.createCrew(70, -100, true);
         // this.addCrew(this.dude, 170, -170);
         // this.dude.addCrown();
+        // this.dude.makeAngry();
     }
 
     private getStackHeight(): number {

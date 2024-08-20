@@ -44,11 +44,11 @@ export class AudioManager {
     public toggleMuteTo(state: boolean): void {
         this.muted = state;
         if (this.muted) {
-            localStorage.setItem('KeybGameMute', '1');
+            // localStorage.setItem('KeybGameMute', '1');
             this.audio.pause();
             return;
         }
-        localStorage.removeItem('KeybGameMute');
+        // localStorage.removeItem('KeybGameMute');
         this.audio.play();
     }
 

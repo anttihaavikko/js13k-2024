@@ -9,7 +9,7 @@ export const HEIGHT = 400;
 const canvas: HTMLCanvasElement = document.createElement('canvas');
 const ctx: CanvasRenderingContext2D = canvas.getContext('2d');
 const mouse: Mouse = { x: 0, y: 0 };
-const audio = new AudioManager(!!localStorage.getItem('KeybGameMute'));
+const audio = new AudioManager(false);
 audio.prepare();
 audio.play();
 const game = new Game(audio, canvas);

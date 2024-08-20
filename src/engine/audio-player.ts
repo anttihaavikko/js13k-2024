@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable no-var */
 /* -*- mode: javascript; tab-width: 4; indent-tabs-mode: nil; -*-
 *
 *

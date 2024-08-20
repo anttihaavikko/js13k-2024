@@ -381,8 +381,8 @@ export class Ship extends Flashable {
         ctx.fillStyle = this.getColor(this.colors[3]);
         ctx.beginPath();
         ctx.moveTo(-60 + mastPos, -520);
-        ctx.quadraticCurveTo(-200 - this.phase * 10, -400, -340 + mastPos - this.phase * 10, -200 - this.phase * 10);
-        ctx.lineTo(-60 + mastPos, -200);
+        ctx.quadraticCurveTo(-200 - this.phase * 10, -400, -340 + mastPos - this.phase * 10, -180 - this.phase * 10);
+        ctx.lineTo(-60 + mastPos, -180);
         ctx.closePath();
         ctx.fill();
         ctx.stroke();

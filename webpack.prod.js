@@ -11,7 +11,7 @@ module.exports = merge(common, {
     mode: 'production',
     optimization: {
         minimizer: [
-            new TerserJSPlugin({ terserOptions: { compress: true, mangle: { properties: true } }, exclude: ['leaderboards/score.ts', 'meta.ts'] }),
+            new TerserJSPlugin({ terserOptions: { compress: true, mangle: { properties: true } } }),
             new HtmlMinimizerPlugin({ minimizerOptions: { minifyJS: false } })
         ],
         minimize: true,

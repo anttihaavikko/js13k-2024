@@ -247,7 +247,7 @@ export class Ship extends Flashable {
         if (this.splashing) {
             this.effects.add(new RectParticle(
                 this.game,
-                this.p.x - 180 + 370 * Math.random(),
+                this.p.x - 550 * Math.random(),
                 500,
                 10,
                 10,
@@ -363,7 +363,7 @@ export class Ship extends Flashable {
         ctx.fillStyle = this.getColor(this.colors[0]);
         const mastPos = 40;
         ctx.beginPath();
-        ctx.rect(-50 + mastPos, -550, 15, 520);
+        ctx.rect(mastPos - 50, -550, 15, 520);
         ctx.fill();
         ctx.stroke();
         ctx.closePath();
@@ -371,9 +371,9 @@ export class Ship extends Flashable {
         // sail
         ctx.fillStyle = this.getColor(this.colors[3]);
         ctx.beginPath();
-        ctx.moveTo(-60 + mastPos, -520);
-        ctx.quadraticCurveTo(-200 - this.animationPhase * 10, -400, -340 + mastPos - this.animationPhase * 10, -180 - this.animationPhase * 10);
-        ctx.lineTo(-60 + mastPos, -180);
+        ctx.moveTo(mastPos - 60, -520);
+        ctx.quadraticCurveTo(-200 - this.animationPhase * 10, -400, mastPos - 340 - this.animationPhase * 10, -180 - this.animationPhase * 10);
+        ctx.lineTo(mastPos - 60, -180);
         ctx.closePath();
         ctx.fill();
         ctx.stroke();
@@ -401,7 +401,36 @@ export class Ship extends Flashable {
         ctx.save();
         ctx.translate(160, 0);
         ctx.rotate(-0.1 - this.recoil * 0.1);
-        if (!this.friendly) this.drawCannon(ctx);
+        
+        ctx.fillStyle = this.getColor('#666');
+        // cannon
+        ctx.save();
+        ctx.rotate(-this.recoil * 0.2);
+        ctx.translate(190 - this.recoil * 10, 0);
+        ctx.beginPath();
+        const height = 25;
+        ctx.moveTo(0, -200 - height);
+        ctx.bezierCurveTo(-300, -200 - height * 2, -300, -200 + height * 2, 0, -200 + height);
+        ctx.closePath();
+        ctx.fill();
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.rect(-20, -230, 20, 60);
+        ctx.fill();
+        ctx.stroke();
+        ctx.restore();
+
+        ctx.fillStyle = this.getColor(this.colors[1]);
+        // cannon base
+        ctx.beginPath();
+        ctx.moveTo(0, -150);
+        ctx.bezierCurveTo(0, -230, 70, -230, 70, -150);
+        ctx.closePath();
+        ctx.fill();
+        ctx.stroke();
+
+        drawCircle(ctx, { x: 35, y: -190 }, 8, this.getColor('#000'));
+
         ctx.restore();
 
         ctx.save();
@@ -424,25 +453,23 @@ export class Ship extends Flashable {
         ctx.lineTo(213, -77);
         ctx.moveTo(-180 - extension + 7, -30);
         ctx.lineTo(193, -30);
-        ctx.fill();
-        ctx.stroke();
 
         // nest
         if (!this.friendly && this.has('navigator')) {
-            ctx.beginPath();
             ctx.moveTo(-60, -535);
-            ctx.lineTo(-60 - 20, -535 - 60);
-            ctx.lineTo(60 + 20, -535 - 60);
+            ctx.lineTo(-80, -595);
+            ctx.lineTo(80, -595);
             ctx.lineTo(60, -535);
             ctx.closePath();
-            ctx.moveTo(-70, -535 - 30);
-            ctx.lineTo(70, -535 - 30);
-            ctx.fill();
-            ctx.stroke();
+            ctx.moveTo(-70, -565);
+            ctx.lineTo(70, -565);
         }
 
+        ctx.fill();
+        ctx.stroke();
+
         ctx.translate(-120, -100);
-        ctx.scale(this.player ? 1 : -1, 1);
+        ctx.scale(this.getDir(), 1);
         ctx.lineWidth = 12;
         ctx.lineJoin = 'round';
         ctx.fillStyle = this.colors[4];
@@ -494,9 +521,8 @@ export class Ship extends Flashable {
         this.tween.move(offset(this.p, 2000 * dir, 0), 6);
         setTimeout(() => this.splashing = true, 300);
         setTimeout(() => this.splashing = false, 5000);
-        const delay = 750;
-        for (let i = 0; i < (6 - 1) * 1000 / delay; i++) {
-            setTimeout(() => this.game.getAudio().sail(0.1 + Math.random() * 0.3), i * delay);
+        for (let i = 0; i < 7; i++) {
+            setTimeout(() => this.game.getAudio().sail(0.1 + Math.random() * 0.3), i * 750);
         }
     }
 
@@ -506,36 +532,5 @@ export class Ship extends Flashable {
 
     public getCargoWidth(): number {
         return Math.floor(Math.max(this.has('navigator') ? 4 : 1, this.dice.length - 1) / this.getStackHeight()) * 100;
-    }
-
-    private drawCannon(ctx: CanvasRenderingContext2D): void {
-        ctx.fillStyle = this.getColor('#666');
-        // cannon
-        ctx.save();
-        ctx.rotate(-this.recoil * 0.2);
-        ctx.translate(190 - this.recoil * 10, 0);
-        ctx.beginPath();
-        const height = 25;
-        ctx.moveTo(0, -200 - height);
-        ctx.bezierCurveTo(-300, -200 - height * 2, -300, -200 + height * 2, 0, -200 + height);
-        ctx.closePath();
-        ctx.fill();
-        ctx.stroke();
-        ctx.beginPath();
-        ctx.rect(-20, -230, 20, 60);
-        ctx.fill();
-        ctx.stroke();
-        ctx.restore();
-
-        ctx.fillStyle = this.getColor(this.colors[1]);
-        // cannon base
-        ctx.beginPath();
-        ctx.moveTo(0, -150);
-        ctx.bezierCurveTo(0, -230, 70, -230, 70, -150);
-        ctx.closePath();
-        ctx.fill();
-        ctx.stroke();
-
-        drawCircle(ctx, { x: 35, y: -190 }, 8, this.getColor('#000'));
     }
 }

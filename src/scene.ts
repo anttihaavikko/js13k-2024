@@ -632,7 +632,7 @@ export class Scene extends Container {
         }
 
         // clouds
-        ctx.globalCompositeOperation = 'overlay';
+        // ctx.globalCompositeOperation = 'overlay';
         this.clouds.forEach(c => {
             ctx.lineWidth = 100 * c.scale;
             ctx.setLineDash([0, 80 * c.scale]);
@@ -645,7 +645,7 @@ export class Scene extends Container {
             if (c.x < this.cam.pan.x - 1000) c.x = this.cam.pan.x + 3000;
         });
 
-        ctx.globalCompositeOperation = 'source-over';
+        // ctx.globalCompositeOperation = 'source-over';
         ctx.setLineDash([]);
         ctx.strokeStyle = '#000';
         ctx.lineWidth = 7;

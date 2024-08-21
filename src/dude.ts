@@ -47,8 +47,6 @@ export class Dude extends Entity {
                 return 'He will repair random cargo when you roll a blank...';
             case 'navigator':
                 return 'He will allow you to reroll an extra time...';
-            default:
-                return '';
         }
     }
 
@@ -66,8 +64,6 @@ export class Dude extends Entity {
                 break;
             case 'navigator':
                 this.p = { x: 0, y: -400 };
-                break;
-            default:
                 break;
         }
     }

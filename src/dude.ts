@@ -13,16 +13,16 @@ import { Vector } from './engine/vector';
 export type CrewRole = 'quartermaster' | 'cannoneer' | 'navigator'
 
 export class Dude extends Entity {
+    public crown: boolean;
+
+    private posing: boolean;
     private height = 0;
     private air = 0;
-    private hopDir: number;
     private wave = 0;
-    private posing: boolean;
     private face: Face;
     private skin: string;
     private crewRole: CrewRole;
     private flipHat: number;
-    private crown: boolean;
 
     constructor(game: Game, x: number, y: number, private mainColor: string, private secondaryColor: string, private cane: string) {
         super(game, x, y, 0, 0);
@@ -37,10 +37,6 @@ export class Dude extends Entity {
         this.skin = randomCell(skins);
         this.flipHat = Math.random() < 0.5 ? 1 : -1;
         this.animationSpeed = 0.005 * (0.8 + Math.random() * 0.4);
-    }
-
-    public addCrown(): void {
-        this.crown = true;
     }
 
     public getRole(): CrewRole {
@@ -114,17 +110,11 @@ export class Dude extends Entity {
         this.face.angry = state;
     }
 
-    public hop(to: Vector): void {
-        this.hopDir = -Math.sign(to.x - this.p.x);
+    public hop(to: Vector = this.p): void {
         this.height = 1;
         this.tween.move(to, 0.3);
         this.game.getAudio().jump();
         setTimeout(() => this.game.getAudio().land(), 370);
-        setTimeout(() => this.hopDir = 0, 300);
-    }
-
-    public hopInPlace(): void {
-        this.hop(this.p);
     }
 
     public openMouth(): void {
@@ -132,7 +122,7 @@ export class Dude extends Entity {
     }
 
     public pose(state: boolean): void {
-        if (state) this.hopInPlace();
+        if (state) this.hop();
         this.posing = state;
     }
 
@@ -180,13 +170,9 @@ export class Dude extends Entity {
 
         ctx.scale(4.5, 4.5);
         ctx.translate(0, -18 + this.animationPhaseAbs * 7 - clamp01(this.air - 0.5) * 20);
-        ctx.rotate(clamp01(this.air - 0.75) * 0.5 * this.hopDir);
-        this.drawHat(ctx);
-
-        ctx.restore();
-    }
-
-    private drawHat(ctx: CanvasRenderingContext2D): void {
+        ctx.rotate(clamp01(this.air - 0.75) * 0.5);
+    
+        // draw hat
         ctx.fillStyle = this.mainColor;
         ctx.lineWidth = 6;
         ctx.beginPath();
@@ -204,13 +190,6 @@ export class Dude extends Entity {
             ctx.lineTo(0, -27);
             ctx.lineTo(-5, -19);
             ctx.lineTo(-12, -25);
-            // ctx.moveTo(-6, -15);
-            // ctx.lineTo(6, -15);
-            // ctx.lineTo(6, -20);
-            // ctx.lineTo(3, -18);
-            // ctx.lineTo(0, -23);
-            // ctx.lineTo(-3, -18);
-            // ctx.lineTo(-6, -20);
             ctx.closePath();
             ctx.stroke();
             ctx.fill();
@@ -232,6 +211,8 @@ export class Dude extends Entity {
         ctx.bezierCurveTo(15, -25, 15, -25, 9, -17);
         ctx.stroke();
         ctx.fill();
+
+        ctx.restore();
     }
 
     private drawLeg(ctx: CanvasRenderingContext2D, dir: number, yoff: number): void {

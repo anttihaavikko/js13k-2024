@@ -19,6 +19,10 @@ import { Flashable } from './flashable';
 import { Scene } from './scene';
 
 export class Ship extends Flashable {
+    public hidden: boolean;
+    public ball: Ball;
+    public friendly: boolean;
+
     private dude: Dude;
     private dice: Dice[] = [];
     private tempDice: Dice[] = [];
@@ -27,16 +31,12 @@ export class Ship extends Flashable {
     private recoil: number = 0;
     private stagger: number = 0;
     private incoming: number = 0;
-    private ball: Ball;
-    private friendly: boolean;
     private splashing: boolean;
     private effects: Container;
-    private hidden: boolean;
     private message: WobblyText;
     private crew: Dude[] = [];
     private availableRoles: CrewRole[] = ['quartermaster', 'cannoneer', 'navigator'];
     private hits: number = 0;
-    private time: number;
     
     constructor(game: Game, private name: string, x: number, private scene: Scene, private player: boolean) {
         super(game, x, 550, 0, 0);
@@ -71,7 +71,7 @@ export class Ship extends Flashable {
         const qm = this.crew.find(c => c.is('quartermaster'));
         if (qm) {
             const target = randomCell(this.dice);
-            qm.hopInPlace();
+            qm.hop();
             target.fix();
         }
     }
@@ -111,10 +111,6 @@ export class Ship extends Flashable {
         if (this.player) this.game.getPitcher().pitchFrom(0.7, 1.5);
     }
 
-    public setBall(ball: Ball) {
-        this.ball = ball;
-    }
-
     public isAuto(): boolean {
         return !this.player;
     }
@@ -132,7 +128,7 @@ export class Ship extends Flashable {
     }
 
     public addCrown(): void {
-        this.dude.addCrown();
+        this.dude.crown = true;
     }
 
     public openMouth(): void {
@@ -184,7 +180,7 @@ export class Ship extends Flashable {
 
     public shootAnim(): void {
         this.dude.openMouth();
-        this.wholeCrew().forEach(d => d.hopInPlace());
+        this.wholeCrew().forEach(d => d.hop());
         setTimeout(() => this.dude.pose(false), 300);
         this.recoil = 1;
         this.stagger = 1;
@@ -253,7 +249,6 @@ export class Ship extends Flashable {
 
     public update(tick: number, mouse: Mouse): void {
         super.update(tick, mouse);
-        this.time = tick;
         this.wholeCrew().forEach(c => c.update(tick, mouse));
         this.effects.update(tick, mouse);
         this.message.update(tick, mouse);
@@ -346,18 +341,18 @@ export class Ship extends Flashable {
 
     public sink(): void {
         this.game.getAudio().sink();
-        this.wholeCrew().forEach(d => d.hopInPlace());
+        this.wholeCrew().forEach(d => d.hop());
         this.tween.setEase(quadEaseIn);
         this.tween.move(offset(this.p, 0, 800 / this.game.getCamera().zoom), 1.5);
     }
 
     public pose(state: boolean): void {
-        // this.crew.forEach(d => d.hopInPlace());
+        // this.crew.forEach(d => d.hop());
         this.dude.pose(state);
     }
 
     public hop(): void {
-        this.wholeCrew().forEach(d => d.hopInPlace());
+        this.wholeCrew().forEach(d => d.hop());
     }
 
     public getRollPos(): number {
@@ -500,17 +495,13 @@ export class Ship extends Flashable {
         return this.getSum() == 13;
     }
 
-    public hide(): void {
-        this.hidden = true;
-    }
-
     public rerollAll(): void {
         this.dice.forEach(d => d.reroll());
         this.repotionQuartermaster();
     }
 
     public sail(dir: number = 1): void {
-        this.dude.hopInPlace();
+        this.dude.hop();
         this.tween.setEase(quadEaseInOut);
         this.tween.move(offset(this.p, 2000 * dir, 0), 6);
         setTimeout(() => this.splashing = true, 300);
@@ -562,9 +553,5 @@ export class Ship extends Flashable {
 
     public makeAngry(): void {
         this.dude.makeAngry();
-    }
-
-    public makeFriendly(): void {
-        this.friendly = true;
     }
 }

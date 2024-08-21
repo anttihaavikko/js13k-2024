@@ -318,7 +318,7 @@ export class Scene extends Container {
     }
 
     private promptShot(): void {
-        this.current.setBall(this.ball);
+        this.current.ball = this.ball;
 
         if (this.current.isDead()) {
             this.ship.pose(false);
@@ -383,7 +383,7 @@ export class Scene extends Container {
         this.loot = [];
 
         if (this.level % 2 == 0 && this.level <= END_LEVEL) {
-            this.enemy.makeFriendly();
+            this.enemy.friendly = true;
             this.doEvent();
             return;
         }
@@ -462,7 +462,7 @@ export class Scene extends Container {
         const hasSpice = this.ship.hasSpice();
 
         if (this.level === END_LEVEL) {
-            this.enemy.hide();
+            this.enemy.hidden = true;
             setTimeout(() => this.triggerWin(), 1000);
             return;
         }
@@ -494,7 +494,7 @@ export class Scene extends Container {
                 break;
             }
             case 2: {
-                this.enemy.hide();
+                this.enemy.hidden = true;
                 this.promptSail();
                 this.info('Free cargo floating in the drink!', 'A vessel must have sunken here...');
                 this.addLoot();

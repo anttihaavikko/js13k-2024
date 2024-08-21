@@ -435,12 +435,12 @@ export class Ship extends Flashable {
         ctx.lineTo(180, 10);
         ctx.lineTo(250, -160);
         ctx.closePath();
-        ctx.moveTo(-195 - extension, -110);
-        ctx.lineTo(235, -120);
-        ctx.moveTo(-190 - extension + 5, -72);
-        ctx.lineTo(215, -77);
-        ctx.moveTo(-180 - extension + 5, -30);
-        ctx.lineTo(195, -30);
+        ctx.moveTo(-193 - extension, -110);
+        ctx.lineTo(233, -120);
+        ctx.moveTo(-190 - extension + 7, -72);
+        ctx.lineTo(213, -77);
+        ctx.moveTo(-180 - extension + 7, -30);
+        ctx.lineTo(193, -30);
         ctx.fill();
         ctx.stroke();
 

@@ -405,7 +405,7 @@ export class Scene extends Container {
         for (let i = 0; i < amount; i++) {
             const crew = this.enemy.createCrew(-70, -100);
             crew.makeAngry();
-            crew.setRole(this.enemy.getAvailableRole());
+            crew.crewRole = this.enemy.getAvailableRole();
             this.enemy.addCrew(crew.clone());
         }
     }
@@ -515,7 +515,7 @@ export class Scene extends Container {
             case 4: {
                 this.enemy.clearCargo();
                 const crew = this.enemy.createCrew(-70, -100);
-                crew.setRole(this.ship.getAvailableRole());
+                crew.crewRole = this.ship.getAvailableRole();
                 this.enemy.addCrew(crew);
                 setTimeout(() => {
                     this.game.getAudio().greet();

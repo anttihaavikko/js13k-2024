@@ -77,10 +77,6 @@ export class Dude extends Entity {
         return copy;
     }
 
-    public setRole(role: CrewRole): void {
-        this.crewRole = role;
-    } 
-
     public getCamera(): Camera {
         return this.game.getCamera();
     }

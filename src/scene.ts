@@ -373,10 +373,6 @@ export class Scene extends Container {
         return this.level % 2 == 0 ? randomCell(['VND', 'MRC', 'GIT', 'POO', 'SIN', 'CSS', 'ASH', 'CAP']) : (13 - (this.level - 1) * 0.5).toString();
     }
 
-    private getTaunt(): string {
-        return randomCell(['FILTHY RAT', 'HOW DARE YOU', 'YOU TRAITOR', 'LAND LUBBER']);
-    }
-
     private activateLevel(): void {
         this.zoom();
 
@@ -384,7 +380,87 @@ export class Scene extends Container {
 
         if (this.level % 2 == 0 && this.level <= END_LEVEL) {
             this.enemy.friendly = true;
-            this.doEvent();
+            const hasSpice = this.ship.hasSpice();
+
+            if (this.level === END_LEVEL) {
+                this.enemy.hidden = true;
+                setTimeout(() => {
+                    this.targetZoom = 0.75;
+                    this.cam.shift = 0;
+                    this.cam.pan.y = -50;
+                    this.ship.addCrown();
+                    this.ship.setName('WIN');
+                    this.ship.pose(true);
+                    this.game.getAudio().win();
+                    this.info('You\'ve defeated the whole 13th fleet!', '', 'THE END?');
+                    this.promptSail();
+                }, 1000);
+                return;
+            }
+
+            // events
+            switch (randomInt(0, 4 - (this.ship.getAvailableRole() ? 0 : 1))) {
+                case 0: {
+                    this.enemy.removeSpice();
+                    setTimeout(() => {
+                        this.game.getAudio().greet();
+                        this.enemy?.hop();
+                        this.promptSail();
+                        this.info('Ahoy mate! Interested in trade?', hasSpice ? 'I\'ll give you fresh cargo for your spice...' : 'Looks like you don\'t have any spice though...');
+                        if (hasSpice) {
+                            this.ship.allowSpicePick();
+                            this.trading = true;
+                        }
+                    }, 1000);
+                    break;
+                }
+                case 1: {
+                    setTimeout(() => {
+                        this.game.getAudio().greet();
+                        this.enemy?.hop();
+                        this.promptAnswerWith('ROLL', 'KEEP', 'Hello there mate!', 'Would you like to reroll all your cargo?', () => {
+                            this.ship.rerollAll();
+                            this.thank();
+                        }, () => this.decline());
+                    }, 1000);
+                    break;
+                }
+                case 2: {
+                    this.enemy.hidden = true;
+                    this.promptSail();
+                    this.info('Free cargo floating in the drink!', 'A vessel must have sunken here...');
+                    this.addLoot();
+                    break;
+                }
+                case 3: {
+                    this.enemy.addPlate();
+                    setTimeout(() => {
+                        this.game.getAudio().greet();
+                        this.enemy?.hop();
+                        this.promptAnswer('Ahoy! I could plate one of your cargo!', 'It\'ll only be able to receive 1 damage at a time....', () => {
+                            this.ship.addPlate();
+                            this.thank();
+                        }, () => this.decline());
+                    }, 1000);
+                    break;
+                }
+                case 4: {
+                    this.enemy.clearCargo();
+                    const crew = this.enemy.createCrew(-70, -100);
+                    crew.crewRole = this.ship.getAvailableRole();
+                    this.enemy.addCrew(crew);
+                    setTimeout(() => {
+                        this.game.getAudio().greet();
+                        this.enemy?.hop();
+                        this.promptAnswer(`Oi! Want to hire this ${crew.crewRole}?`, crew.getRoleDescription(), () => {
+                            this.enemy.removeCrew();
+                            this.ship.addCrew(crew.clone());
+                            this.thank();
+                        }, () => this.decline());
+                    }, 1000);
+                    break;
+                }
+            }
             return;
         }
 
@@ -395,7 +471,7 @@ export class Scene extends Container {
         this.enemy.dude.face.angry = true;
         setTimeout(() => {
             this.info('Man the cannons! Battle stations!', 'There\'s no parley in sight...');
-            this.enemy.talk(this.getTaunt());
+            this.enemy.talk(randomCell(['FILTHY RAT', 'HOW DARE YOU', 'YOU TRAITOR', 'LAND LUBBER']));
             this.game.getAudio().warn();
         }, 1000);
         setTimeout(() => this.promptShot(), 2000);
@@ -446,93 +522,6 @@ export class Scene extends Container {
         }
     }
 
-    private triggerWin(): void {
-        this.targetZoom = 0.75;
-        this.cam.shift = 0;
-        this.cam.pan.y = -50;
-        this.ship.addCrown();
-        this.ship.setName('WIN');
-        this.ship.pose(true);
-        this.game.getAudio().win();
-        this.info('You\'ve defeated the whole 13th fleet!', '', 'THE END?');
-        this.promptSail();
-    }
-
-    private doEvent(): void {
-        const hasSpice = this.ship.hasSpice();
-
-        if (this.level === END_LEVEL) {
-            this.enemy.hidden = true;
-            setTimeout(() => this.triggerWin(), 1000);
-            return;
-        }
-
-        switch (randomInt(0, 4 - (this.ship.getAvailableRole() ? 0 : 1))) {
-            case 0: {
-                this.enemy.removeSpice();
-                setTimeout(() => {
-                    this.game.getAudio().greet();
-                    this.enemy?.hop();
-                    this.promptSail();
-                    this.info('Ahoy mate! Interested in trade?', hasSpice ? 'I\'ll give you fresh cargo for your spice...' : 'Looks like you don\'t have any spice though...');
-                    if (hasSpice) {
-                        this.ship.allowSpicePick();
-                        this.trading = true;
-                    }
-                }, 1000);
-                break;
-            }
-            case 1: {
-                setTimeout(() => {
-                    this.game.getAudio().greet();
-                    this.enemy?.hop();
-                    this.promptAnswerWith('ROLL', 'KEEP', 'Hello there mate!', 'Would you like to reroll all your cargo?', () => {
-                        this.ship.rerollAll();
-                        this.thank();
-                    }, () => this.decline());
-                }, 1000);
-                break;
-            }
-            case 2: {
-                this.enemy.hidden = true;
-                this.promptSail();
-                this.info('Free cargo floating in the drink!', 'A vessel must have sunken here...');
-                this.addLoot();
-                break;
-            }
-            case 3: {
-                this.enemy.addPlate();
-                setTimeout(() => {
-                    this.game.getAudio().greet();
-                    this.enemy?.hop();
-                    this.promptAnswer('Ahoy! I could plate one of your cargo!', 'It\'ll only be able to receive 1 damage at a time....', () => {
-                        this.ship.addPlate();
-                        this.thank();
-                    }, () => this.decline());
-                }, 1000);
-                break;
-            }
-            case 4: {
-                this.enemy.clearCargo();
-                const crew = this.enemy.createCrew(-70, -100);
-                crew.crewRole = this.ship.getAvailableRole();
-                this.enemy.addCrew(crew);
-                setTimeout(() => {
-                    this.game.getAudio().greet();
-                    this.enemy?.hop();
-                    this.promptAnswer(`Oi! Want to hire this ${crew.crewRole}?`, crew.getRoleDescription(), () => {
-                        this.enemy.removeCrew();
-                        this.ship.addCrew(crew.clone());
-                        this.thank();
-                    }, () => this.decline());
-                }, 1000);
-                break;
-            }
-            default:
-                break;
-        }
-    }
-
     private zoom(): void {
         const left = this.ship?.getCargoWidth();
         const right = this.enemy?.getCargoWidth() ?? 0;
@@ -549,10 +538,6 @@ export class Scene extends Container {
         setTimeout(() => {
             this.dice = [];
         }, 300);
-    }
-
-    private getMid(): number {
-        return (this.cam.pan.x + 400 - this.cam.shift);
     }
 
     public roll(amount: number, offX: number = 0, offY: number = 0): void {
@@ -585,11 +570,10 @@ export class Scene extends Container {
         [this.ball, this.ship, this.enemy, ...this.dice, this.splash, this.secondLine, this.bigText, ...this.getButtons()].filter(e => !!e).forEach(e => e.update(tick, mouse));
         this.loot.forEach(l => l.update(tick, this.mp));
         this.mp = { ...mouse };
-        const diff = this.ship.p.x - this.getMid() + this.cam.shift;
+        const diff = this.ship.p.x - this.cam.pan.x - 400 + this.cam.shift * 2;
         if (Math.abs(diff) > 10) this.camVelocity += Math.sign(diff);
         this.cam.pan.x += this.camVelocity;
         this.camVelocity *= 0.9;
-        // const z = this.cam.zoom - this.targetZoom
         const z = this.targetZoom - this.cam.zoom;
         if (Math.abs(z) > 0.01) this.cam.zoom += Math.sign(z) * 0.0075;
 
@@ -620,7 +604,7 @@ export class Scene extends Container {
         ctx.lineWidth = 45 + 10 * this.animationPhaseAbs;
         ctx.lineCap = 'round';
         ctx.setLineDash([0, 35]);
-        for (let i = 0; i < 3000 / 50; i++) {
+        for (let i = 0; i < 60; i++) {
             ctx.save();
             ctx.translate(start + i * 100 - 500, 0);
             ctx.rotate(Math.PI * 0.25);

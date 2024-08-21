@@ -229,6 +229,7 @@ export class Dude extends Entity {
             ctx.strokeStyle = this.cane;
             ctx.lineWidth = 6;
             ctx.stroke();
+            // drawCircle(ctx, { x: 4, y: 0 }, 5, '#000');
         }
         ctx.restore();
     }

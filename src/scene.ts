@@ -41,6 +41,7 @@ export class Scene extends Container {
     private mp: Mouse;
     private prompted: NodeJS.Timeout;
     private extraRerollUsed: boolean;
+    private clouds: { x: number, y: number, scale: number, speed: number }[];
 
     constructor(game: Game) {
         super(game, 0, 0, []);
@@ -81,6 +82,8 @@ export class Scene extends Container {
         this.cam.zoom = this.targetZoom;
         this.cam.pan = { x: -100, y: -20 };
         this.cam.shift = 0;
+
+        this.clouds = Array.from(Array(50)).map((_, i) => ({ x: -1000 + i * 200, y: Math.random() * 500 - 200, speed: Math.random(), scale: 0.75 + Math.random() * 1.3 }));
 
         game.onKey((e) => {
             if (e.key == 'm') this.game.getAudio().toggleMute();
@@ -627,7 +630,22 @@ export class Scene extends Container {
             ctx.stroke();
             ctx.restore();
         }
-        
+
+        // clouds
+        ctx.globalCompositeOperation = 'overlay';
+        this.clouds.forEach(c => {
+            ctx.lineWidth = 100 * c.scale;
+            ctx.setLineDash([0, 80 * c.scale]);
+            // ctx.lineDashOffset = Math.sin(c.x * 0.001) * 100;
+            ctx.beginPath();
+            ctx.strokeStyle = '#ffffff22';
+            ctx.ellipse(c.x, c.y, 140 * c.scale, 30 * c.scale, 0, 0, Math.PI * 2);
+            ctx.stroke();
+            c.x -= c.speed * this.delta * 0.03;
+            if (c.x < this.cam.pan.x - 1000) c.x = this.cam.pan.x + 3000;
+        });
+
+        ctx.globalCompositeOperation = 'source-over';
         ctx.setLineDash([]);
         ctx.strokeStyle = '#000';
         ctx.lineWidth = 7;

@@ -10,10 +10,12 @@ export class TextEntity extends Particle {
 
     public draw(ctx: CanvasRenderingContext2D): void {
         ctx.save();
-        ctx.rotate(this.options?.angle ?? 0);
+        // TODO: commented for optimization
+        // ctx.rotate(this.options?.angle ?? 0);
         const mod = this.options?.scales ? this.ratio : 1;
         ctx.font =`${this.fontSize * mod}px ${font}`;
-        ctx.textAlign = this.options?.align ?? 'center';
+        // TODO: commented for optimization
+        // ctx.textAlign = this.options?.align ?? 'center';
 
         if (this.options?.shadow) {
             ctx.fillStyle = '#000';

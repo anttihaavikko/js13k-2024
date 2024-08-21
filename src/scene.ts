@@ -610,20 +610,27 @@ export class Scene extends Container {
     }
 
     public draw(ctx: CanvasRenderingContext2D): void {
-        ctx.strokeStyle = '#000';
-        ctx.lineWidth = 7;
-
         const start = Math.floor(this.cam.pan.x / 100) * 100 - 500 - this.cam.shift;
 
-        ctx.fillStyle = '#0000ff11';
-        
+        // background
+        ctx.strokeStyle = '#0000ff11';
+        ctx.lineWidth = 45 + 10 * this.animationPhaseAbs;
+        ctx.lineCap = 'round';
+        ctx.setLineDash([0, 35]);
         for (let i = 0; i < 3000 / 50; i++) {
             ctx.save();
             ctx.translate(start + i * 100 - 500, 0);
             ctx.rotate(Math.PI * 0.25);
-            ctx.fillRect(i, -2000, 30, 5000);
+            ctx.beginPath();
+            ctx.moveTo(i, -2000);
+            ctx.lineTo(i, 5000);
+            ctx.stroke();
             ctx.restore();
         }
+        
+        ctx.setLineDash([]);
+        ctx.strokeStyle = '#000';
+        ctx.lineWidth = 7;
         
         this.enemy?.draw(ctx);
         this.ship.draw(ctx);
@@ -631,10 +638,9 @@ export class Scene extends Container {
 
         this.loot.forEach(l => l.draw(ctx));
 
+        // water
         ctx.strokeStyle = '#ffffffcc';
         ctx.fillStyle = '#03fcf4cc';
-
-        // water
         // ctx.globalCompositeOperation = 'screen';
         ctx.beginPath();
         ctx.moveTo(start + 3000, 2000);

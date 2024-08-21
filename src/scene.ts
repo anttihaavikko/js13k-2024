@@ -83,7 +83,7 @@ export class Scene extends Container {
         this.cam.pan = { x: -100, y: -20 };
         this.cam.shift = 0;
 
-        this.clouds = Array.from(Array(50)).map((_, i) => ({ x: -1000 + i * 200, y: Math.random() * 500 - 200, speed: Math.random(), scale: 0.75 + Math.random() * 1.3 }));
+        this.clouds = Array.from(Array(50)).map((_, i) => ({ x: -1000 + i * 200, y: Math.random() * 600 - 300, speed: Math.random(), scale: 0.75 + Math.random() * 1.3 }));
 
         game.onKey((e) => {
             if (e.key == 'm') this.game.audio.toggleMute();

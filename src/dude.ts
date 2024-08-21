@@ -48,10 +48,6 @@ export class Dude extends Entity {
         }
     }
 
-    public is(role: CrewRole): boolean {
-        return this.crewRole === role;
-    }
-
     public setRolePosition(): void {
         switch (this.crewRole) {
             case 'cannoneer':

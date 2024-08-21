@@ -68,7 +68,7 @@ export class Ship extends Flashable {
     }
 
     public tryRepair(): void {
-        const qm = this.crew.find(c => c.is('quartermaster'));
+        const qm = this.crew.find(c => c.crewRole == 'quartermaster');
         if (qm) {
             const target = randomCell(this.dice);
             qm.hop();
@@ -85,7 +85,7 @@ export class Ship extends Flashable {
     }
 
     public has(role: CrewRole): boolean {
-        return this.crew.some(c => c.is(role));
+        return this.crew.some(c => c.crewRole == role);
     }
 
     public getAvailableRole(): CrewRole {
@@ -460,7 +460,7 @@ export class Ship extends Flashable {
     }
 
     public repotionQuartermaster(): void {
-        const qm = this.crew.find(c => c.is('quartermaster'));
+        const qm = this.crew.find(c => c.crewRole == 'quartermaster');
         if (qm) {
             const height = this.getStackHeight();
             qm.hop({ x: -45 - Math.max(Math.floor(this.dice.length / height), 1) * 40, y: -105 - Math.min(height, this.dice.length) * 70});

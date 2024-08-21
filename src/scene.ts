@@ -643,7 +643,7 @@ export class Scene extends Container {
         this.loot.forEach(l => l.draw(ctx));
 
         // water
-        ctx.strokeStyle = '#ffffffaa';
+        ctx.strokeStyle = '#ffffffbb';
         ctx.fillStyle = '#03fcf477';
         // ctx.globalCompositeOperation = 'lighter';
         ctx.beginPath();

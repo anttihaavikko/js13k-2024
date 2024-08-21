@@ -96,19 +96,16 @@ export class Dude extends Entity {
         this.posing = state;
     }
 
-    private isBoss() {
-        return this.crown && this.face.angry;
-    }
-
     public draw(ctx: CanvasRenderingContext2D): void {
+        const boss = this.crown && this.face.angry;
         ctx.lineCap = 'round';
         ctx.save();
         ctx.translate(this.p.x, this.p.y);
         if (!this.cane) ctx.scale(0.9, 0.9);
-        if (this.isBoss()) ctx.scale(1.3, 1.3);
+        if (boss) ctx.scale(1.3, 1.3);
         ctx.translate(-this.p.x, -this.p.y - this.air * 50 - (this.posing ? 10 : 0));
 
-        const raisePos = this.isBoss() ? -35 : -45;
+        const raisePos = boss ? -35 : -45;
         this.drawLeg(ctx, 1, this.posing ? raisePos : 0);
         this.drawLeg(ctx, -1, 0);
         

@@ -13,8 +13,7 @@ const audio = new AudioManager(false);
 audio.prepare();
 audio.play();
 const game = new Game(audio, canvas);
-const scene = new Scene(game);
-game.setScene(scene);
+game.scene = new Scene(game);
 
 canvas.id = 'game';
 canvas.width = WIDTH;

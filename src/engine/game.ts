@@ -58,13 +58,9 @@ export class Game extends Entity {
         this.blinders.draw(ctx);
     }
 
-    public setScene(scene: Container): void {
-        this.scene = scene;
-    }
-
     public changeScene(scene: Container): void {
         this.blinders.close(() => {
-            this.setScene(scene);
+            this.scene = scene;
             this.blinders.open();
         });
     }

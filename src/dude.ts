@@ -103,19 +103,18 @@ export class Dude extends Entity {
         ctx.translate(this.p.x, this.p.y);
         if (!this.cane) ctx.scale(0.9, 0.9);
         if (boss) ctx.scale(1.3, 1.3);
-        ctx.translate(-this.p.x, -this.p.y - this.air * 50 - (this.posing ? 10 : 0));
+        ctx.translate(0, -this.air * 50 - (this.posing ? 10 : 0));
 
         const raisePos = boss ? -35 : -45;
         this.drawLeg(ctx, 1, this.posing ? raisePos : 0);
         this.drawLeg(ctx, -1, 0);
         
-        ctx.translate(this.p.x, this.p.y);
+        ctx.translate(0, -this.animationPhaseAbs * 10);
         ctx.rotate(this.wave * 0.05 - (this.posing ? 0.3 : 0));
-        ctx.translate(-this.p.x, -this.p.y - this.animationPhaseAbs * 10);
 
         ctx.beginPath();
-        ctx.moveTo(this.p.x, this.p.y - 40);
-        ctx.lineTo(this.p.x, this.p.y - 90);
+        ctx.moveTo(0, 0 - 40);
+        ctx.lineTo(0, 0 - 90);
         ctx.lineWidth = 50;
         ctx.strokeStyle = '#000';
         ctx.stroke();
@@ -128,7 +127,7 @@ export class Dude extends Entity {
         this.drawArm(ctx, 1, this.posing ? -30 : 10 + this.animationPhaseAbs * 10);
         this.drawArm(ctx, -1, 0);
 
-        ctx.translate(this.p.x + 4, this.p.y - 50 - this.animationPhaseAbs * 5);
+        ctx.translate(4, -50 - this.animationPhaseAbs * 5);
 
         ctx.scale(0.3, 0.3);
         ctx.globalCompositeOperation = 'multiply';
@@ -187,13 +186,13 @@ export class Dude extends Entity {
         ctx.lineWidth = 7;
         ctx.beginPath();
         ctx.lineJoin = 'round';
-        ctx.moveTo(this.p.x, this.p.y - 30 - this.animationPhaseAbs * 10);
+        ctx.moveTo(0, -30 - this.animationPhaseAbs * 10);
         const diff = clamp01(this.air - 0.5) * 20;
         ctx.quadraticCurveTo(
-            this.p.x + dir * 30 * (1 + this.animationPhaseAbs * 0.2) - diff * 0.2 * dir,
-            this.p.y - 30 - this.animationPhaseAbs * 5 + diff - diff * 0.2 * dir + yoff,
-            this.p.x + dir * 22 - diff * dir,
-            this.p.y + diff + yoff
+            dir * 30 * (1 + this.animationPhaseAbs * 0.2) - diff * 0.2 * dir,
+            -30 - this.animationPhaseAbs * 5 + diff - diff * 0.2 * dir + yoff,
+            dir * 22 - diff * dir,
+            diff + yoff
         );
         // ctx.lineTo(this.p.x - this.air * dir * 5 + dir * 30 - diff * dir, this.p.y + this.air * 18);
         ctx.stroke();
@@ -207,7 +206,7 @@ export class Dude extends Entity {
 
     private drawArm(ctx: CanvasRenderingContext2D, dir: number, yoff: number): void {
         ctx.save();
-        ctx.translate(this.p.x + dir * 22, this.p.y - 15 + this.animationPhaseAbs * 10);
+        ctx.translate(dir * 22, -15 + this.animationPhaseAbs * 10);
         ctx.strokeStyle = '#000';
         ctx.lineWidth = 7;
         ctx.beginPath();

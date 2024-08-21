@@ -107,12 +107,12 @@ export class Scene extends Container {
             // if (e.key == 'h') this.game.getCamera().shake(10, 0.15, 1);
             // if (e.key == 'c') {
             //     const crew = this.ship.createCrew(-70, -100);
-            //     crew.setRole(this.ship.getAvailableRole());
+            //     crew.crewRole = this.ship.getAvailableRole();
             //     this.ship.addCrew(crew.clone());
             // }
             // if (e.key == 'C') {
             //     const crew = this.enemy.createCrew(-70, -100);
-            //     crew.setRole(this.enemy.getAvailableRole());
+            //     crew.crewRole = this.enemy.getAvailableRole();
             //     this.enemy.addCrew(crew.clone());
             // }
         });

@@ -12,12 +12,12 @@ export type CrewRole = 'quartermaster' | 'cannoneer' | 'navigator'
 
 export class Dude extends Entity {
     public crown: boolean;
+    public face: Face;
 
     private posing: boolean;
     private height = 0;
     private air = 0;
     private wave = 0;
-    private face: Face;
     private skin: string;
     public crewRole: CrewRole;
     private flipHat: number;
@@ -82,10 +82,6 @@ export class Dude extends Entity {
         this.air = Math.sin((1 - this.height) * Math.PI);
         this.wave = Math.sin(tick * 0.005);
         super.update(tick, mouse);
-    }
-
-    public makeAngry(state: boolean = true): void {
-        this.face.angry = state;
     }
 
     public hop(to: Vector = this.p): void {

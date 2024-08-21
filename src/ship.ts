@@ -552,6 +552,6 @@ export class Ship extends Flashable {
     }
 
     public makeAngry(): void {
-        this.dude.makeAngry();
+        this.dude.face.angry = true;
     }
 }

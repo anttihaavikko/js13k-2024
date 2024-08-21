@@ -404,7 +404,7 @@ export class Scene extends Container {
     private addEnemyCrew(amount: number): void {
         for (let i = 0; i < amount; i++) {
             const crew = this.enemy.createCrew(-70, -100);
-            crew.makeAngry();
+            crew.face.angry = true;
             crew.crewRole = this.enemy.getAvailableRole();
             this.enemy.addCrew(crew.clone());
         }

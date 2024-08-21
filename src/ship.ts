@@ -146,7 +146,7 @@ export class Ship extends Flashable {
     public hurtDice(target: Dice, amount: number): void {
         target.mark();
         setTimeout(() => {
-            this.game.pitcher.pitchFrom(this.player ? 0.85 : 1.25, this.player ? 1 : 2.5);
+            this.game.pitcher.pitchFrom(this.player ? 0.85 : 1.21, this.player ? 1 : 2);
             this.openMouth();
             this.flash();
             this.game.camera.shake(20, 0.3, 2);

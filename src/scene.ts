@@ -520,7 +520,7 @@ export class Scene extends Container {
                 setTimeout(() => {
                     this.game.getAudio().greet();
                     this.enemy?.hop();
-                    this.promptAnswer(`Oi! Want to hire this ${crew.getRole()}?`, crew.getRoleDescription(), () => {
+                    this.promptAnswer(`Oi! Want to hire this ${crew.crewRole}?`, crew.getRoleDescription(), () => {
                         this.enemy.removeCrew();
                         this.ship.addCrew(crew.clone());
                         this.thank();

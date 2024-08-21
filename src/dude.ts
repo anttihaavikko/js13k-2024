@@ -21,7 +21,7 @@ export class Dude extends Entity {
     private wave = 0;
     private face: Face;
     private skin: string;
-    private crewRole: CrewRole;
+    public crewRole: CrewRole;
     private flipHat: number;
 
     constructor(game: Game, x: number, y: number, private mainColor: string, private secondaryColor: string, private cane: string) {
@@ -37,10 +37,6 @@ export class Dude extends Entity {
         this.skin = randomCell(skins);
         this.flipHat = Math.random() < 0.5 ? 1 : -1;
         this.animationSpeed = 0.005 * (0.8 + Math.random() * 0.4);
-    }
-
-    public getRole(): CrewRole {
-        return this.crewRole;
     }
 
     public getRoleDescription(): string {

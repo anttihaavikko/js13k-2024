@@ -93,7 +93,7 @@ export class Ship extends Flashable {
     }
 
     public addCrew(dude: Dude): void {
-        this.availableRoles = this.availableRoles.filter(role => role !== dude.getRole());
+        this.availableRoles = this.availableRoles.filter(role => role !== dude.crewRole);
         this.crew.push(dude);
         this.repotionQuartermaster();
     }

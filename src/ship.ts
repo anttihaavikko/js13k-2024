@@ -22,12 +22,12 @@ export class Ship extends Flashable {
     public hidden: boolean;
     public ball: Ball;
     public friendly: boolean;
+    public dude: Dude;
+    public opponent: Ship;
 
-    private dude: Dude;
     private dice: Dice[] = [];
     private tempDice: Dice[] = [];
     private colors: string[];
-    private opponent: Ship;
     private recoil: number = 0;
     private stagger: number = 0;
     private incoming: number = 0;
@@ -38,7 +38,7 @@ export class Ship extends Flashable {
     private availableRoles: CrewRole[] = ['quartermaster', 'cannoneer', 'navigator'];
     private hits: number = 0;
     
-    constructor(game: Game, private name: string, x: number, private scene: Scene, private player: boolean) {
+    constructor(game: Game, private name: string, x: number, private scene: Scene, public player: boolean) {
         super(game, x, 550, 0, 0);
         this.animationSpeed = 0.005;
         this.colors = [
@@ -109,18 +109,6 @@ export class Ship extends Flashable {
         this.talk('UNLUCKY 13!');
         this.game.getAudio().bad();
         if (this.player) this.game.getPitcher().pitchFrom(0.7, 1.5);
-    }
-
-    public isAuto(): boolean {
-        return !this.player;
-    }
-
-    public getOpponent(): Ship {
-        return this.opponent;
-    }
-
-    public setOpponent(other: Ship): void {
-        this.opponent = other;
     }
 
     public isDead(): boolean {
@@ -549,9 +537,5 @@ export class Ship extends Flashable {
         ctx.stroke();
 
         drawCircle(ctx, { x: 35, y: -190 }, 8, this.getColor('#000'));
-    }
-
-    public makeAngry(): void {
-        this.dude.face.angry = true;
     }
 }

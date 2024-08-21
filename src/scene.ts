@@ -188,7 +188,7 @@ export class Scene extends Container {
     }
 
     private promptForReroll(first: string, second: string, after: () => void): void {
-        if (this.current.isAuto()) {
+        if (!this.current.player) {
             const dmg = this.getDamage();
             if (dmg < this.dice.length) {
                 this.reroll();
@@ -216,7 +216,7 @@ export class Scene extends Container {
             this.nextTurn();
             return;
         } 
-        if (!this.current.getOpponent().isAuto() && this.current.getOpponent().getDiceCount() > 1) {
+        if (this.current.opponent.player && this.current.opponent.getDiceCount() > 1) {
             this.game.getAudio().incoming();
             this.info(`Incoming ${dmg} damage!`, 'Select cargo taking the hit...');
             this.ship.addDamage(dmg);
@@ -263,9 +263,9 @@ export class Scene extends Container {
             }, 750);
             return;
         }
-        this.current = this.current.getOpponent();
+        this.current = this.current.opponent;
 
-        if (this.current.isUnlucky() && !this.current.getOpponent().isUnlucky()) {
+        if (this.current.isUnlucky() && !this.current.opponent.isUnlucky()) {
             setTimeout(() => {
                 this.current.badLuck();
                 this.game.getAudio().bad();
@@ -329,7 +329,7 @@ export class Scene extends Container {
             setTimeout(() => this.ship.sink(), 100);
             return;
         }
-        if (this.current.isAuto()) {
+        if (!this.current.player) {
             setTimeout(() => this.rollForDamage(), 1000);
             return;
         }
@@ -356,8 +356,8 @@ export class Scene extends Container {
         this.loot.forEach(l => l.allowPick(false));
         setTimeout(() => {
             this.enemy = new Ship(this.game, this.getEnemyName(), (this.level - 1) * 2000 + 3000, this, false);
-            this.ship.setOpponent(this.enemy);
-            this.enemy.setOpponent(this.ship);
+            this.ship.opponent = this.enemy;
+            this.enemy.opponent = this.ship;
             for (let index = 0; index < 1 + (this.level - 1) * 0.5; index++) {
                 this.enemy.addDice(new Dice(this.game, 0, 0));
             }
@@ -392,7 +392,7 @@ export class Scene extends Container {
         if (this.level >= END_LEVEL - 1) this.addEnemyCrew(2);
         if (this.level > 13) this.addEnemyCrew(1);
 
-        this.enemy.makeAngry();
+        this.enemy.dude.face.angry = true;
         setTimeout(() => {
             this.info('Man the cannons! Battle stations!', 'There\'s no parley in sight...');
             this.enemy.talk(this.getTaunt());

@@ -13,13 +13,13 @@ export type CrewRole = 'quartermaster' | 'cannoneer' | 'navigator'
 export class Dude extends Entity {
     public crown: boolean;
     public face: Face;
+    public crewRole: CrewRole;
 
     private posing: boolean;
     private height = 0;
     private air = 0;
     private wave = 0;
     private skin: string;
-    public crewRole: CrewRole;
     private flipHat: number;
 
     constructor(game: Game, x: number, y: number, private mainColor: string, private secondaryColor: string, private cane: string) {

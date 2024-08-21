@@ -219,11 +219,11 @@ export class Dude extends Entity {
         }
         ctx.stroke();
         if (dir > 0 && this.cane) {
-            // ctx.translate(20 * dir, -25 + diff + yoff);
+            ctx.translate(20 * dir, -25 + diff + yoff);
             if (this.posing) ctx.rotate(-this.animationPhaseAbs * 0.2);
             ctx.beginPath();
-            ctx.moveTo(20 * dir, -25 + diff + yoff);
-            ctx.lineTo(20 * dir, 25 + diff + yoff);
+            ctx.moveTo(0, 0);
+            ctx.lineTo(0, 50);
             ctx.lineWidth = 12;
             ctx.stroke();
             ctx.strokeStyle = this.cane;

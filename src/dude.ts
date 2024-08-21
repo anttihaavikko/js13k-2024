@@ -211,21 +211,19 @@ export class Dude extends Entity {
         ctx.lineWidth = 7;
         ctx.beginPath();
         const diff = this.animationPhaseAbs * -15;
-        const rise = this.air * -10;
         ctx.moveTo(0, diff - 15);
-        const normal = () => this.curveTo(ctx, dir * 20 - this.wave * 5 + rise, -20 + diff * 1.2, dir * 15 + this.wave * 5, 0 + diff + rise);
         if (dir < 0 || !this.cane) {
-            normal();
+            this.curveTo(ctx, dir * 20 - this.wave * 5 + this.air * -10, -20 + diff * 1.2, dir * 15 + this.wave * 5, diff + this.air * -10);
         } else {
             this.curveTo(ctx, dir * 20 - this.wave * 10 + this.animationPhaseAbs * 3, 5 + diff * 1.2 + yoff, 20 * dir, -25 + diff + yoff);
         }
         ctx.stroke();
         if (dir > 0 && this.cane) {
-            ctx.translate(20 * dir, -25 + diff + yoff);
+            // ctx.translate(20 * dir, -25 + diff + yoff);
             if (this.posing) ctx.rotate(-this.animationPhaseAbs * 0.2);
             ctx.beginPath();
-            ctx.moveTo(0, -10);
-            ctx.lineTo(0, 50);
+            ctx.moveTo(20 * dir, -25 + diff + yoff);
+            ctx.lineTo(20 * dir, 25 + diff + yoff);
             ctx.lineWidth = 12;
             ctx.stroke();
             ctx.strokeStyle = this.cane;

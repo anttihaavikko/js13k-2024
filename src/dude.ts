@@ -1,6 +1,4 @@
 import { skins } from './colors';
-import { AudioManager } from './engine/audio';
-import { Camera } from './engine/camera';
 import { drawCircle } from './engine/drawing';
 import { Entity } from './engine/entity';
 import { Face } from './engine/face';
@@ -75,14 +73,6 @@ export class Dude extends Entity {
         copy.face.angry = this.face.angry;
         copy.setRolePosition();
         return copy;
-    }
-
-    public getCamera(): Camera {
-        return this.game.getCamera();
-    }
-
-    public getAudio(): AudioManager {
-        return this.game.getAudio();
     }
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars

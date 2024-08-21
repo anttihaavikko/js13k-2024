@@ -83,8 +83,8 @@ export class Dude extends Entity {
     public hop(to: Vector = this.p): void {
         this.height = 1;
         this.tween.move(to, 0.3);
-        this.game.getAudio().jump();
-        setTimeout(() => this.game.getAudio().land(), 370);
+        this.game.audio.jump();
+        setTimeout(() => this.game.audio.land(), 370);
     }
 
     public openMouth(): void {

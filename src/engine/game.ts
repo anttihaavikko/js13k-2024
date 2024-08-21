@@ -7,36 +7,17 @@ import { Mouse } from './mouse';
 import { Pitcher } from './pitcher';
 
 export class Game extends Entity {
-    private scene: Container;
-    private keyListeners: ((event: KeyboardEvent) => void)[] = [];
-    private camera = new Camera();
-    private blinders: Blinders;
-    private pitcher: Pitcher;
+    public pitcher: Pitcher;
+    public scene: Container;
+    public camera = new Camera();
 
-    constructor(private audio: AudioManager, private canvas: HTMLCanvasElement) {
+    private keyListeners: ((event: KeyboardEvent) => void)[] = [];
+    private blinders: Blinders;
+
+    constructor(public audio: AudioManager, public canvas: HTMLCanvasElement) {
         super(null, 0, 0, 0, 0);
         this.pitcher = new Pitcher(audio);
         this.blinders = new Blinders(this, 400);
-    }
-
-    // public goFullScreen(): void {
-    //     this.canvas.requestFullscreen();
-    // }
-
-    public getScene(): Container {
-        return this.scene;
-    }
-
-    public getCamera(): Camera {
-        return this.camera;
-    }
-
-    public getAudio(): AudioManager {
-        return this.audio;
-    }
-
-    public getPitcher(): Pitcher {
-        return this.pitcher;
     }
 
     public click(mouse: Mouse): void {

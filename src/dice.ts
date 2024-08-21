@@ -52,11 +52,11 @@ export class Dice extends Flashable {
     }
 
     public roll(x: number, y: number): void {
-        this.game.getAudio().throw();
+        this.game.audio.throw();
         this.tween.move({ x, y }, 0.3 );
         this.rolling = true;
         setTimeout(() => {
-            this.game.getAudio().roll();
+            this.game.audio.roll();
             this.rolling = false;
             this.fixRotation();
         }, 300);

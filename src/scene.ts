@@ -56,10 +56,10 @@ export class Scene extends Container {
         this.splash = new WobblyText(game, 'Lets start by rolling for your cargo!', 35, 400, 60, 0.2, 3, { shadow: 4, align: 'center', scales: true });
         this.secondLine = new WobblyText(game, '', 25, 400, 105, 0.2, 3, { shadow: 3, align: 'center', scales: true });
         this.bigText = new WobblyText(game, '~ COUP AHOO ~', 80, 400, 150, 0.2, 3, { shadow: 6, align: 'center', scales: true });
-        this.action = new ButtonEntity(game, 'ROLL', 800 - 100 - 10, 360, 200, 55, () => this.buttonPress(), game.getAudio(), 20);
-        this.yesButton = new ButtonEntity(game, '', 800 - 70 - 10, 360, 140, 55, () => this.answer(true), game.getAudio(), 20);
-        this.noButton = new ButtonEntity(game, '', 800 - 70 * 3 - 10 * 2, 360, 140, 55, () => this.answer(false), game.getAudio(), 20);
-        // this.fullScreenButton = new ButtonEntity(game, '[ ]', 10 + 27, 360, 55, 55, () => this.goFullScreen(), game.getAudio(), 20);
+        this.action = new ButtonEntity(game, 'ROLL', 800 - 100 - 10, 360, 200, 55, () => this.buttonPress(), game.audio, 20);
+        this.yesButton = new ButtonEntity(game, '', 800 - 70 - 10, 360, 140, 55, () => this.answer(true), game.audio, 20);
+        this.noButton = new ButtonEntity(game, '', 800 - 70 * 3 - 10 * 2, 360, 140, 55, () => this.answer(false), game.audio, 20);
+        // this.fullScreenButton = new ButtonEntity(game, '[ ]', 10 + 27, 360, 55, 55, () => this.goFullScreen(), game.audio, 20);
 
         this.yesButton.visible = false;
         this.noButton.visible = false;
@@ -78,7 +78,7 @@ export class Scene extends Container {
             }), 500);
         });
 
-        this.cam = game.getCamera();
+        this.cam = game.camera;
         this.cam.zoom = this.targetZoom;
         this.cam.pan = { x: -100, y: -20 };
         this.cam.shift = 0;
@@ -86,7 +86,7 @@ export class Scene extends Container {
         this.clouds = Array.from(Array(50)).map((_, i) => ({ x: -1000 + i * 200, y: Math.random() * 500 - 200, speed: Math.random(), scale: 0.75 + Math.random() * 1.3 }));
 
         game.onKey((e) => {
-            if (e.key == 'm') this.game.getAudio().toggleMute();
+            if (e.key == 'm') this.game.audio.toggleMute();
             // if (e.key == 'f') this.game.goFullScreen();
             // dev keys
             // if (e.key == 'w') this.triggerWin();
@@ -100,11 +100,11 @@ export class Scene extends Container {
             // if (e.key == 'd') this.ship.hurt(1);
             // if (e.key == 'j') this.ship.hop();
             // if (e.key == 'k') this.ship.sink();
-            // if (e.key == 'p') this.game.getPitcher().pitchTo(0, 5);
+            // if (e.key == 'p') this.game.pitcher.pitchTo(0, 5);
             // if (e.key == 'R') this.restart();
             // if (e.key == 'x') this.ship.shoot(1);
             // if (e.key == 'p') this.ship.pose(true);
-            // if (e.key == 'h') this.game.getCamera().shake(10, 0.15, 1);
+            // if (e.key == 'h') this.game.camera.shake(10, 0.15, 1);
             // if (e.key == 'c') {
             //     const crew = this.ship.createCrew(-70, -100);
             //     crew.crewRole = this.ship.getAvailableRole();
@@ -124,9 +124,9 @@ export class Scene extends Container {
     // }
 
     public restart(): void {
-        this.game.getPitcher().pitchFrom(0.2);
-        this.game.getPitcher().pitchTo(1, 5);
-        this.game.getAudio().setVolume(0.7);
+        this.game.pitcher.pitchFrom(0.2);
+        this.game.pitcher.pitchTo(1, 5);
+        this.game.audio.setVolume(0.7);
         this.game.changeScene(new Scene(this.game));
     }
 
@@ -219,7 +219,7 @@ export class Scene extends Container {
             return;
         } 
         if (this.current.opponent.player && this.current.opponent.getDiceCount() > 1) {
-            this.game.getAudio().incoming();
+            this.game.audio.incoming();
             this.info(`Incoming ${dmg} damage!`, 'Select cargo taking the hit...');
             this.ship.addDamage(dmg);
             return;
@@ -257,7 +257,7 @@ export class Scene extends Container {
             this.addLoot();
 
             setTimeout(() => {
-                this.game.getAudio().win();
+                this.game.audio.win();
                 this.promptForReroll('Victory! Nicely done!', 'Would you like to reroll the loot?', () => {
                     this.promptSail();
                     this.showGreed();
@@ -270,7 +270,7 @@ export class Scene extends Container {
         if (this.current.isUnlucky() && !this.current.opponent.isUnlucky()) {
             setTimeout(() => {
                 this.current.badLuck();
-                this.game.getAudio().bad();
+                this.game.audio.bad();
                 setTimeout(() => this.nextTurn(), 500);
             }, 500);
             return;
@@ -325,7 +325,7 @@ export class Scene extends Container {
         if (this.current.isDead()) {
             this.ship.pose(false);
             this.enemy.pose(true);
-            this.game.getPitcher().pitchTo(0, 5);
+            this.game.pitcher.pitchTo(0, 5);
             this.info('Down to Davy Jones\' Locker...', '', 'GAME OVER');
             this.promptAction('TRY AGAIN?', () => this.restart());
             setTimeout(() => this.ship.sink(), 100);
@@ -393,7 +393,7 @@ export class Scene extends Container {
                     this.ship.addCrown();
                     this.ship.setName('WIN');
                     this.ship.pose(true);
-                    this.game.getAudio().win();
+                    this.game.audio.win();
                     this.info('You\'ve defeated the whole 13th fleet!', '', 'THE END?');
                     this.promptSail();
                 }, 1000);
@@ -405,7 +405,7 @@ export class Scene extends Container {
                 case 0: {
                     this.enemy.removeSpice();
                     setTimeout(() => {
-                        this.game.getAudio().greet();
+                        this.game.audio.greet();
                         this.enemy?.hop();
                         this.promptSail();
                         this.info('Ahoy mate! Interested in trade?', hasSpice ? 'I\'ll give you fresh cargo for your spice...' : 'Looks like you don\'t have any spice though...');
@@ -418,7 +418,7 @@ export class Scene extends Container {
                 }
                 case 1: {
                     setTimeout(() => {
-                        this.game.getAudio().greet();
+                        this.game.audio.greet();
                         this.enemy?.hop();
                         this.promptAnswerWith('ROLL', 'KEEP', 'Hello there mate!', 'Would you like to reroll all your cargo?', () => {
                             this.ship.rerollAll();
@@ -437,7 +437,7 @@ export class Scene extends Container {
                 case 3: {
                     this.enemy.addPlate();
                     setTimeout(() => {
-                        this.game.getAudio().greet();
+                        this.game.audio.greet();
                         this.enemy?.hop();
                         this.promptAnswer('Ahoy! I could plate one of your cargo!', 'It\'ll only be able to receive 1 damage at a time....', () => {
                             this.ship.addPlate();
@@ -452,7 +452,7 @@ export class Scene extends Container {
                     crew.crewRole = this.ship.getAvailableRole();
                     this.enemy.addCrew(crew);
                     setTimeout(() => {
-                        this.game.getAudio().greet();
+                        this.game.audio.greet();
                         this.enemy?.hop();
                         this.promptAnswer(`Oi! Want to hire this ${crew.crewRole}?`, crew.getRoleDescription(), () => {
                             this.enemy.removeCrew();
@@ -474,7 +474,7 @@ export class Scene extends Container {
         setTimeout(() => {
             this.info('Man the cannons! Battle stations!', 'There\'s no parley in sight...');
             this.enemy.talk(randomCell(['FILTHY RAT', 'HOW DARE YOU', 'YOU TRAITOR', 'LAND LUBBER']));
-            this.game.getAudio().warn();
+            this.game.audio.warn();
         }, 1000);
         setTimeout(() => this.promptShot(), 2000);
     }
@@ -509,7 +509,7 @@ export class Scene extends Container {
 
     public pick(d: Dice): void {
         if (this.trading) {
-            this.game.getAudio().pick();
+            this.game.audio.pick();
             d.allowPick(false);
             this.enemy.giveDice(d.getValue());
             this.ship.remove(d);
@@ -535,7 +535,7 @@ export class Scene extends Container {
 
     private moveDiceTo(ship: Ship): void {
         ship.openMouth();
-        this.game.getAudio().pick();
+        this.game.audio.pick();
         this.dice.forEach((d, i) => d.move(offset(ship.getDicePos(i + ship.getDiceCount()), this.ship.p.x, this.ship.p.y), () => ship.addDice(d)));
         setTimeout(() => {
             this.dice = [];
@@ -583,7 +583,7 @@ export class Scene extends Container {
             const looted = this.loot.find(l => l.isHovering());
             if (looted) {
                 this.showGreed();
-                this.game.getAudio().pick();
+                this.game.audio.pick();
                 this.yesButton.visible = false;
                 this.noButton.visible = false;
                 this.loot.forEach(l => l.allowPick(false));

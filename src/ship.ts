@@ -107,8 +107,8 @@ export class Ship extends Flashable {
 
     public badLuck(): void {
         this.talk('UNLUCKY 13!');
-        this.game.getAudio().bad();
-        if (this.player) this.game.getPitcher().pitchFrom(0.7, 1.5);
+        this.game.audio.bad();
+        if (this.player) this.game.pitcher.pitchFrom(0.7, 1.5);
     }
 
     public isDead(): boolean {
@@ -146,11 +146,11 @@ export class Ship extends Flashable {
     public hurtDice(target: Dice, amount: number): void {
         target.mark();
         setTimeout(() => {
-            this.game.getPitcher().pitchFrom(this.player ? 0.85 : 1.25, this.player ? 1 : 2.5);
+            this.game.pitcher.pitchFrom(this.player ? 0.85 : 1.25, this.player ? 1 : 2.5);
             this.openMouth();
             this.flash();
-            this.game.getCamera().shake(20, 0.3, 2);
-            this.game.getAudio().explosion();
+            this.game.camera.shake(20, 0.3, 2);
+            this.game.audio.explosion();
             const pos = offset(this.p, this.getDir() * -50, -this.p.y + 340);
             this.pulse(pos.x + 40, pos.y - 100, 200);
             this.pop(amount.toString(), target.p.x + 25, target.p.y);
@@ -175,9 +175,9 @@ export class Ship extends Flashable {
         const dir = this.getDir();
         const muzzle = offset(this.p, dir * 300, -this.p.y + 320);
         this.ball.shoot(muzzle, 800 * dir);
-        this.game.getCamera().shake(15, 0.2, 1.25);
+        this.game.camera.shake(15, 0.2, 1.25);
         this.pulse(muzzle.x + 40, muzzle.y - 20, 80);
-        this.game.getAudio().shoot();
+        this.game.audio.shoot();
     }
 
     public shoot(damage: number, first: boolean = true): void {
@@ -197,7 +197,7 @@ export class Ship extends Flashable {
     }
 
     public pulse(x: number, y: number, size: number): void {
-        this.game.getScene().add(new Pulse(this.game, x, y, size, 0.15, 0, 150));
+        this.game.scene.add(new Pulse(this.game, x, y, size, 0.15, 0, 150));
     }
 
     public addDice(d: Dice): void {
@@ -240,7 +240,7 @@ export class Ship extends Flashable {
         this.wholeCrew().forEach(c => c.update(tick, mouse));
         this.effects.update(tick, mouse);
         this.message.update(tick, mouse);
-        [...this.dice, ...this.tempDice].forEach(d => d.update(tick, this.offsetMouse(mouse, this.game.getCamera())));
+        [...this.dice, ...this.tempDice].forEach(d => d.update(tick, this.offsetMouse(mouse, this.game.camera)));
         if (this.recoil > 0) this.recoil = Math.max(0, this.recoil - 0.075);
         if (this.stagger > 0) this.stagger = Math.max(0, this.stagger - 0.05);
 
@@ -268,7 +268,7 @@ export class Ship extends Flashable {
                     if (this.opponent.has('cannoneer') && this.incoming > 0 && this.hits < 2 && this.canTake(this.incoming)) {
                         this.scene.info();
                         setTimeout(() => {
-                            this.game.getAudio().incoming();
+                            this.game.audio.incoming();
                             this.scene.info(`Another ${this.incoming} damage!`, 'Choose cargo taking the hit...');
                         }, 750);
                         return;
@@ -301,7 +301,7 @@ export class Ship extends Flashable {
                 this.tempDice = [];
             });
         });
-        this.game.getAudio().greet();
+        this.game.audio.greet();
         this.repositionDice();
     }
 
@@ -322,16 +322,16 @@ export class Ship extends Flashable {
     }
 
     public addPlate(): void {
-        if (this.player) this.game.getAudio().greet();
+        if (this.player) this.game.audio.greet();
         const options = this.dice.filter(d => d.canPlate());
         if (options.length > 0) randomCell(options).plate();
     }
 
     public sink(): void {
-        this.game.getAudio().sink();
+        this.game.audio.sink();
         this.wholeCrew().forEach(d => d.hop());
         this.tween.setEase(quadEaseIn);
-        this.tween.move(offset(this.p, 0, 800 / this.game.getCamera().zoom), 1.5);
+        this.tween.move(offset(this.p, 0, 800 / this.game.camera.zoom), 1.5);
     }
 
     public pose(state: boolean): void {
@@ -522,7 +522,7 @@ export class Ship extends Flashable {
         setTimeout(() => this.splashing = true, 300);
         setTimeout(() => this.splashing = false, 5000);
         for (let i = 0; i < 7; i++) {
-            setTimeout(() => this.game.getAudio().sail(0.1 + Math.random() * 0.3), i * 750);
+            setTimeout(() => this.game.audio.sail(0.1 + Math.random() * 0.3), i * 750);
         }
     }
 

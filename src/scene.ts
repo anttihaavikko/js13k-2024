@@ -124,7 +124,9 @@ export class Scene extends Container {
     // }
 
     public restart(): void {
+        this.game.getPitcher().pitchFrom(0.2);
         this.game.getPitcher().pitchTo(1, 5);
+        this.game.getAudio().setVolume(0.7);
         this.game.changeScene(new Scene(this.game));
     }
 

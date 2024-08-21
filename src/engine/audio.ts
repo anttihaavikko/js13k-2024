@@ -39,12 +39,19 @@ export class AudioManager {
         }, 5);
     }
 
+    public setVolume(vol: number): void {
+        this.audio.volume = vol;
+    }
+
     public getPitch(): number {
         return this.audio.playbackRate;
     }
 
     public setPitch(target: number): void {
-        if (target < 0.1) return;
+        if (target < 0.1) {
+            this.audio.volume = 0;
+            return;
+        }
         this.audio.playbackRate = target;
     }
 

@@ -366,7 +366,6 @@ export class Ship extends Flashable {
         ctx.rect(mastPos - 50, -550, 15, 520);
         ctx.fill();
         ctx.stroke();
-        ctx.closePath();
 
         // sail
         ctx.fillStyle = this.getColor(this.colors[3]);

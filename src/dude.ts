@@ -35,6 +35,7 @@ export class Dude extends Entity {
         this.skin = randomCell(skins);
         this.flipHat = Math.random() < 0.5 ? 1 : -1;
         this.animationSpeed = 0.005 * (0.8 + Math.random() * 0.4);
+        // this.crown = true;
     }
 
     public getRoleDescription(): string {
@@ -133,6 +134,7 @@ export class Dude extends Entity {
         ctx.globalCompositeOperation = 'multiply';
         this.face.draw(ctx);
         ctx.globalCompositeOperation = 'source-over';
+        ctx.translate(-13, 0);
 
         ctx.scale(4.5, 4.5);
         ctx.translate(0, -18 + this.animationPhaseAbs * 7 - clamp01(this.air - 0.5) * 20);
@@ -159,10 +161,11 @@ export class Dude extends Entity {
             ctx.closePath();
             ctx.stroke();
             ctx.fill();
+            ctx.restore();
             return;
         }
 
-        ctx.translate(Math.max(-this.flipHat * 3, 0), -1);
+        ctx.translate(2, -1);
         
         ctx.moveTo(8, -15);
         ctx.bezierCurveTo(-12, -5, -12, -5, -20, -5 - this.animationPhaseAbs * 2);

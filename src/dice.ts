@@ -131,7 +131,7 @@ export class Dice extends Flashable {
         ctx.rotate(this.rotation);
         ctx.fillStyle = this.spice ? '#e92' : '#fff';
         if (this.plated) ctx.fillStyle = '#a9c5db';
-        if (this.hovering || this.marked) ctx.fillStyle = '#ff3';
+        if (this.hovering || this.marked) ctx.fillStyle = '#f2e949';
         if (this.flashing) ctx.fillStyle = this.getColor('#fff');
         ctx.rect(-50, -50, 100, 100);
         ctx.fill();

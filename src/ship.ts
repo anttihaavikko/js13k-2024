@@ -52,7 +52,7 @@ export class Ship extends Flashable {
         this.effects = new Container(game);
         this.dude = this.createCrew(70, -100, true);
         // this.addCrew(this.dude, 170, -170);
-        // this.dude.addCrown();
+        // this.dude.crown = true;
         // this.dude.makeAngry();
     }
 
@@ -401,34 +401,36 @@ export class Ship extends Flashable {
         ctx.translate(160, 0);
         ctx.rotate(-0.1 - this.recoil * 0.1);
         
-        ctx.fillStyle = this.getColor('#666');
-        // cannon
-        ctx.save();
-        ctx.rotate(-this.recoil * 0.2);
-        ctx.translate(190 - this.recoil * 10, 0);
-        ctx.beginPath();
-        const height = 25;
-        ctx.moveTo(0, -200 - height);
-        ctx.bezierCurveTo(-300, -200 - height * 2, -300, -200 + height * 2, 0, -200 + height);
-        ctx.closePath();
-        ctx.fill();
-        ctx.stroke();
-        ctx.beginPath();
-        ctx.rect(-20, -230, 20, 60);
-        ctx.fill();
-        ctx.stroke();
-        ctx.restore();
+        if (!this.friendly) {
+            ctx.fillStyle = this.getColor('#666');
+            // cannon
+            ctx.save();
+            ctx.rotate(-this.recoil * 0.2);
+            ctx.translate(190 - this.recoil * 10, 0);
+            ctx.beginPath();
+            const height = 25;
+            ctx.moveTo(0, -200 - height);
+            ctx.bezierCurveTo(-300, -200 - height * 2, -300, -200 + height * 2, 0, -200 + height);
+            ctx.closePath();
+            ctx.fill();
+            ctx.stroke();
+            ctx.beginPath();
+            ctx.rect(-20, -230, 20, 60);
+            ctx.fill();
+            ctx.stroke();
+            ctx.restore();
 
-        ctx.fillStyle = this.getColor(this.colors[1]);
-        // cannon base
-        ctx.beginPath();
-        ctx.moveTo(0, -150);
-        ctx.bezierCurveTo(0, -230, 70, -230, 70, -150);
-        ctx.closePath();
-        ctx.fill();
-        ctx.stroke();
+            ctx.fillStyle = this.getColor(this.colors[1]);
+            // cannon base
+            ctx.beginPath();
+            ctx.moveTo(0, -150);
+            ctx.bezierCurveTo(0, -230, 70, -230, 70, -150);
+            ctx.closePath();
+            ctx.fill();
+            ctx.stroke();
 
-        drawCircle(ctx, { x: 35, y: -190 }, 8, this.getColor('#000'));
+            drawCircle(ctx, { x: 35, y: -190 }, 8, this.getColor('#000'));
+        }
 
         ctx.restore();
 

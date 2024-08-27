@@ -574,10 +574,10 @@ export class Scene extends Container {
         this.mp = { ...mouse };
         const diff = this.ship.p.x - this.cam.pan.x - 400 + this.cam.shift * 2;
         if (Math.abs(diff) > 10) this.camVelocity += Math.sign(diff);
-        this.cam.pan.x += this.camVelocity;
+        this.cam.pan.x += this.camVelocity * 0.05 * this.delta;
         this.camVelocity *= 0.9;
         const z = this.targetZoom - this.cam.zoom;
-        if (Math.abs(z) > 0.01) this.cam.zoom += Math.sign(z) * 0.0075;
+        if (Math.abs(z) > 0.01) this.cam.zoom += Math.sign(z) * 0.0075 * 0.05 * this.delta;
 
         if (this.loot.length > 0 && mouse.pressing) {
             const looted = this.loot.find(l => l.isHovering());

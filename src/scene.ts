@@ -127,6 +127,7 @@ export class Scene extends Container {
         this.game.pitcher.pitchFrom(0.2);
         this.game.pitcher.pitchTo(1, 5);
         this.game.audio.setVolume(0.7);
+        this.game.scene = null;
         this.game.changeScene(new Scene(this.game));
     }
 

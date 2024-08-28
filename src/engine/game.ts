@@ -27,7 +27,7 @@ export class Game extends Entity {
     }
 
     public onKey(callback: (event: KeyboardEvent) => void): void {
-        this.keyListeners.push(callback);
+        this.keyListeners = [callback];
     }
 
     public pressed(event: KeyboardEvent): void {

@@ -95,13 +95,13 @@ export class Scene extends Container {
             // if (e.key == 'v') this.doEvent();
             // if (e.key == 'f') this.ship.tryRepair();
             // if (e.key == 'z') this.zoom();
-            if (e.key == 's') this.nextLevel();
+            // if (e.key == 's') this.nextLevel();
             // if (e.key == 'l') this.current.badLuck();
             // if (e.key == 'd') this.ship.hurt(1);
             // if (e.key == 'j') this.ship.hop();
             // if (e.key == 'k') this.ship.sink();
             // if (e.key == 'p') this.game.pitcher.pitchTo(0, 5);
-            if (e.key == 'R') this.restart();
+            // if (e.key == 'R') this.restart();
             // if (e.key == 'x') this.ship.shoot(1);
             // if (e.key == 'p') this.ship.pose(true);
             // if (e.key == 'h') this.game.camera.shake(10, 0.15, 1);

@@ -95,13 +95,13 @@ export class Scene extends Container {
             // if (e.key == 'v') this.doEvent();
             // if (e.key == 'f') this.ship.tryRepair();
             // if (e.key == 'z') this.zoom();
-            // if (e.key == 's') this.nextLevel();
+            if (e.key == 's') this.nextLevel();
             // if (e.key == 'l') this.current.badLuck();
             // if (e.key == 'd') this.ship.hurt(1);
             // if (e.key == 'j') this.ship.hop();
             // if (e.key == 'k') this.ship.sink();
             // if (e.key == 'p') this.game.pitcher.pitchTo(0, 5);
-            // if (e.key == 'R') this.restart();
+            if (e.key == 'R') this.restart();
             // if (e.key == 'x') this.ship.shoot(1);
             // if (e.key == 'p') this.ship.pose(true);
             // if (e.key == 'h') this.game.camera.shake(10, 0.15, 1);
@@ -573,6 +573,7 @@ export class Scene extends Container {
 
     public update(tick: number, mouse: Mouse): void {
         super.update(tick, mouse);
+        if (this.delta > 1000) return;
         this.wave = Math.sin(tick * 0.0003);
         this.fastWave = Math.sin(tick * 0.0007);
         [this.ball, this.ship, this.enemy, ...this.dice, this.splash, this.secondLine, this.bigText, ...this.getButtons()].filter(e => !!e).forEach(e => e.update(tick, mouse));
@@ -666,8 +667,11 @@ export class Scene extends Container {
 
         [...this.dice, ...this.getChildren()].forEach(e => e.draw(ctx));
 
-        const p = new DOMPoint(this.mp.x, this.mp.y).matrixTransform(ctx.getTransform().inverse());
-        this.mp = { x: p.x, y: p.y };
+        if (this.mp) {
+            const p = new DOMPoint(this.mp.x, this.mp.y).matrixTransform(ctx.getTransform().inverse());
+            this.mp = { x: p.x, y: p.y };
+        }
+        
         ctx.resetTransform();
         
         [this.splash, this.secondLine, this.bigText, ...this.getButtons()].forEach(b => b.draw(ctx));

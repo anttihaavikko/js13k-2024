@@ -141,6 +141,7 @@ export class Scene extends Container {
     private reroll(): void {
         this.current.openMouth();
         [...this.dice, ...this.loot].forEach(l => l.reroll());
+        this.checkForBlankRepair();
     }
 
     private promptAction(label: string, action: () => void): void {
@@ -555,6 +556,10 @@ export class Scene extends Container {
             d.roll(m + offX + i * 120 - 120 * (Math.min(amount - 1, perRow) * 0.5) - 120 * perRow * Math.floor(i / perRow), 450 + row * 120 + offY);
             this.dice.push(d);
         }
+        this.checkForBlankRepair();
+    }
+
+    private checkForBlankRepair(): void {
         setTimeout(() => {
             if (this.dice.some(d => d.getValue() === 0)) this.current.tryRepair();
         }, 500);

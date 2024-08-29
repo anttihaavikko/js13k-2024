@@ -389,9 +389,10 @@ export class Scene extends Container {
             if (this.level === END_LEVEL) {
                 this.enemy.hidden = true;
                 setTimeout(() => {
-                    this.targetZoom = 0.75;
-                    this.cam.shift = 0;
-                    this.cam.pan.y = -50;
+                    // this.targetZoom = 0.75;
+                    // this.cam.shift = 0;
+                    // this.cam.pan.y = -50;
+                    this.zoom();
                     this.ship.addCrown();
                     this.ship.setName('WIN');
                     this.ship.pose(true);

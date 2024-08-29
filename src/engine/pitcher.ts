@@ -8,7 +8,7 @@ export class Pitcher {
 
     constructor(private audio: AudioManager) {
         this.value = this.target = this.audio.getPitch();
-        this.disabled = ['iphone', 'ipad'].some(s => navigator.userAgent.toLowerCase().includes(s));
+        this.disabled = ['ipho', 'ipad', 'macin'].some(s => navigator.userAgent.toLowerCase().includes(s) && navigator.maxTouchPoints > 0);
     }
 
     public update(delta: number): void {

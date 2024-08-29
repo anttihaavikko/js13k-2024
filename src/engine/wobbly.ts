@@ -52,11 +52,9 @@ export class WobblyText extends TextEntity {
         if (this.options?.align == 'right') offset = -w;
         this.content.split('').forEach((letter, i) => {
             // ctx.font =`${this.fontSize * mod * (this.content[i - 1] === ' ' ? 1.2 : 1)}px ${font}`;
-            if (this.options?.shadow) {
-                ctx.fillStyle = '#000';
-                ctx.fillText(letter, this.p.x + spacing * i + this.options.shadow + offset, this.p.y + this.options.shadow + Math.sin(this.time * 0.005 + i * this.frequency) * this.amplitude);
-            }
-            ctx.fillStyle = this.options?.color ?? '#fff';
+            ctx.fillStyle = '#000';
+            ctx.fillText(letter, this.p.x + spacing * i + this.options.shadow + offset, this.p.y + this.options.shadow + Math.sin(this.time * 0.005 + i * this.frequency) * this.amplitude);
+            ctx.fillStyle = '#fff';
             // TODO: commented for optimization
             // if (this.options?.outline) {
             //     ctx.strokeStyle = '#000';

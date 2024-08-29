@@ -17,11 +17,10 @@ export class TextEntity extends Particle {
         // TODO: commented for optimization
         // ctx.textAlign = this.options?.align ?? 'center';
 
-        if (this.options?.shadow) {
-            ctx.fillStyle = '#000';
-            ctx.fillText(this.content, this.p.x + this.options.shadow, this.p.y + this.options.shadow);
-        }
-        ctx.fillStyle = this.options?.color ?? '#fff';
+        ctx.fillStyle = '#000';
+        ctx.fillText(this.content, this.p.x + this.options.shadow, this.p.y + this.options.shadow);
+
+        ctx.fillStyle = '#fff';
         ctx.fillText(this.content, this.p.x, this.p.y);
         
         ctx.restore();

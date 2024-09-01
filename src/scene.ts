@@ -636,7 +636,7 @@ export class Scene extends Container {
             ctx.ellipse(c.x, c.y, 140 * c.scale, 30 * c.scale, 0, 0, Math.PI * 2);
             ctx.stroke();
             c.x -= c.speed * this.delta * 0.03;
-            if (c.x < this.cam.pan.x - 1000) c.x = this.cam.pan.x + 3000;
+            if (c.x < this.cam.pan.x - 1000) c.x = this.cam.pan.x + 2500 + Math.random() * 1000;
         });
 
         // ctx.globalCompositeOperation = 'source-over';

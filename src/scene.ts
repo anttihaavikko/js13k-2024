@@ -531,9 +531,9 @@ export class Scene extends Container {
         const left = this.ship?.getCargoWidth();
         const right = this.enemy?.getCargoWidth() ?? 0;
         const max = Math.max(left, right);
-        this.targetZoom = 500 / (1000 + left + right);
+        this.targetZoom = Math.min(750 / (1500 + left + right), 0.5);
         this.cam.pan.y = 220 + max - 100 / this.cam.zoom;
-        this.cam.shift = 100 - left - right;
+        this.cam.shift = 100 - left + right * this.targetZoom * 0.25;
     }
 
     private moveDiceTo(ship: Ship): void {
